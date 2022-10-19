@@ -1,0 +1,15 @@
+
+{
+	"tasks": [
+		{
+			"label": "Compile",
+			"type": "shell",
+			"command": "make test_tree_run",
+			"problemMatcher": [
+				"$gcc"
+			]
+		}
+	],
+	"version": "2.0.0"
+}
+
