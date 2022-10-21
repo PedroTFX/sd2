@@ -72,7 +72,7 @@ int main(int argc, char const *argv[])
     // struct rtree* server_tree = {0};
     // server_tree->port = 1337;
     // server_tree->root = tree_create();
-    
+
     network_connect(NULL);
     return 0;
 }

@@ -7,10 +7,9 @@
 #include "tree.h"
 #include "client_stub.h"
 
-struct rtree{
+struct rtree_t{
     int port;
     struct tree_t* root;
 };
-
 
 #endif

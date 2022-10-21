@@ -13,7 +13,7 @@
  * Em caso de erro retorna NULL.
  */
 struct tree_t* tree_create(){
-	struct tree_t* tree = calloc(sizeof(struct tree_t));
+	struct tree_t* tree = calloc(1, sizeof(struct tree_t));
 	if(tree == NULL){
 		tree = NULL;
 		return NULL;
@@ -249,7 +249,7 @@ int tree_get_keys_aux(struct tree_t *tree, char **keyPtrs, int index) {
 
 	keyPtrs[index] = strdup(tree->node->key);
 		index++;
-		
+
 	if(tree->tree_right){
 		index = tree_get_keys_aux(tree->tree_right, keyPtrs, index);
 	}
@@ -286,11 +286,11 @@ int tree_get_values_aux(struct tree_t *tree, struct data_t **valuePtrs, int inde
 
 	valuePtrs[index] = data_dup(tree->node->value);
 		index++;
-		
+
 	if(tree->tree_right){
 		index = tree_get_values_aux(tree->tree_right, valuePtrs, index);
 	}
-	
+
 	return index;
 }
 

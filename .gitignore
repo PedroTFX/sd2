@@ -1,0 +1,12 @@
+obj/network_server.o
+obj/sdmessage.pb-c.o
+obj/tree_skel.o
+obj/tree.o
+network_client
+obj/data.o
+obj/entry.o
+obj/network_client.o
+network_client
+.vscode/settings.json
+bin/network_server
+bin/test_tree

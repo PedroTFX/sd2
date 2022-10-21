@@ -1,30 +1,67 @@
 syntax = "proto3";
-message message_t
- {
-        enum Opcode {
-                OP_BAD     	= 0;
-                OP_SIZE    	= 10;
-                OP_HEIGHT  	= 20;
-                OP_DEL     	= 30;
-                OP_GET     	= 40;
-                OP_PUT     	= 50;
-                OP_GETKEYS	= 60;
-                OP_GETVALUES	= 70;
-                OP_ERROR   	= 99;
-        }
-        Opcode opcode = 1;
+message message_t {
+	enum Opcode {
+			OP_BAD     	= 0;
+			OP_SIZE    	= 10;
+			OP_HEIGHT  	= 20;
+			OP_DEL     	= 30;
+			OP_GET     	= 40;
+			OP_PUT     	= 50;
+			OP_GETKEYS	= 60;
+			OP_GETVALUES	= 70;
+			OP_ERROR   	= 99;
+	}
+	Opcode opcode = 1;
 
-        enum C_type {
-                CT_BAD    	= 0;
-                CT_KEY    	= 10;
-                CT_VALUE  	= 20;
-                CT_ENTRY  	= 30;
-                CT_KEYS   	= 40;
-                CT_VALUE  	= 50;
-                CT_RESULT 	= 60;
-                CT_NONE   	= 70;
-        }
-        C_type c_type = 2;
-        bytes data = 3;
+	enum C_type {
+		CT_BAD    	= 0;
+		CT_KEY    	= 10;
+		CT_VALUE  	= 20;
+		CT_ENTRY  	= 30;
+		CT_KEYS   	= 40;
+		CT_VALUES  	= 50;
+		CT_RESULT 	= 60;
+		CT_NONE   	= 70;
+	}
+	C_type c_type = 2;
 
+	int32 result = 3;
+	string key = 4;
+	bytes value = 5;
+	message Entry {
+		string key = 1;
+		bytes value = 2;
+	}
+	Entry entry = 6;
+	repeated string keys = 7;
+	repeated bytes values = 8;
+
+
+	/* int32 size = 2;
+
+	int32 height = 3;
+
+	string put_key = 4;
+	bytes put_value = 5;
+	int32 put_result = 6;
+
+	string del_key = 9;
+	int32 del_result = 10;
+
+	string get_key = 7;
+	bytes get_result = 8;
+
+	repeated string get_keys_result = 11;
+
+	repeated bytes get_values_result = 12; */
 };
+
+/**
+int tree_size(struct tree_t *tree);
+int tree_height(struct tree_t *tree);
+int tree_put(struct tree_t *tree, char *key, struct data_t *value);
+struct data_t *tree_get(struct tree_t *tree, char *key);
+int tree_del(struct tree_t *tree, char *key);
+char **tree_get_keys(struct tree_t *tree);
+void **tree_get_values(struct tree_t *tree);
+*/

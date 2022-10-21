@@ -5,6 +5,7 @@
 
 #include "serialization.h"
 
+//[num_bytes][string][num_bytes][string][0]
 void copy_strings_from_buffer_to_keys_array(char *keys_buf, char **keys_array);
 
 int num_strings_in_buffer(char *keys_buf);
