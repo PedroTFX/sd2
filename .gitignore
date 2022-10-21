@@ -10,3 +10,5 @@ network_client
 .vscode/settings.json
 bin/network_server
 bin/test_tree
+tests/test_tree.c
+tree_client
