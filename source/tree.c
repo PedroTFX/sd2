@@ -211,7 +211,7 @@ int tree_del(struct tree_t *tree, char *key){
 
 /* Função que devolve a altura da árvore.
  */
-int tree_height(struct tree_t *tree){
+int tree_height(struct tree_t *tree) {
 	if(tree == NULL){
 		return 0;
 	}

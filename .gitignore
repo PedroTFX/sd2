@@ -12,3 +12,5 @@ bin/network_server
 bin/test_tree
 tests/test_tree.c
 tree_client
+network_client
+bin/tree_server

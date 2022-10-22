@@ -55,7 +55,7 @@ int invoke(struct message_t* msg) {
 }
 
 void invoke_size(struct message_t* msg) {
-	msg->opcode++;
+	msg->opcode = msg->opcode+1;
 	msg->c_type = M_TYPE_RESULT;
 	msg->result = tree_size(tree);
 }

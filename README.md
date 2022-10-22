@@ -41,4 +41,5 @@ Melhor metodo de teste:
 
 
 
-ALTERAR .PROTO
+ja ha troca de mensagem entre o cliente e o servidor.
+fazer o client stub e tree_client

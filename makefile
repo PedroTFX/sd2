@@ -139,16 +139,18 @@ proto:
 tree_skel: tree
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR)
 
-network_server: tree_skel
+network_server.o: tree_skel
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_server.c -o $(OBJDIR)/network_server.o -I $(INCLUDEDIR)
+
+network_server: network_server.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/network_server.c -o $(BINDIR)/network_server $(OBJDIR)/tree_skel.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
+
+tree_server: network_server.o
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree_server $(OBJDIR)/network_server.o $(OBJDIR)/tree_skel.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
 network_client:
 	$(CC) $(DEBUGFLAGS) -o $(OBJDIR)/network_client.o -c $(SRCDIR)/network_client.c -I $(INCLUDEDIR)
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/network_client.c -I $(INCLUDEDIR) -o network_client
-
-tree_server: network_server
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/network_client.c -o $(BINDIR)/network_client $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
 # Tests
 test_data: data

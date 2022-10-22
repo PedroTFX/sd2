@@ -5,20 +5,79 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Debug",
+			"name": "Debug client",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/test_tree",
+			"program": "${workspaceFolder}/bin/network_client",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "Compile client",
+			"setupCommands": [
+				{
+					"description": "Enable funcy printing to gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "In this mode GDB will be attached to both processes after a call to fork() or vfork().",
+					"text": "-gdb-set detach-on-fork on",
+					"ignoreFailures": false
+				},
+				{
+					"description": "The new process is debugged after a fork. The parent process runs unimpeded.",
+					"text": "-gdb-set follow-fork-mode child",
+					"ignoreFailures": false
+				}
+			]
+		},
+		{
+			"name": "Debug server",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/bin/network_server",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "Compile server",
+			"setupCommands": [
+				{
+					"description": "Enable funcy printing to gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "In this mode GDB will be attached to both processes after a call to fork() or vfork().",
+					"text": "-gdb-set detach-on-fork on",
+					"ignoreFailures": false
+				},
+				{
+					"description": "The new process is debugged after a fork. The parent process runs unimpeded.",
+					"text": "-gdb-set follow-fork-mode child",
+					"ignoreFailures": false
+				}
+			]
+		},
+		{
+			"name": "Debug tree_server",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/bin/tree_server",
 			"args": [
+				"1337"
 			],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],
 			"externalConsole": false,
 			"MIMode": "gdb",
-			//"miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
-			//"miDebuggerPath": "/usr/bin/gdb",
-			"preLaunchTask": "Compile",
+			"preLaunchTask": "Compile tree_server",
 			"setupCommands": [
 				{
 					"description": "Enable funcy printing to gdb",

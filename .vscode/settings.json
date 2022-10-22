@@ -1,5 +1,7 @@
 {
 	"files.associations": {
-		"stdio.h": "c"
+		"stdio.h": "c",
+		"message-private.h": "c",
+		"tree_server-private.h": "c"
 	}
 }

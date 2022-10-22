@@ -2,9 +2,25 @@
 {
 	"tasks": [
 		{
-			"label": "Compile",
+			"label": "Compile client",
 			"type": "shell",
-			"command": "make test_tree_run",
+			"command": "make network_client",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Compile server",
+			"type": "shell",
+			"command": "make network_server",
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Compile tree_server",
+			"type": "shell",
+			"command": "make tree_server",
 			"problemMatcher": [
 				"$gcc"
 			]

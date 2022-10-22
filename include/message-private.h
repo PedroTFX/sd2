@@ -1,6 +1,6 @@
 #ifndef _MESSAGE_T_H
 #define _MESSAGE_T_H
-
+#define BUFFER_MAX_SIZE 1024
 #include "sdmessage.pb-c.h"
 
 #define message_t _MessageT

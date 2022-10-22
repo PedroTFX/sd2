@@ -11,7 +11,6 @@
 
 #include "network_server.h"
 #include "message-private.h"
-#include "tree_skel.h"
 
 int sfd;
 
@@ -100,11 +99,12 @@ struct message_t* network_receive(int client_socket) {
  * - Enviar a mensagem serializada, através do client_socket.
  */
 int network_send(int client_socket, struct message_t* msg) {
-	char* hello = "Hello world\0\n";
+	uint8_t buffer[BUFFER_MAX_SIZE];
+	int buffer_size = message_t__pack(msg, buffer);
 
-	ssize_t sent = send(client_socket, (void*)hello, strlen(hello) - 1, 0);
-	close(client_socket);
-	return 0;
+	ssize_t sent = send(client_socket, buffer, buffer_size, 0);
+	//close(client_socket);
+	return sent;
 }
 
 /* A função network_server_close() liberta os recursos alocados por
@@ -112,13 +112,5 @@ int network_send(int client_socket, struct message_t* msg) {
  */
 int network_server_close() {
 	close(sfd);
-	return 0;
-}
-
-int main(int argc, char const* argv[]) {
-	network_server_init(1337);	// existem ports que n se pod escolher
-	network_main_loop(sfd);
-	network_send(sfd, NULL);
-
 	return 0;
 }
