@@ -1,4 +1,3 @@
-// #include "tree_skel.h"
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
 #include <stdio.h>
@@ -9,6 +8,7 @@
 #include <tree.h>
 #include <unistd.h>
 
+#include "tree_skel.h"
 #include "network_server.h"
 #include "message-private.h"
 
@@ -32,7 +32,8 @@ int network_server_init(short port) {
 		return -1;
 	}
 	printf("socket created\n");
-
+	int option_value = 1;
+	setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
 	// bind to addr
 	if (bind(sfd, (struct sockaddr*)&server_info, server_info_len) < 0) {
 		perror("bind");

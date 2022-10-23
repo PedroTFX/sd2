@@ -1,16 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <string.h>
-#include "client_stub-private.h"
+
 #include "sdmessage.pb-c.h"
-#include "network_client-private.h"
 #include "message-private.h"
-#include "tree.h"
+#include "client_stub-private.h"
+#include "network_client.h"
+#include "network_client-private.h"
+
 /* Esta função deve:
  * - Obter o endereço do servidor (struct sockaddr_in) a base da
  *   informação guardada na estrutura rtree;
@@ -19,30 +22,32 @@
  *   na estrutura rtree;
  * - Retornar 0 (OK) ou -1 (erro).
  */
-int network_connect(struct rtree_t *rtree){
-    //socket info
-    struct sockaddr_in server_info ={0};
-    server_info.sin_family = AF_INET;
-    server_info.sin_addr.s_addr = rtree->address;
-    server_info.sin_port = rtree->port;
+int network_connect(struct rtree_t* rtree) {
+	// socket info
+	struct sockaddr_in server_info = {0};
+	server_info.sin_family = AF_INET;
+	// Store this IP address in struct sockaddr_in
+	inet_pton(AF_INET, rtree->address, &(server_info.sin_addr));
+	//server_info.sin_addr.s_addr = htonl(rtree->address);
+	server_info.sin_port = htons(atoi(rtree->port));
 
-    socklen_t server_info_len = sizeof(server_info);
+	socklen_t server_info_len = sizeof(server_info);
 
-    //socket
-    int sfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(sfd < 0){
-        perror("socket");
-        return -1;
-    }
+	// socket
+	int sfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sfd < 0) {
+		perror("socket");
+		return -1;
+	}
 	rtree->socket_id = sfd;
-    //connect
+	// connect
 	int con = connect(sfd, (struct sockaddr*)&server_info, server_info_len);
-    if(con == -1){
-        perror("connect");
-        return -1;
-    }
+	if (con == -1) {
+		perror("connect");
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 /* Esta função deve:
@@ -53,11 +58,11 @@ int network_connect(struct rtree_t *rtree){
  * - De-serializar a mensagem de resposta;
  * - Retornar a mensagem de-serializada ou NULL em caso de erro.
  */
-struct message_t *network_send_receive(struct rtree_t * rtree, struct message_t *msg){
+struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* msg) {
 	int sfd = rtree->socket_id;
 	uint8_t buffer[BUFFER_MAX_SIZE];
 	int buffer_size = message_t__pack(msg, buffer);
-	//message_t__free_unpacked(msg, NULL);
+	// message_t__free_unpacked(msg, NULL);
 	if (send(sfd, buffer, buffer_size, 0) == -1) {
 		perror("could not send data\n");
 	}
@@ -69,17 +74,17 @@ struct message_t *network_send_receive(struct rtree_t * rtree, struct message_t 
 /* A função network_close() fecha a ligação estabelecida por
  * network_connect().
  */
-int network_close(struct rtree_t * rtree){
+int network_close(struct rtree_t* rtree) {
 	return close(rtree->socket_id);
 }
 
-int main(int argc, char const *argv[]) {
+/* int main(int argc, char const* argv[]) {
 	struct rtree_t server_tree;
-	server_tree.address = htonl(0x7f000001); // 127.0.0.1
-	//server_tree.address = inet_address("localhost");
-	server_tree.port = htons(1337);
+	server_tree.address = 0x7f000001;  // 127.0.0.1
+	// server_tree.address = inet_address("localhost");
+	server_tree.port = 1337;
 	server_tree.socket_id = -1;
-	server_tree.root = tree_create();
+	//server_tree.root = tree_create();
 
 	network_connect(&server_tree);
 	struct message_t* request;
@@ -92,4 +97,4 @@ int main(int argc, char const *argv[]) {
 	printf("HEIGHT: %d\n", response->result);
 	network_close(&server_tree);
 	return 0;
-}
+} */

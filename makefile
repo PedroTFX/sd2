@@ -117,40 +117,41 @@ valgrind_all: valgrind_data valgrind_entry valgrind_tree valgrind_serial
 todo:
 	@grep -R TODO -n | tr -s ' ' | grep -v makefile
 
-data:
+data.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/data.c -o $(OBJDIR)/data.o -I $(INCLUDEDIR)
 
-entry:
+entry.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/entry.c -o $(OBJDIR)/entry.o -I $(INCLUDEDIR)
 
-tree:
+tree.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree.c -o $(OBJDIR)/tree.o -I $(INCLUDEDIR)
 
 serialization:
-	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/serialization.c -o $(OBJDIR)/serialization.o -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/serialization.c -o $(OBJDIR)/serialization.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR)
 
-proto:
+proto.o:
 	protoc --c_out=. sdmessage.proto
 	mv sdmessage.pb-c.c source
 	mv sdmessage.pb-c.h include
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/sdmessage.pb-c.c -o $(OBJDIR)/sdmessage.pb-c.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
-
-tree_skel: tree
-	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR)
-
-network_server.o: tree_skel
+network_server.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_server.c -o $(OBJDIR)/network_server.o -I $(INCLUDEDIR)
 
-network_server: network_server.o
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/network_server.c -o $(BINDIR)/network_server $(OBJDIR)/tree_skel.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
+tree_skel.o:
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR)
 
-tree_server: network_server.o
+tree_server: data.o entry.o tree.o proto.o network_server.o tree_skel.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree_server $(OBJDIR)/network_server.o $(OBJDIR)/tree_skel.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
-network_client:
-	$(CC) $(DEBUGFLAGS) -o $(OBJDIR)/network_client.o -c $(SRCDIR)/network_client.c -I $(INCLUDEDIR)
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/network_client.c -o $(BINDIR)/network_client $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
+network_client.o:
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_client.c -o $(OBJDIR)/network_client.o -I $(INCLUDEDIR)
+
+client_stub.o:
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/client_stub.c -o $(OBJDIR)/client_stub.o -I $(INCLUDEDIR)
+
+tree_client: data.o entry.o network_client.o client_stub.o
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree_client $(OBJDIR)/network_client.o $(OBJDIR)/client_stub.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
 # Tests
 test_data: data
@@ -176,12 +177,4 @@ test_tree_run: test_tree
 
 test_serial_run: test_serial
 	./$(BINDIR)/test_serialization
-
-
-
-
-
-t_c:
-	gcc -g -Wall source/tree_client.c -o tree_client
-	./tree_client 1.2.3.4:69
 

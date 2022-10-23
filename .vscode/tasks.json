@@ -4,15 +4,7 @@
 		{
 			"label": "Compile client",
 			"type": "shell",
-			"command": "make network_client",
-			"problemMatcher": [
-				"$gcc"
-			]
-		},
-		{
-			"label": "Compile server",
-			"type": "shell",
-			"command": "make network_server",
+			"command": "make tree_client",
 			"problemMatcher": [
 				"$gcc"
 			]

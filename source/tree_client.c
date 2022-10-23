@@ -6,61 +6,82 @@
 #include "network_client.h"
 #include "client_stub.h"
 #include "client_stub-private.h"
+#include "tree_client-private.h"
 
-int main(int argc, char const *argv[]) {
+#define PUT "put"
+#define QUIT "quit"
+int main(int argc, char const* argv[]) {
 	if (argc < 2) {
 		printf("Usage: ./tree_client <server>:<port>\n");
+		return -1;
 	}
 
-	// connect to server and port
-	char* adrressport[255];
-	printf(argv[1]);
-	printf("\n");
+	struct rtree_t* r_tree = rtree_connect(argv[1]);
 
-	sprintf(adrressport, argv[1], "%s:%s");
-	struct rtree_t* rtree = rtree_connect(adrressport);
-
-	//printf("lista de comandos disponiveis:\n");
-	printf("pedido:\n");
-	char *input[999];
-	fgets(input, 999, stdin);
-	char *token = strtok(input, " ");
-	if (strcmp(token, "quit")== 0) {
-        rtree_disconnect(r_tree);
-    } else if(strcmp(token, "size")== 0) {
-		rtree_size(r_tree);
-	} else if (strcmp(token, "height")== 0) {
-		rtree_height(r_tree);
-	} else if (strcmp(token, "getkeys")==0) {
-		rtree_get_keys(r_tree);
-	} else if (strcmp(token, "getvalues")==0) {
-		rtree_get_values(r_tree);
-	} else if (strcmp(token, "del")==0) {
-		token = strtok(NULL, " ");
-		rtree_del(rtree, token);
-	} else if (strcmp(token, "get")==0) {
-		token = strtok(NULL, " ");
-		rtree_get(rtree,token);
-	} else if(strcmp(token,"put")==0){
-		char* key = strtok(NULL, " ");
-		token = strtok(NULL, " ");
-		rtree_put(rtree, key, token);
-	} else{
-		printf("xau\n")
+	if (r_tree == NULL) {
+		perror("could not connect client\n");
+		return -1;
 	}
 
-	while (token != NULL) {
-		printf("%s\n", token);
-		token = strtok(NULL, " ");
-	}
+	char option[1024];
+	do {
+		showMenu();
+		readOption(option);
 
-	printf("%s", input);
-	// struct entry_t* entry;
-	// rtree_put(r_tree, entry);
+		if (commandIsPut(option)) {
+			executePut(r_tree, option);
+		} /* else if (strcmp(command, "get") == 0) {
+			command = strtok(NULL, " ");
+			rtree_get(r_tree, command);
+		} else if (strcmp(command, "del") == 0) {
+			command = strtok(NULL, " ");
+			rtree_del(r_tree, command);
+		} else if (strcmp(command, "size") == 0) {
+			rtree_size(r_tree);
+		} else if (strcmp(command, "height") == 0) {
+			rtree_height(r_tree);
+		} else if (strcmp(command, "getkeys") == 0)
+			rtree_get_keys(r_tree);
+		} else if (strcmp(command, "getvalues") == 0) {
+			rtree_get_values(r_tree);
+		} */
+	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
 
-	// create request for action
+	rtree_disconnect(r_tree);
+	printf("Client exiting. Bye.\n");
 
-	// close connection
-	// rtree_disconnect(r_tree);
 	return 0;
+}
+
+void showMenu() {
+	printf("put <key> <value>\n");
+	printf("get <key>\n");
+	printf("del <key>\n");
+	printf("size\n");
+	printf("height\n");
+	printf("getkeys\n");
+	printf("getvalues\n");
+	printf("quit\n");
+	printf("Option: ");
+}
+
+void readOption(char* input) {
+	fgets(input, 999, stdin);
+}
+
+int commandIsPut(char* option) {
+	return strncmp(option, PUT, strlen(PUT)) == 0;
+}
+
+void executePut(struct rtree_t* r_tree, char* option) {
+	strtok(option, " ");
+	char* key = strtok(NULL, " ");
+	char* value = strtok(NULL, " ");
+	struct data_t* data = data_create2(strlen(value), value);
+	struct entry_t* entry = entry_create(key, data);
+	if (rtree_put(r_tree, entry) == -1) {
+		printf("put failed\n");
+		return;
+	}
+	printf("put successful\n");
 }
