@@ -61,16 +61,17 @@ void invoke_put(struct message_t* msg) {
 	int result = tree_put(tree, msg->entry->key, (struct data_t*)&(msg->entry->value));
 	//message_t__free_unpacked(msg, NULL);
 	message_t__init(msg);
-
 	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_PUT + 1) : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_get(struct message_t* msg) {
-	msg->opcode++;
 	struct data_t* result = tree_get(tree, msg->key);
-	msg->value.len = result->datasize;
-	memcpy(msg->value.data, result->data, result->datasize);
+	message_t__init(msg);
+	msg->opcode = MESSAGE_T__OPCODE__OP_GET + 1;
+	msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
+	msg->value.len = result != NULL? result->datasize : 0;
+	msg->value.data = result != NULL ? result->data : NULL;
 }
 
 void invoke_del(struct message_t* msg) {

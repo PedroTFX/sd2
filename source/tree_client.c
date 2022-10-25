@@ -9,6 +9,7 @@
 #include "tree_client-private.h"
 
 #define PUT "put"
+#define GET "get"
 #define QUIT "quit"
 int main(int argc, char const* argv[]) {
 	if (argc < 2) {
@@ -26,14 +27,13 @@ int main(int argc, char const* argv[]) {
 	char option[1024];
 	do {
 		showMenu();
-		readOption(option);
+		readOption(option, 1024);
 
 		if (commandIsPut(option)) {
 			executePut(r_tree, option);
-		} /* else if (strcmp(command, "get") == 0) {
-			command = strtok(NULL, " ");
-			rtree_get(r_tree, command);
-		} else if (strcmp(command, "del") == 0) {
+		} else if (commandIsGet(option)) {
+			executeGet(r_tree, option);
+		}/*  else if (strcmp(command, "del") == 0) {
 			command = strtok(NULL, " ");
 			rtree_del(r_tree, command);
 		} else if (strcmp(command, "size") == 0) {
@@ -54,6 +54,7 @@ int main(int argc, char const* argv[]) {
 }
 
 void showMenu() {
+	printf("\n");
 	printf("put <key> <value>\n");
 	printf("get <key>\n");
 	printf("del <key>\n");
@@ -65,12 +66,17 @@ void showMenu() {
 	printf("Option: ");
 }
 
-void readOption(char* input) {
-	fgets(input, 999, stdin);
+void readOption(char* input, int size) {
+	fgets(input, size, stdin); // char* input <- stdin até um máximo de size bytes
+	input[strlen(input)-1] = '\0';
 }
 
 int commandIsPut(char* option) {
 	return strncmp(option, PUT, strlen(PUT)) == 0;
+}
+
+int commandIsGet(char* option){
+	return strncmp(option, GET, strlen(GET)) == 0;
 }
 
 void executePut(struct rtree_t* r_tree, char* option) {
@@ -80,8 +86,25 @@ void executePut(struct rtree_t* r_tree, char* option) {
 	struct data_t* data = data_create2(strlen(value), value);
 	struct entry_t* entry = entry_create(key, data);
 	if (rtree_put(r_tree, entry) == -1) {
-		printf("put failed\n");
+		printf("\nput failed\n");
 		return;
 	}
-	printf("put successful\n");
+	printf("\nput successful\n");
 }
+
+void executeGet(struct rtree_t* r_tree, char* option) {
+	strtok(option, " ");
+	char* key = strtok(NULL, " ");
+	struct data_t* value = rtree_get(r_tree, key);
+	if (value == NULL) {
+		printf("\nget failed\n");
+		return;
+	}
+	char* buffer = (char*) calloc(sizeof(char), value->datasize + 1);
+	strncpy(buffer, value->data, value->datasize); //ja coloca "\0" automaticamente
+	printf("\nNumber of bytes: %d\n", value->datasize);
+	printf("Bytes: %s\n", buffer);
+	free(buffer);
+}
+
+// tentar imprimir o pedido do cliente

@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "sdmessage.pb-c.h"
 #include "message-private.h"
@@ -30,8 +31,14 @@ int network_connect(struct rtree_t* rtree) {
 	inet_pton(AF_INET, rtree->address, &(server_info.sin_addr));
 	//server_info.sin_addr.s_addr = htonl(rtree->address);
 	server_info.sin_port = htons(atoi(rtree->port));
-
 	socklen_t server_info_len = sizeof(server_info);
+
+	// Ignore SIGPIPE signal so client doesn't crash if socket closes unexpectedly
+	struct sigaction new_actn;
+	new_actn.sa_handler = SIG_IGN;
+	sigemptyset (&new_actn.sa_mask);
+	new_actn.sa_flags = 0;
+	sigaction (SIGPIPE, &new_actn, NULL);
 
 	// socket
 	int sfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -67,8 +74,7 @@ struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* 
 		perror("could not send data\n");
 	}
 	int size = read(sfd, buffer, BUFFER_MAX_SIZE);
-	struct message_t* msg2 = message_t__unpack(NULL, size, buffer);
-	return msg2;
+	return message_t__unpack(NULL, size, buffer);
 }
 
 /* A função network_close() fecha a ligação estabelecida por

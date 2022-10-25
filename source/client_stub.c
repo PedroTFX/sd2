@@ -29,11 +29,12 @@ struct rtree_t* rtree_connect(const char* address_port) {
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
 int rtree_disconnect(struct rtree_t* rtree) {
-	network_close(rtree);
-	//free(rtree->address);
+	if(network_close(rtree) == -1) {
+		printf("Error closing connection.\n");
+	}
+	free(rtree->address);
 	//free(rtree->port);
-	// tree_destroy(rtree->root);
-	//free(rtree);
+	free(rtree);
 	return 0;
 }
 
@@ -59,7 +60,19 @@ int rtree_put(struct rtree_t* rtree, struct entry_t* entry) {
  * Em caso de erro, devolve NULL.
  */
 struct data_t* rtree_get(struct rtree_t* rtree, char* key) {
-	return NULL;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_GET;
+	request->c_type = MESSAGE_T__C_TYPE__CT_KEY;
+	request->key = key;
+	struct message_t* response = network_send_receive(rtree, request);
+	if(response->opcode != (MESSAGE_T__OPCODE__OP_GET + 1)) {
+		return NULL;
+	}
+	struct data_t* value = (struct data_t*) malloc(sizeof(struct data_t));
+	value->datasize = response->value.len;
+	value->data = response->value.data;
+	return value;
 }
 
 /* Função para remover um elemento da árvore. Vai libertar

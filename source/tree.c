@@ -86,7 +86,7 @@ int tree_put(struct tree_t *tree, char *key, struct data_t *value) {
  */
 struct data_t* tree_get(struct tree_t *tree, char *key){
 	struct tree_t* tree_st = get_tree(tree, key);
-	return (tree_st) ? data_dup(tree_st->node->value) : NULL ;
+	return (tree_st) ? data_dup(tree_st->node->value) : NULL;
 }
 
 /**
@@ -98,6 +98,7 @@ struct data_t* tree_get(struct tree_t *tree, char *key){
  */
 struct tree_t* get_tree(struct tree_t* tree, char* key){
 	struct data_t* data = data_create(1);
+	//struct data_t* data = data_create(strlen(key));
 	struct entry_t* entry = entry_create(strdup(key), data);
 	struct tree_t* current_tree = tree;
 

@@ -23,7 +23,7 @@ int main(int argc, char const *argv[]) {
 	}
 
 	tree_skel_init();
-	if(network_main_loop(listening_socket) != 0) {
+	if(network_main_loop(listening_socket) == -1) {
 		printf("Error in network_main_loop()\n");
 	}
 	if(network_server_close() != 0) {

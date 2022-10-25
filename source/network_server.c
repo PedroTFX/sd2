@@ -1,5 +1,6 @@
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,11 +9,12 @@
 #include <tree.h>
 #include <unistd.h>
 
-#include "tree_skel.h"
-#include "network_server.h"
 #include "message-private.h"
+#include "network_server.h"
+#include "tree_skel.h"
 
-int sfd;
+int listening_socket;
+int client_socket;
 
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
@@ -25,30 +27,37 @@ int network_server_init(short port) {
 	server_info.sin_port = htons(port);
 	socklen_t server_info_len = sizeof(struct sockaddr_in);
 
+	// Ignore SIGPIPE signal so server doesn't crash if socket closes unexpectedly
+	struct sigaction new_actn;
+	new_actn.sa_handler = SIG_IGN;
+	sigemptyset(&new_actn.sa_mask);
+	new_actn.sa_flags = 0;
+	sigaction(SIGPIPE, &new_actn, NULL);
+
 	// socket
-	//  +++int sfd = socket(AF_INET, SOCK_STREAM, 0);
-	if ((sfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	//  +++int listening_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if ((listening_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("socket");
 		return -1;
 	}
 	printf("socket created\n");
 	int option_value = 1;
-	setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
+	setsockopt(listening_socket, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
 	// bind to addr
-	if (bind(sfd, (struct sockaddr*)&server_info, server_info_len) < 0) {
+	if (bind(listening_socket, (struct sockaddr*)&server_info, server_info_len) < 0) {
 		perror("bind");
 		return -1;
 	}
 	printf("socket bound\n");
 
 	// listen for connections
-	if (listen(sfd, 0) < 0) {  // right declaration
+	if (listen(listening_socket, 0) < 0) {	// right declaration
 		perror("listen failed");
 		return -1;
 	}
 	printf("listen\n");
 
-	return sfd;
+	return listening_socket;
 }
 
 /* Esta função deve:
@@ -63,23 +72,22 @@ int network_main_loop(int listening_socket) {
 	struct sockaddr client_info = {0};
 	socklen_t client_info_len = sizeof(client_info);
 
-	// int sfd = accept(listening_socket, &client_info, &client_info_len);
-	if ((sfd = accept(listening_socket, &client_info, &client_info_len)) < 0) {
-		close(sfd);
+	// int client_socket = accept(listening_socket, &client_info, &client_info_len);
+	if ((client_socket = accept(listening_socket, &client_info, &client_info_len)) < 0) {
+		close(client_socket);
 		perror("accept failed");
 		return -1;
 	}
 
 	printf("New client connected\n");
-	while (1) {
-		struct message_t* msg = network_receive(sfd);
+	struct message_t* msg;
+	while ((msg = network_receive(client_socket)) != NULL) {
 		invoke(msg);
-		network_send(sfd, msg);
+		network_send(client_socket, msg);
 	}
-	// free msg
-	close(listening_socket);  // we might not need this one anymore, for further testing
+	printf("Client disconnected\n");
 
-	return sfd;
+	return 0;
 }
 
 /* Esta função deve:
@@ -89,9 +97,8 @@ int network_main_loop(int listening_socket) {
  */
 struct message_t* network_receive(int client_socket) {
 	uint8_t buff[1000];
-	int size = read(sfd, buff, 1000);
-	struct message_t* msg = message_t__unpack(NULL, size, buff);
-	return msg;
+	int size = read(client_socket, buff, 1000);
+	return size > 0 ? message_t__unpack(NULL, size, buff) : NULL;
 }
 
 /* Esta função deve:
@@ -102,16 +109,15 @@ struct message_t* network_receive(int client_socket) {
 int network_send(int client_socket, struct message_t* msg) {
 	uint8_t buffer[BUFFER_MAX_SIZE];
 	int buffer_size = message_t__pack(msg, buffer);
-
-	ssize_t sent = send(client_socket, buffer, buffer_size, 0);
-	//close(client_socket);
-	return sent;
+	return send(client_socket, buffer, buffer_size, 0);
 }
 
 /* A função network_server_close() liberta os recursos alocados por
  * network_server_init().
  */
 int network_server_close() {
-	close(sfd);
+	// free msg
+	close(client_socket);
+	close(listening_socket);  // we might not need this one anymore, for further testing
 	return 0;
 }
