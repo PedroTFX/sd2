@@ -153,6 +153,16 @@ client_stub.o:
 tree_client: data.o entry.o network_client.o client_stub.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree_client $(OBJDIR)/network_client.o $(OBJDIR)/client_stub.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
+client_run: tree_client
+	./bin/tree_client 127.0.0.1:1337
+
+server_run: tree_server
+	./bin/tree_server 1337
+
+
+
+
+
 # Tests
 test_data: data
 	$(CC) $(DEBUGFLAGS) tests/test_data.c -o $(BINDIR)/test_data $(OBJDIR)/data.o -I $(INCLUDEDIR)

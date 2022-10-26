@@ -14,7 +14,6 @@
 #include "tree_skel.h"
 
 int listening_socket;
-int client_socket;
 
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
@@ -40,7 +39,7 @@ int network_server_init(short port) {
 		perror("socket");
 		return -1;
 	}
-	printf("socket created\n");
+
 	int option_value = 1;
 	setsockopt(listening_socket, SOL_SOCKET, SO_REUSEADDR, &option_value, sizeof(int));
 	// bind to addr
@@ -48,14 +47,13 @@ int network_server_init(short port) {
 		perror("bind");
 		return -1;
 	}
-	printf("socket bound\n");
 
 	// listen for connections
 	if (listen(listening_socket, 0) < 0) {	// right declaration
 		perror("listen failed");
 		return -1;
 	}
-	printf("listen\n");
+	printf("Listening on port %hu...\n", port);
 
 	return listening_socket;
 }
@@ -68,25 +66,20 @@ int network_server_init(short port) {
  * - Enviar a resposta ao cliente usando a função network_send.
  */
 int network_main_loop(int listening_socket) {
-	// accept
 	struct sockaddr client_info = {0};
 	socklen_t client_info_len = sizeof(client_info);
+	int client_socket;
+	while ((client_socket = accept(listening_socket, &client_info, &client_info_len)) > 0) {
+		printf("Client connected\n");
 
-	// int client_socket = accept(listening_socket, &client_info, &client_info_len);
-	if ((client_socket = accept(listening_socket, &client_info, &client_info_len)) < 0) {
+		struct message_t* msg;
+		while ((msg = network_receive(client_socket)) != NULL) {
+			invoke(msg);
+			network_send(client_socket, msg);
+		}
 		close(client_socket);
-		perror("accept failed");
-		return -1;
+		printf("Client disconnected\n");
 	}
-
-	printf("New client connected\n");
-	struct message_t* msg;
-	while ((msg = network_receive(client_socket)) != NULL) {
-		invoke(msg);
-		network_send(client_socket, msg);
-	}
-	printf("Client disconnected\n");
-
 	return 0;
 }
 
@@ -117,7 +110,6 @@ int network_send(int client_socket, struct message_t* msg) {
  */
 int network_server_close() {
 	// free msg
-	close(client_socket);
 	close(listening_socket);  // we might not need this one anymore, for further testing
 	return 0;
 }

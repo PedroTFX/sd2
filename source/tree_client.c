@@ -10,16 +10,22 @@
 
 #define PUT "put"
 #define GET "get"
+#define DEL "del"
 #define QUIT "quit"
+#define SIZE "size"
+#define HEIGHT "height"
+#define GET_KEYS "getkeys"
+#define GET_VALUES "getvalues"
+
 int main(int argc, char const* argv[]) {
 	if (argc < 2) {
 		printf("Usage: ./tree_client <server>:<port>\n");
 		return -1;
 	}
 
-	struct rtree_t* r_tree = rtree_connect(argv[1]);
+	struct rtree_t* rtree = rtree_connect(argv[1]);
 
-	if (r_tree == NULL) {
+	if (rtree == NULL) {
 		perror("could not connect client\n");
 		return -1;
 	}
@@ -30,24 +36,24 @@ int main(int argc, char const* argv[]) {
 		readOption(option, 1024);
 
 		if (commandIsPut(option)) {
-			executePut(r_tree, option);
+			executePut(rtree, option);
+		} else if (commandIsGetKeys(option)) {
+			executeGetKeys(rtree);
+		} else if (commandIsGetValues(option)) {
+			executeGetValues(rtree);
 		} else if (commandIsGet(option)) {
-			executeGet(r_tree, option);
-		}/*  else if (strcmp(command, "del") == 0) {
-			command = strtok(NULL, " ");
-			rtree_del(r_tree, command);
-		} else if (strcmp(command, "size") == 0) {
-			rtree_size(r_tree);
+			executeGet(rtree, option);
+		}  else if (commandIsDel(option)) {
+			executeDel(rtree, option);
+		}/* else if (strcmp(command, "size") == 0) {
+			rtree_size(rtree);
 		} else if (strcmp(command, "height") == 0) {
-			rtree_height(r_tree);
-		} else if (strcmp(command, "getkeys") == 0)
-			rtree_get_keys(r_tree);
-		} else if (strcmp(command, "getvalues") == 0) {
-			rtree_get_values(r_tree);
-		} */
+			rtree_height(rtree);
+		}
+		*/
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
 
-	rtree_disconnect(r_tree);
+	rtree_disconnect(rtree);
 	printf("Client exiting. Bye.\n");
 
 	return 0;
@@ -79,23 +85,35 @@ int commandIsGet(char* option){
 	return strncmp(option, GET, strlen(GET)) == 0;
 }
 
-void executePut(struct rtree_t* r_tree, char* option) {
+int commandIsDel(char* option){
+	return strncmp(option, DEL, strlen(DEL)) == 0;
+}
+
+int commandIsGetKeys(char* option) {
+	return strncmp(option, GET_KEYS, strlen(GET_KEYS)) == 0;
+}
+
+int commandIsGetValues(char* option) {
+	return strncmp(option, GET_VALUES, strlen(GET_VALUES)) == 0;
+}
+
+void executePut(struct rtree_t* rtree, char* option) {
 	strtok(option, " ");
 	char* key = strtok(NULL, " ");
 	char* value = strtok(NULL, " ");
 	struct data_t* data = data_create2(strlen(value), value);
 	struct entry_t* entry = entry_create(key, data);
-	if (rtree_put(r_tree, entry) == -1) {
+	if (rtree_put(rtree, entry) == -1) {
 		printf("\nput failed\n");
 		return;
 	}
 	printf("\nput successful\n");
 }
 
-void executeGet(struct rtree_t* r_tree, char* option) {
+void executeGet(struct rtree_t* rtree, char* option) {
 	strtok(option, " ");
 	char* key = strtok(NULL, " ");
-	struct data_t* value = rtree_get(r_tree, key);
+	struct data_t* value = rtree_get(rtree, key);
 	if (value == NULL) {
 		printf("\nget failed\n");
 		return;
@@ -105,6 +123,55 @@ void executeGet(struct rtree_t* r_tree, char* option) {
 	printf("\nNumber of bytes: %d\n", value->datasize);
 	printf("Bytes: %s\n", buffer);
 	free(buffer);
+}
+
+void executeDel(struct rtree_t* rtree, char* option) {
+	strtok(option, " ");
+	char* key = strtok(NULL, " ");
+	int result = rtree_del(rtree, key);
+	if (result == -1) {
+		printf("\nDel failed\n");
+		return;
+	}
+	printf("\nDel successful\n");
+}
+
+void executeGetKeys(struct rtree_t* rtree) {
+	char** keys = rtree_get_keys(rtree);
+	if(keys == NULL) {
+		printf("There was an error executing get_keys() on the server.\n");
+		return;
+	}
+
+	if(keys[0] == NULL) {
+		printf("\nThere are no keys.\n");
+		return;
+	}
+
+	printf("\nKeys: \n");
+	int i = 0;
+	while (keys[i] != NULL) {
+		printf("%s\n", keys[i++]);
+	}
+}
+
+void executeGetValues(struct rtree_t* rtree) {
+	char** keys = rtree_get_values(rtree);
+	if(keys == NULL) {
+		printf("There was an error executing get_values() on the server.\n");
+		return;
+	}
+
+	if(keys[0] == NULL) {
+		printf("\nThere are no values.\n");
+		return;
+	}
+
+	printf("\nKeys: \n");
+	int i = 0;
+	while (keys[i] != NULL) {
+		printf("%s\n", keys[i++]);
+	}
 }
 
 // tentar imprimir o pedido do cliente

@@ -75,9 +75,11 @@ void invoke_get(struct message_t* msg) {
 }
 
 void invoke_del(struct message_t* msg) {
-	msg->opcode++;
-	msg->result = tree_del(tree, msg->key);
+	int result = tree_del(tree, msg->key);
 	free(msg->key);
+	message_t__init(msg);
+	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_DEL + 1) : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_size(struct message_t* msg) {
@@ -93,8 +95,19 @@ void invoke_heigth(struct message_t* msg) {
 }
 
 void invoke_get_keys(struct message_t* msg) {
-	msg->opcode++;
-	msg->keys = tree_get_keys(tree);
+	char** keys = tree_get_keys(tree);
+	message_t__init(msg);
+	if(keys == NULL) {
+		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
+		msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+		return;
+	}
+	msg->opcode = MESSAGE_T__OPCODE__OP_GETKEYS + 1;
+	msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
+	msg->keys = keys;
+	int i = 0;
+	while(keys[i++] != NULL);
+	msg->n_keys = i;
 }
 
 void invoke_get_values(struct message_t* msg) {

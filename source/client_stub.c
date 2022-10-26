@@ -29,11 +29,11 @@ struct rtree_t* rtree_connect(const char* address_port) {
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
 int rtree_disconnect(struct rtree_t* rtree) {
-	if(network_close(rtree) == -1) {
+	if (network_close(rtree) == -1) {
 		printf("Error closing connection.\n");
 	}
 	free(rtree->address);
-	//free(rtree->port);
+	// free(rtree->port);
 	free(rtree);
 	return 0;
 }
@@ -66,10 +66,10 @@ struct data_t* rtree_get(struct rtree_t* rtree, char* key) {
 	request->c_type = MESSAGE_T__C_TYPE__CT_KEY;
 	request->key = key;
 	struct message_t* response = network_send_receive(rtree, request);
-	if(response->opcode != (MESSAGE_T__OPCODE__OP_GET + 1)) {
+	if (response->opcode != (MESSAGE_T__OPCODE__OP_GET + 1)) {
 		return NULL;
 	}
-	struct data_t* value = (struct data_t*) malloc(sizeof(struct data_t));
+	struct data_t* value = (struct data_t*)malloc(sizeof(struct data_t));
 	value->datasize = response->value.len;
 	value->data = response->value.data;
 	return value;
@@ -80,7 +80,16 @@ struct data_t* rtree_get(struct rtree_t* rtree, char* key) {
  * Devolve: 0 (ok), -1 (key not found ou problemas).
  */
 int rtree_del(struct rtree_t* rtree, char* key) {
-	return 0;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_DEL;
+	request->c_type = MESSAGE_T__C_TYPE__CT_KEY;
+	request->key = key;
+	struct message_t* response = network_send_receive(rtree, request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		return -1;
+	}
+	return request->result;
 }
 
 /* Devolve o número de elementos contidos na árvore.
@@ -99,12 +108,47 @@ int rtree_height(struct rtree_t* rtree) {
  * colocando um último elemento a NULL.
  */
 char** rtree_get_keys(struct rtree_t* rtree) {
-	return NULL;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_GETKEYS;
+	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	struct message_t* response = network_send_receive(rtree, request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		message_t__free_unpacked(response, NULL);
+		return NULL;
+	}
+
+	char** keys = (char**)malloc(sizeof(char*) * (response->n_keys));
+	int i;
+	for (i = 0; i < response->n_keys - 1; i++) {
+		keys[i] = (char*)malloc(strlen(response->keys[i]) + 1);
+		strcpy(keys[i], response->keys[i]);
+	}
+	keys[i] = NULL;
+	message_t__free_unpacked(response, NULL);
+	return keys;
 }
 
 /* Devolve um array de void* com a cópia de todas os values da árvore,
  * colocando um último elemento a NULL.
  */
 void** rtree_get_values(struct rtree_t* rtree) {
-	return NULL;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_GETVALUES;
+	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	struct message_t* response = network_send_receive(rtree, request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		message_t__free_unpacked(response, NULL);
+		return NULL;
+	}
+	struct data_t** values = malloc((struct data_t*)response->n_values);
+	for (int i = 0; i < response->n_values; i++) {
+		values[i] = (struct data_t*) malloc(sizeof(struct data_t));
+		values[i]->datasize = response->values[i].len;
+		values[i]->data = malloc(response->values[i].len);
+		memcpy(values[i]->data, response->values[i].data, response->values[i].len);
+	}
+	message_t__free_unpacked(response, NULL);
+	return (void*) values;
 }
