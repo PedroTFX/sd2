@@ -59,7 +59,6 @@ int invoke(struct message_t* msg) {
 
 void invoke_put(struct message_t* msg) {
 	int result = tree_put(tree, msg->entry->key, (struct data_t*)&(msg->entry->value));
-	//message_t__free_unpacked(msg, NULL);
 	message_t__init(msg);
 	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_PUT + 1) : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
@@ -124,15 +123,23 @@ void invoke_get_values(struct message_t* msg) {
 	msg->opcode = MESSAGE_T__OPCODE__OP_GETKEYS + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
 	int i = 0;
-	while(values[i++] != NULL);
+	while(values[i] != NULL) {
+		i++;
+	}
 	msg->n_values = i;
-	//msg->values = (ProtobufCBinaryData *)values;
-	msg->values = (ProtobufCBinaryData *) malloc((ProtobufCBinaryData*) msg->n_values);
-	for (int j = 0; values[j] != NULL; j++) {
+	msg->values = (ProtobufCBinaryData *) malloc(msg->n_values * sizeof(ProtobufCBinaryData));
+	for (int j = 0; j < i; j++) {
 		msg->values[j].len = values[j]->datasize;
 		msg->values[j].data = malloc(msg->values[j].len);
-		memcpy(values[i]->data, msg->values[i].data, msg->values[i].len);
+		memcpy(msg->values[j].data, values[j]->data, msg->values[j].len);
 	}
-	msg->values[i].data = NULL;
-	msg->values[i].len = 0;
 }
+
+
+/**
+msg->values
+
+[struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
+[struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
+[struct ProtobufCBinaryData { int len = 0; void* data = NULL;}
+*/

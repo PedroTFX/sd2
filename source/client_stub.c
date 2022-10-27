@@ -158,13 +158,15 @@ void** rtree_get_values(struct rtree_t* rtree) {
 		message_t__free_unpacked(response, NULL);
 		return NULL;
 	}
-	struct data_t** values = (struct data_t**)malloc((struct data_t*)response->n_values);
-	for (int i = 0; i < response->n_values; i++) {
+	struct data_t** values = (struct data_t**)malloc(sizeof(struct data_t*) * (response->n_values + 1));
+	int i;
+	for (i = 0; i < response->n_values; i++) {
 		values[i] = (struct data_t*) malloc(sizeof(struct data_t));
 		values[i]->datasize = response->values[i].len;
 		values[i]->data = malloc(response->values[i].len);
 		memcpy(values[i]->data, response->values[i].data, response->values[i].len);
 	}
+	values[i] = NULL;
 	//message_t__free_unpacked(response, NULL);
-	return (void*) values;
+	return (void**) values;
 }

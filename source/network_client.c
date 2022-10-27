@@ -1,19 +1,21 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <signal.h>
+#include <errno.h>
 
-#include "sdmessage.pb-c.h"
-#include "message-private.h"
 #include "client_stub-private.h"
-#include "network_client.h"
+#include "message-private.h"
 #include "network_client-private.h"
+#include "network_client.h"
+#include "sdmessage.pb-c.h"
+#include "util.h"
 
 /* Esta função deve:
  * - Obter o endereço do servidor (struct sockaddr_in) a base da
@@ -29,16 +31,16 @@ int network_connect(struct rtree_t* rtree) {
 	server_info.sin_family = AF_INET;
 	// Store this IP address in struct sockaddr_in
 	inet_pton(AF_INET, rtree->address, &(server_info.sin_addr));
-	//server_info.sin_addr.s_addr = htonl(rtree->address);
+	// server_info.sin_addr.s_addr = htonl(rtree->address);
 	server_info.sin_port = htons(atoi(rtree->port));
 	socklen_t server_info_len = sizeof(server_info);
 
 	// Ignore SIGPIPE signal so client doesn't crash if socket closes unexpectedly
 	struct sigaction new_actn;
 	new_actn.sa_handler = SIG_IGN;
-	sigemptyset (&new_actn.sa_mask);
+	sigemptyset(&new_actn.sa_mask);
 	new_actn.sa_flags = 0;
-	sigaction (SIGPIPE, &new_actn, NULL);
+	sigaction(SIGPIPE, &new_actn, NULL);
 
 	// socket
 	int sfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -67,14 +69,20 @@ int network_connect(struct rtree_t* rtree) {
  */
 struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* msg) {
 	int sfd = rtree->socket_id;
-	uint8_t buffer[BUFFER_MAX_SIZE];
-	int buffer_size = message_t__pack(msg, buffer);
+	//uint8_t buffer[BUFFER_MAX_SIZE];
+	char* buffer = (char*) malloc(message_t__get_packed_size(msg));
+	int buffer_size = message_t__pack(msg, (uint8_t*) buffer);
 	// message_t__free_unpacked(msg, NULL);
-	if (send(sfd, buffer, buffer_size, 0) == -1) {
+/* 	if (send(sfd, buffer, buffer_size, 0) == -1) {
+		perror("could not send data\n");
+	} */
+	if (write_all(sfd, buffer, buffer_size) < 0) {
 		perror("could not send data\n");
 	}
-	int size = read(sfd, buffer, BUFFER_MAX_SIZE);
-	return message_t__unpack(NULL, size, buffer);
+	//int size = read(sfd, buffer, BUFFER_MAX_SIZE);
+	buffer = (char*)realloc(buffer, BUFFER_MAX_SIZE);
+	int size = read_all(sfd, &buffer, BUFFER_MAX_SIZE);
+	return message_t__unpack(NULL, size, (uint8_t*)buffer);
 }
 
 /* A função network_close() fecha a ligação estabelecida por
@@ -84,23 +92,3 @@ int network_close(struct rtree_t* rtree) {
 	return close(rtree->socket_id);
 }
 
-/* int main(int argc, char const* argv[]) {
-	struct rtree_t server_tree;
-	server_tree.address = 0x7f000001;  // 127.0.0.1
-	// server_tree.address = inet_address("localhost");
-	server_tree.port = 1337;
-	server_tree.socket_id = -1;
-	//server_tree.root = tree_create();
-
-	network_connect(&server_tree);
-	struct message_t* request;
-	message_t__init(request);
-	request->opcode = MESSAGE_T__OPCODE__OP_HEIGHT;
-	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
-	struct message_t* response = network_send_receive(&server_tree, request);
-	printf("OPCODE: %d\n", response->opcode);
-	printf("CTYPE: %d\n", response->c_type);
-	printf("HEIGHT: %d\n", response->result);
-	network_close(&server_tree);
-	return 0;
-} */

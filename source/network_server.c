@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
 #include <signal.h>
@@ -12,7 +13,7 @@
 #include "message-private.h"
 #include "network_server.h"
 #include "tree_skel.h"
-
+#include "util.h"
 int listening_socket;
 
 /* Função para preparar uma socket de receção de pedidos de ligação
@@ -89,9 +90,11 @@ int network_main_loop(int listening_socket) {
  *   reservando a memória necessária para a estrutura message_t.
  */
 struct message_t* network_receive(int client_socket) {
-	uint8_t buff[1000];
-	int size = read(client_socket, buff, 1000);
-	return size > 0 ? message_t__unpack(NULL, size, buff) : NULL;
+	// uint8_t buff[1000];
+	// int size = read(client_socket, buff, 1000);
+	char* buff = (char*)malloc(BUFFER_MAX_SIZE);
+	int size = read_all(client_socket, &buff, BUFFER_MAX_SIZE);
+	return size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
 }
 
 /* Esta função deve:
@@ -100,9 +103,13 @@ struct message_t* network_receive(int client_socket) {
  * - Enviar a mensagem serializada, através do client_socket.
  */
 int network_send(int client_socket, struct message_t* msg) {
-	uint8_t buffer[BUFFER_MAX_SIZE];
-	int buffer_size = message_t__pack(msg, buffer);
-	return send(client_socket, buffer, buffer_size, 0);
+	//char* buffer[BUFFER_MAX_SIZE];
+	//int size = message_t__get_packed_size(msg);
+	int size = BUFFER_MAX_SIZE;
+	char* buffer = (char*) malloc(size);
+	int buffer_size = message_t__pack(msg, (uint8_t*)buffer);
+	return write_all(client_socket, buffer, buffer_size);
+	//return send(client_socket, buffer, buffer_size, 0);
 }
 
 /* A função network_server_close() liberta os recursos alocados por

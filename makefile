@@ -135,14 +135,17 @@ proto.o:
 	mv sdmessage.pb-c.h include
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/sdmessage.pb-c.c -o $(OBJDIR)/sdmessage.pb-c.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
+util.o:
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/util.c -o $(OBJDIR)/util.o -I $(INCLUDEDIR)
+
 network_server.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_server.c -o $(OBJDIR)/network_server.o -I $(INCLUDEDIR)
 
 tree_skel.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR)
 
-tree_server: data.o entry.o tree.o proto.o network_server.o tree_skel.o
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree_server $(OBJDIR)/network_server.o $(OBJDIR)/tree_skel.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
+tree_server: data.o entry.o tree.o proto.o util.o network_server.o tree_skel.o
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree_server $(OBJDIR)/tree_skel.o $(OBJDIR)/network_server.o $(OBJDIR)/util.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
 network_client.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_client.c -o $(OBJDIR)/network_client.o -I $(INCLUDEDIR)
@@ -150,8 +153,8 @@ network_client.o:
 client_stub.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/client_stub.c -o $(OBJDIR)/client_stub.o -I $(INCLUDEDIR)
 
-tree_client: data.o entry.o network_client.o client_stub.o
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree_client $(OBJDIR)/network_client.o $(OBJDIR)/client_stub.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
+tree_client: data.o entry.o util.o network_client.o client_stub.o
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree_client $(OBJDIR)/client_stub.o $(OBJDIR)/network_client.o $(OBJDIR)/util.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -I/usr/include/protobuf-c -L/usr/include -L/usr/include/protobuf-c -L/usr/lib -lprotobuf-c
 
 client_run: tree_client
 	./bin/tree_client 127.0.0.1:1337

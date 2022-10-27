@@ -1,2 +1,4 @@
 obj/
 bin/
+tests/del01-expected.txt
+tests/del01.txt

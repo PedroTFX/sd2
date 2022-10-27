@@ -11,7 +11,7 @@ struct tree_t {
 
 struct tree_t* get_tree(struct tree_t* tree, char* key);
 
-struct entry_t* mind(struct tree_t* tree);
+struct tree_t* mind(struct tree_t* tree);
 
 int tree_get_keys_aux(struct tree_t *tree, char **key, int index);
 
