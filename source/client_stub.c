@@ -89,19 +89,35 @@ int rtree_del(struct rtree_t* rtree, char* key) {
 	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
 		return -1;
 	}
-	return request->result;
+	return response->result;
 }
 
 /* Devolve o número de elementos contidos na árvore.
  */
 int rtree_size(struct rtree_t* rtree) {
-	return 0;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_SIZE;
+	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	struct message_t* response = network_send_receive(rtree, request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		return -1;
+	}
+	return response->result;
 }
 
 /* Função que devolve a altura da árvore.
  */
 int rtree_height(struct rtree_t* rtree) {
-	return 0;
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_HEIGHT;
+	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	struct message_t* response = network_send_receive(rtree, request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		return -1;
+	}
+	return response->result;
 }
 
 /* Devolve um array de char* com a cópia de todas as keys da árvore,
@@ -142,13 +158,13 @@ void** rtree_get_values(struct rtree_t* rtree) {
 		message_t__free_unpacked(response, NULL);
 		return NULL;
 	}
-	struct data_t** values = malloc((struct data_t*)response->n_values);
+	struct data_t** values = (struct data_t**)malloc((struct data_t*)response->n_values);
 	for (int i = 0; i < response->n_values; i++) {
 		values[i] = (struct data_t*) malloc(sizeof(struct data_t));
 		values[i]->datasize = response->values[i].len;
 		values[i]->data = malloc(response->values[i].len);
 		memcpy(values[i]->data, response->values[i].data, response->values[i].len);
 	}
-	message_t__free_unpacked(response, NULL);
+	//message_t__free_unpacked(response, NULL);
 	return (void*) values;
 }

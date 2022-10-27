@@ -34,7 +34,6 @@ int main(int argc, char const* argv[]) {
 	do {
 		showMenu();
 		readOption(option, 1024);
-
 		if (commandIsPut(option)) {
 			executePut(rtree, option);
 		} else if (commandIsGetKeys(option)) {
@@ -45,17 +44,14 @@ int main(int argc, char const* argv[]) {
 			executeGet(rtree, option);
 		}  else if (commandIsDel(option)) {
 			executeDel(rtree, option);
-		}/* else if (strcmp(command, "size") == 0) {
-			rtree_size(rtree);
-		} else if (strcmp(command, "height") == 0) {
-			rtree_height(rtree);
+		} else if (commandIsSize(option)) {
+			executeSize(rtree, option);
+		} else if (commandIsHeight(option)) {
+			executeHeight(rtree, option);
 		}
-		*/
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
-
 	rtree_disconnect(rtree);
 	printf("Client exiting. Bye.\n");
-
 	return 0;
 }
 
@@ -87,6 +83,14 @@ int commandIsGet(char* option){
 
 int commandIsDel(char* option){
 	return strncmp(option, DEL, strlen(DEL)) == 0;
+}
+
+int commandIsSize(char* option){
+	return strncmp(option, SIZE, strlen(SIZE)) == 0;
+}
+
+int commandIsHeight(char* option){
+	return strncmp(option, HEIGHT, strlen(HEIGHT)) == 0;
 }
 
 int commandIsGetKeys(char* option) {
@@ -136,6 +140,28 @@ void executeDel(struct rtree_t* rtree, char* option) {
 	printf("\nDel successful\n");
 }
 
+void executeSize(struct rtree_t* rtree, char* option) {
+	strtok(option, " ");
+	int result = rtree_size(rtree);
+	if (result == -1) {
+		printf("\nSize failed\n");
+		return;
+	}
+	printf("\nSize successful\n");
+	printf("Size: %d\n", result);
+}
+
+void executeHeight(struct rtree_t* rtree, char* option) {
+	strtok(option, " ");
+	int result = rtree_height(rtree);
+	if (result == -1) {
+		printf("\nHeight failed\n");
+		return;
+	}
+	printf("\nHeight successful\n");
+	printf("Height: %d\n", result);
+}
+
 void executeGetKeys(struct rtree_t* rtree) {
 	char** keys = rtree_get_keys(rtree);
 	if(keys == NULL) {
@@ -156,21 +182,22 @@ void executeGetKeys(struct rtree_t* rtree) {
 }
 
 void executeGetValues(struct rtree_t* rtree) {
-	char** keys = rtree_get_values(rtree);
-	if(keys == NULL) {
+	struct data_t** values = (struct data_t**) rtree_get_values(rtree);
+	if(values == NULL) {
 		printf("There was an error executing get_values() on the server.\n");
 		return;
 	}
 
-	if(keys[0] == NULL) {
+	if(values[0] == NULL) {
 		printf("\nThere are no values.\n");
 		return;
 	}
 
-	printf("\nKeys: \n");
+	printf("\nValues: \n");
 	int i = 0;
-	while (keys[i] != NULL) {
-		printf("%s\n", keys[i++]);
+	while (values[i] != NULL) {
+		char* str = (char*)values[i++]->data;
+		printf("%s\n", str);
 	}
 }
 
