@@ -69,7 +69,7 @@ void invoke_get(struct message_t* msg) {
 	message_t__init(msg);
 	msg->opcode = MESSAGE_T__OPCODE__OP_GET + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
-	msg->value.len = result != NULL? result->datasize : 0;
+	msg->value.len = result != NULL ? result->datasize : 0;
 	msg->value.data = result != NULL ? result->data : NULL;
 }
 
@@ -84,38 +84,49 @@ void invoke_del(struct message_t* msg) {
 void invoke_size(struct message_t* msg) {
 	message_t__init(msg);
 	msg->result = tree_size(tree);
-	msg->opcode = (msg->result) >= 0? MESSAGE_T__OPCODE__OP_SIZE + 1 : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = (msg->result) >= 0? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_SIZE + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_heigth(struct message_t* msg) {
 	message_t__init(msg);
 	msg->result = tree_height(tree);
-	msg->opcode = (msg->result) >= 0? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = (msg->result) >= 0? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_get_keys(struct message_t* msg) {
 	char** keys = tree_get_keys(tree);
 	message_t__init(msg);
-	if(keys == NULL) {
+	if (keys == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
 		msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 		return;
 	}
 	msg->opcode = MESSAGE_T__OPCODE__OP_GETKEYS + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
-	msg->keys = keys;
-	int i = 0;
-	while(keys[i++] != NULL);
-	msg->n_keys = i;
+
+	int n_keys = 0;
+	while (keys[n_keys] != NULL) {
+		n_keys++;
+	}
+	msg->n_keys = n_keys;
+
+	msg->keys = (char**)malloc(n_keys * sizeof(char*));
+	for (int i = 0; i < n_keys; i++) {
+		msg->keys[i] = strdup(keys[i]);
+	}
+	tree_free_keys(keys);
 }
 
-//segfault
 void invoke_get_values(struct message_t* msg) {
-	struct data_t** values = (struct data_t **)tree_get_values(tree);
+	struct data_t** values = (struct data_t**)tree_get_values(tree);
+	for (int i = 0; values[i]!= NULL; i++) {
+		/* code */
+	}
+
 	message_t__init(msg);
-	if(values == NULL) {
+	if (values == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
 		msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 		return;
@@ -123,18 +134,18 @@ void invoke_get_values(struct message_t* msg) {
 	msg->opcode = MESSAGE_T__OPCODE__OP_GETKEYS + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
 	int i = 0;
-	while(values[i] != NULL) {
+	while (values[i] != NULL) {
 		i++;
 	}
 	msg->n_values = i;
-	msg->values = (ProtobufCBinaryData *) malloc(msg->n_values * sizeof(ProtobufCBinaryData));
+	msg->values = (ProtobufCBinaryData*)malloc(msg->n_values * sizeof(ProtobufCBinaryData));
 	for (int j = 0; j < i; j++) {
 		msg->values[j].len = values[j]->datasize;
 		msg->values[j].data = malloc(msg->values[j].len);
 		memcpy(msg->values[j].data, values[j]->data, msg->values[j].len);
+		printf("%s\n", msg->values[j].data);
 	}
 }
-
 
 /**
 msg->values

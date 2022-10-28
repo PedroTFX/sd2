@@ -41,7 +41,6 @@ int network_connect(struct rtree_t* rtree) {
 	sigemptyset(&new_actn.sa_mask);
 	new_actn.sa_flags = 0;
 	sigaction(SIGPIPE, &new_actn, NULL);
-
 	// socket
 	int sfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sfd < 0) {
@@ -55,7 +54,6 @@ int network_connect(struct rtree_t* rtree) {
 		perror("connect");
 		return -1;
 	}
-
 	return 0;
 }
 
@@ -72,7 +70,6 @@ struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* 
 	//uint8_t buffer[BUFFER_MAX_SIZE];
 	char* buffer = (char*) malloc(message_t__get_packed_size(msg));
 	int buffer_size = message_t__pack(msg, (uint8_t*) buffer);
-	// message_t__free_unpacked(msg, NULL);
 /* 	if (send(sfd, buffer, buffer_size, 0) == -1) {
 		perror("could not send data\n");
 	} */
@@ -82,7 +79,11 @@ struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* 
 	//int size = read(sfd, buffer, BUFFER_MAX_SIZE);
 	buffer = (char*)realloc(buffer, BUFFER_MAX_SIZE);
 	int size = read_all(sfd, &buffer, BUFFER_MAX_SIZE);
-	return message_t__unpack(NULL, size, (uint8_t*)buffer);
+	struct message_t* response = message_t__unpack(NULL, size, (uint8_t*)buffer);
+	free(buffer);
+	//message_t__free_unpacked(msg, NULL);
+	return response;
+	//return message_t__unpack(NULL, size, (uint8_t*)buffer);
 }
 
 /* A função network_close() fecha a ligação estabelecida por

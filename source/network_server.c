@@ -33,7 +33,6 @@ int network_server_init(short port) {
 	sigemptyset(&new_actn.sa_mask);
 	new_actn.sa_flags = 0;
 	sigaction(SIGPIPE, &new_actn, NULL);
-
 	// socket
 	//  +++int listening_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if ((listening_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -116,7 +115,6 @@ int network_send(int client_socket, struct message_t* msg) {
  * network_server_init().
  */
 int network_server_close() {
-	// free msg
 	close(listening_socket);  // we might not need this one anymore, for further testing
 	return 0;
 }

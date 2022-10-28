@@ -22,9 +22,9 @@ void executeGet(struct rtree_t* r_tree, char* option);
 
 void executeDel(struct rtree_t* r_tree, char* option);
 
-void executeSize(struct rtree_t* r_tree, char* option);
+void executeSize(struct rtree_t* r_tree);
 
-void executeHeight(struct rtree_t* r_tree, char* option);
+void executeHeight(struct rtree_t* r_tree);
 
 void executeGetKeys(struct rtree_t* rtree);
 

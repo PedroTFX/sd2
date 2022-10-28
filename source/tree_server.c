@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <signal.h>
 #include "tree_server-private.h"
 #include "network_server.h"
 
@@ -33,4 +33,3 @@ int main(int argc, char const *argv[]) {
 
 	return 0;
 }
-

@@ -4,15 +4,15 @@
 		{
 			"label": "Compile client",
 			"type": "shell",
-			"command": "make tree_client",
+			"command": "make tree-client",
 			"problemMatcher": [
 				"$gcc"
 			]
 		},
 		{
-			"label": "Compile tree_server",
+			"label": "Compile server",
 			"type": "shell",
-			"command": "make tree_server",
+			"command": "make tree-server",
 			"problemMatcher": [
 				"$gcc"
 			]
