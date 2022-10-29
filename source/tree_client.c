@@ -200,7 +200,7 @@ void executeGetValues(struct rtree_t* rtree) {
 	int i = 0;
 	char* str;
 	while (values[i] != NULL) {
-		str = (char*)values[i]->data;
+		str = strdup((char*)values[i]->data);
 		printf("%s\n", str);
 		free(values[i]->data);
 		free(values[i]);
