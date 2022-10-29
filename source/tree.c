@@ -13,7 +13,7 @@
  * Em caso de erro retorna NULL.
  */
 struct tree_t* tree_create() {
-	struct tree_t* tree = calloc(1, sizeof(struct tree_t));
+	struct tree_t* tree = (struct tree_t*)calloc(1, sizeof(struct tree_t));
 	if (tree == NULL) {
 		tree = NULL;
 		return NULL;
@@ -50,10 +50,8 @@ void tree_destroy(struct tree_t* tree) {
 int tree_put(struct tree_t* tree, char* key, struct data_t* value) {
 	struct tree_t* current_tree = tree;
 	struct entry_t* entry = entry_create(strdup(key), data_dup(value));
-
 	while (current_tree->node) {
 		int comp = entry_compare(entry, current_tree->node);
-
 		if (comp == -1) {
 			if (!current_tree->tree_left) {
 				current_tree->tree_left = tree_create();
@@ -69,7 +67,6 @@ int tree_put(struct tree_t* tree, char* key, struct data_t* value) {
 			break;
 		}
 	}
-
 	current_tree->node = entry_dup(entry);
 	entry_destroy(entry);
 	return 0;
@@ -150,9 +147,9 @@ int tree_del(struct tree_t* tree, char* key) {
 	if (!sub_tree) {
 		return -1;
 	}
-	printf("Antes: \n");
-	print_tree(tree);
-	printf("\n");
+	//printf("Antes: \n");
+	//print_tree(tree);
+	//printf("\n");
 	if (sub_tree->tree_left && sub_tree->tree_right) {  // if the node has left and right
 		struct tree_t* tree_mind = mind(sub_tree->tree_right); // Find the minimum of the maximums
 		struct tree_t* parent = get_parent(tree, tree_mind);
@@ -183,9 +180,9 @@ int tree_del(struct tree_t* tree, char* key) {
 		sub_tree->node = NULL;
 		sub_tree = NULL;
 	}
-	printf("Depois: \n");
-	print_tree(tree);
-	printf("\n");
+	//printf("Depois: \n");
+	//print_tree(tree);
+	//printf("\n");
 	return 0;
 }
 

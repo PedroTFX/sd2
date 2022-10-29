@@ -65,12 +65,14 @@ void invoke_put(struct message_t* msg) {
 }
 
 void invoke_get(struct message_t* msg) {
-	struct data_t* result = tree_get(tree, msg->key);
+	struct data_t* result = data_dup(tree_get(tree, msg->key));
 	message_t__init(msg);
 	msg->opcode = MESSAGE_T__OPCODE__OP_GET + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
 	msg->value.len = result != NULL ? result->datasize : 0;
-	msg->value.data = result != NULL ? result->data : NULL;
+	//msg->value.data = result != NULL ? result->data : NULL;
+
+	data_destroy(result);
 }
 
 void invoke_del(struct message_t* msg) {
@@ -121,10 +123,6 @@ void invoke_get_keys(struct message_t* msg) {
 
 void invoke_get_values(struct message_t* msg) {
 	struct data_t** values = (struct data_t**)tree_get_values(tree);
-	for (int i = 0; values[i]!= NULL; i++) {
-		/* code */
-	}
-
 	message_t__init(msg);
 	if (values == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
@@ -143,8 +141,11 @@ void invoke_get_values(struct message_t* msg) {
 		msg->values[j].len = values[j]->datasize;
 		msg->values[j].data = malloc(msg->values[j].len);
 		memcpy(msg->values[j].data, values[j]->data, msg->values[j].len);
-		printf("%s\n", msg->values[j].data);
+		free(values[j]->data);
+		free(values[i]);
+		//printf("%s\n", msg->values[j].data);
 	}
+	free(values);
 }
 
 /**

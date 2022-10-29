@@ -76,7 +76,10 @@ int network_main_loop(int listening_socket) {
 		while ((msg = network_receive(client_socket)) != NULL) {
 			invoke(msg);
 			network_send(client_socket, msg);
+			message_t__free_unpacked(msg,NULL);
 		}
+		//free(msg);
+		//message_t__free_unpacked(msg,NULL);
 		close(client_socket);
 		printf("Client disconnected\n");
 	}
@@ -93,7 +96,11 @@ struct message_t* network_receive(int client_socket) {
 	// int size = read(client_socket, buff, 1000);
 	char* buff = (char*)malloc(BUFFER_MAX_SIZE);
 	int size = read_all(client_socket, &buff, BUFFER_MAX_SIZE);
-	return size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
+	struct message_t* result = size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
+	//message_t__free_unpacked(msg,NULL);
+	free(buff);
+	//size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
+	return result;
 }
 
 /* Esta função deve:
@@ -107,7 +114,9 @@ int network_send(int client_socket, struct message_t* msg) {
 	int size = BUFFER_MAX_SIZE;
 	char* buffer = (char*) malloc(size);
 	int buffer_size = message_t__pack(msg, (uint8_t*)buffer);
-	return write_all(client_socket, buffer, buffer_size);
+	int num_bytes_to_write = write_all(client_socket, buffer, buffer_size);
+	free(buffer);
+	return num_bytes_to_write;
 	//return send(client_socket, buffer, buffer_size, 0);
 }
 

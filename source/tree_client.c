@@ -111,7 +111,7 @@ void executePut(struct rtree_t* rtree, char* option) {
 		return;
 	}
 	entry_destroy(entry);
-	printf("\nput successful\n");
+	printf("\n#######put successful#######\n");
 }
 
 void executeGet(struct rtree_t* rtree, char* option) {
@@ -140,7 +140,7 @@ void executeDel(struct rtree_t* rtree, char* option) {
 		return;
 	}
 	free(key);
-	printf("\nDel successful\n");
+	printf("\n #######Del successful####### \n");
 }
 
 void executeSize(struct rtree_t* rtree) {
@@ -149,7 +149,7 @@ void executeSize(struct rtree_t* rtree) {
 		printf("\nSize failed\n");
 		return;
 	}
-	printf("\nSize successful\n");
+	printf("\n #######Size successful####### \n");
 	printf("Size: %d\n", result);
 }
 
@@ -159,7 +159,7 @@ void executeHeight(struct rtree_t* rtree) {
 		printf("\nHeight failed\n");
 		return;
 	}
-	printf("\nHeight successful\n");
+	printf("\n #######Height successful####### \n");
 	printf("Height: %d\n", result);
 }
 

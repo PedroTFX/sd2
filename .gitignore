@@ -2,3 +2,6 @@ obj/
 bin/
 tests/del01-expected.txt
 tests/del01.txt
+tests/test_data.c
+tests/test_entry.c
+tests/test_tree.c

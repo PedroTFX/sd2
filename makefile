@@ -86,5 +86,27 @@ server_run: tree-server
 	./bin/tree_server 1337
 
 sserver_valgrind: tree-server
-	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree_server 1337
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree_server 1337
 
+
+
+
+
+
+test_data:
+	$(CC) $(DEBUGFLAGS) -o obj/data.o -c source/data.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_data.c -o bin/test_data obj/data.o -I $(INCLUDEDIR)
+
+test_data_run: test_data
+	./bin/test_data
+
+test_entry: test_data_run
+	$(CC) $(DEBUGFLAGS) -o obj/entry.o -c source/entry.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_entry.c -o bin/test_entry obj/data.o obj/entry.o -I $(INCLUDEDIR)
+
+test_entry_run: test_entry
+	./bin/test_entry
+
+test_tree: test_entry_run
+	$(CC) $(DEBUGFLAGS) -o obj/tree.o -c source/tree.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_tree.c -o bin/test_tree obj/data.o obj/entry.o obj/tree.o -I $(INCLUDEDIR)
+
+test_tree_run: test_tree
+	./bin/test_tree
