@@ -76,7 +76,7 @@ int network_main_loop(int listening_socket) {
 		while ((msg = network_receive(client_socket)) != NULL) {
 			invoke(msg);
 			network_send(client_socket, msg);
-			message_t__free_unpacked(msg,NULL);
+			//message_t__free_unpacked(msg,NULL);
 		}
 		//free(msg);
 		//message_t__free_unpacked(msg,NULL);

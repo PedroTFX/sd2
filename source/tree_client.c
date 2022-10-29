@@ -125,8 +125,8 @@ void executeGet(struct rtree_t* rtree, char* option) {
 	}
 	char* buffer = (char*)calloc(sizeof(char), value->datasize + 1);
 	strncpy(buffer, value->data, value->datasize);	// ja coloca "\0" automaticamente
-	printf("\nNumber of bytes: %d\n", value->datasize);
-	printf("Bytes: %s\n", buffer);
+	printf("\n###Number of bytes: %d\n", value->datasize);
+	printf("###Bytes: %s\n", buffer);
 	data_destroy(value);
 	free(buffer);
 }
