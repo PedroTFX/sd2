@@ -2,15 +2,12 @@
 #ifndef _CLIENT_STUB_PRIVATEH
 #define _CLIENT_STUB_PRIVATE_H
 
-#include "data.h"
-#include "entry.h"
-#include "tree.h"
-#include "client_stub.h"
+//#include "client_stub.h"
 
-struct rtree{
-    int port;
-    struct tree_t* root;
+struct rtree_t {
+	char* address;
+	char* port;
+	int socket_id;
 };
-
 
 #endif
