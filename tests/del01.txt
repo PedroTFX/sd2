@@ -1,2 +1,17 @@
 put cris ronaldo
+put leo messi
+put fer santos
+put antonio costa
+put adeus xau
+put dinis I
+put ie ieieie
+put xau tassa
+get xau
+get ie
+get dinis
+del dinis
+size
+height
+getkeys
+getvalues
 quit

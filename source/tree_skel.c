@@ -65,14 +65,12 @@ void invoke_put(struct message_t* msg) {
 }
 
 void invoke_get(struct message_t* msg) {
-	struct data_t* result = data_dup(tree_get(tree, msg->key));
+	struct data_t* result = tree_get(tree, msg->key);
 	message_t__init(msg);
 	msg->opcode = MESSAGE_T__OPCODE__OP_GET + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
 	msg->value.len = result != NULL ? result->datasize : 0;
-	//msg->value.data = result != NULL ? result->data : NULL;
-
-	data_destroy(result);
+	msg->value.data = result != NULL ? result->data : NULL;
 }
 
 void invoke_del(struct message_t* msg) {
