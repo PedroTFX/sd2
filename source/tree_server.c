@@ -28,6 +28,8 @@ int main(int argc, char const *argv[]) {
 		printf("Could not initialize tree.\n");
 		if(network_server_close() != 0) {
 			printf("Error in network_server_close()\n");
+		}else{
+			printf("\nServer Closed Sucessfuly\n");
 		}
 		return -1;
 	}
@@ -47,8 +49,9 @@ void tree_server_close(int signum) {
 	// Close server
 	if(network_server_close() != 0) {
 		printf("Error in network_server_close()\n");
+	}else{
+		printf("\nServer Closed Sucessfuly\n");
 	}
-
 	// Destroy tree
 	tree_skel_destroy();
 }

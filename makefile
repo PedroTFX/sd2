@@ -3,7 +3,7 @@ EXTENSION := c
 CC := gcc
 
 INCLUDEDIR := include
-OBJDIR := obj
+OBJDIR := object
 SRCDIR := source
 BINDIR := binary
 LIBDIR := lib
@@ -25,6 +25,9 @@ clean:
 	rm -rf $(OBJDIR)
 	rm -rf $(BINDIR)
 	rm -rf $(LIBDIR)
+	mkdir -p $(OBJDIR)
+	mkdir -p $(BINDIR)
+	mkdir -p $(LIBDIR)
 
 
 #setup directory
@@ -94,19 +97,19 @@ sserver_valgrind: tree-server
 
 
 test_data:
-	$(CC) $(DEBUGFLAGS) -o obj/data.o -c source/data.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_data.c -o $(BINDIR)/test_data obj/data.o -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) -o $(OBJDIR)/data.o -c source/data.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_data.c -o $(BINDIR)/test_data $(OBJDIR)/data.o -I $(INCLUDEDIR)
 
 test_data_run: test_data
 	./$(BINDIR)/test_data
 
 test_entry: test_data_run
-	$(CC) $(DEBUGFLAGS) -o obj/entry.o -c source/entry.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_entry.c -o $(BINDIR)/test_entry obj/data.o obj/entry.o -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) -o $(OBJDIR)/entry.o -c source/entry.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_entry.c -o $(BINDIR)/test_entry $(OBJDIR)/data.o $(OBJDIR)/entry.o -I $(INCLUDEDIR)
 
 test_entry_run: test_entry
 	./$(BINDIR)/test_entry
 
 test_tree: test_entry_run
-	$(CC) $(DEBUGFLAGS) -o obj/tree.o -c source/tree.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_tree.c -o $(BINDIR)/test_tree obj/data.o obj/entry.o obj/tree.o -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) -o $(OBJDIR)/tree.o -c source/tree.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_tree.c -o $(BINDIR)/test_tree $(OBJDIR)/data.o $(OBJDIR)/entry.o $(OBJDIR)/tree.o -I $(INCLUDEDIR)
 
 test_tree_run: test_tree
 	./$(BINDIR)/test_tree

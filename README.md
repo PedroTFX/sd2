@@ -32,14 +32,3 @@ do servidor (em geral, -1).
 Note que o caso em que uma chave não é encontrada no get não deve ser considerado
 como  erro.  Neste  caso  o  servidor  deve  responder  com  uma  resposta  normal
 (OP_GET+1) mas definindo um data_t com size=0 e data=NULL.
-
-Melhor metodo de teste:
-
- • correr (sim / não)
- • tem leaks? (sim / não)
- • tem erros do valgrind? (sim / não)
-
-
-
-ja ha troca de mensagem entre o cliente e o servidor.
-fazer o client stub e tree_client
