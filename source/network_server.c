@@ -33,6 +33,7 @@ int network_server_init(short port) {
 	sigemptyset(&new_actn.sa_mask);
 	new_actn.sa_flags = 0;
 	sigaction(SIGPIPE, &new_actn, NULL);
+
 	// socket
 	//  +++int listening_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if ((listening_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -76,10 +77,7 @@ int network_main_loop(int listening_socket) {
 		while ((msg = network_receive(client_socket)) != NULL) {
 			invoke(msg);
 			network_send(client_socket, msg);
-			//message_t__free_unpacked(msg,NULL);
 		}
-		//free(msg);
-		//message_t__free_unpacked(msg,NULL);
 		close(client_socket);
 		printf("Client disconnected\n");
 	}
@@ -92,14 +90,10 @@ int network_main_loop(int listening_socket) {
  *   reservando a memória necessária para a estrutura message_t.
  */
 struct message_t* network_receive(int client_socket) {
-	// uint8_t buff[1000];
-	// int size = read(client_socket, buff, 1000);
 	char* buff = (char*)malloc(BUFFER_MAX_SIZE);
 	int size = read_all(client_socket, &buff, BUFFER_MAX_SIZE);
 	struct message_t* result = size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
-	//message_t__free_unpacked(msg,NULL);
 	free(buff);
-	//size > 0 ? message_t__unpack(NULL, size, (uint8_t *)buff) : NULL;
 	return result;
 }
 
@@ -109,15 +103,12 @@ struct message_t* network_receive(int client_socket) {
  * - Enviar a mensagem serializada, através do client_socket.
  */
 int network_send(int client_socket, struct message_t* msg) {
-	//char* buffer[BUFFER_MAX_SIZE];
-	//int size = message_t__get_packed_size(msg);
-	int size = BUFFER_MAX_SIZE;
-	char* buffer = (char*) malloc(size);
+	char* buffer = (char*) malloc(BUFFER_MAX_SIZE);
 	int buffer_size = message_t__pack(msg, (uint8_t*)buffer);
-	int num_bytes_to_write = write_all(client_socket, buffer, buffer_size);
+	message_t__free_unpacked(msg, NULL);
+	int num_bytes_written = write_all(client_socket, buffer, buffer_size);
 	free(buffer);
-	return num_bytes_to_write;
-	//return send(client_socket, buffer, buffer_size, 0);
+	return num_bytes_written;
 }
 
 /* A função network_server_close() liberta os recursos alocados por

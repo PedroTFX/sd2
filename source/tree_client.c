@@ -181,6 +181,7 @@ void executeGetKeys(struct rtree_t* rtree) {
 		printf("%s\n", keys[i]);
 		free(keys[i++]);
 	}
+	free(keys[i]);
 	free(keys);
 }
 
@@ -198,15 +199,11 @@ void executeGetValues(struct rtree_t* rtree) {
 
 	printf("\nValues: \n");
 	int i = 0;
-	char* str;
 	while (values[i] != NULL) {
-		str = (char*)values[i]->data;
-		printf("%s\n", str);
-		free(values[i]->data);
-		free(values[i]);
+		printf("%s\n", (char*)values[i]->data);
+		data_destroy(values[i]);
 		i++;
 	}
-	free(str);
 	free(values);
 }
 
