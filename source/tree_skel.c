@@ -16,11 +16,7 @@ struct tree_t* tree;
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int tree_skel_init() {
-	tree = tree_create();
-	if (tree == NULL) {
-		return -1;
-	}
-	return 0;
+	return (tree = tree_create()) != NULL ? 0 : -1;
 }
 
 /* Liberta toda a memória e recursos alocados pela função tree_skel_init.
@@ -59,6 +55,9 @@ int invoke(struct message_t* msg) {
 
 void invoke_put(struct message_t* msg) {
 	int result = tree_put(tree, msg->entry->key, (struct data_t*)&(msg->entry->value));
+	free(msg->entry->key);
+	free(msg->entry->value.data);
+	free(msg->entry);
 	message_t__init(msg);
 	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_PUT + 1) : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
@@ -134,14 +133,12 @@ void invoke_get_values(struct message_t* msg) {
 		i++;
 	}
 	msg->n_values = i;
-	msg->values = (ProtobufCBinaryData*)malloc(msg->n_values * sizeof(ProtobufCBinaryData));
+	msg->values = (ProtobufCBinaryData*)malloc(i * sizeof(ProtobufCBinaryData));
 	for (int j = 0; j < i; j++) {
 		msg->values[j].len = values[j]->datasize;
 		msg->values[j].data = malloc(msg->values[j].len);
 		memcpy(msg->values[j].data, values[j]->data, msg->values[j].len);
-		free(values[j]->data);
-		free(values[i]);
-		//printf("%s\n", msg->values[j].data);
+		data_destroy(values[j]);
 	}
 	free(values);
 }

@@ -174,7 +174,7 @@ void** rtree_get_values(struct rtree_t* rtree) {
 	for (i = 0; i < response->n_values; i++) {
 		values[i] = (struct data_t*)malloc(sizeof(struct data_t));
 		values[i]->datasize = response->values[i].len;
-		values[i]->data = malloc(response->values[i].len + 1);
+		values[i]->data = malloc(response->values[i].len);
 		memcpy(values[i]->data, response->values[i].data, response->values[i].len);
 	}
 	values[i] = NULL;

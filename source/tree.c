@@ -13,12 +13,7 @@
  * Em caso de erro retorna NULL.
  */
 struct tree_t* tree_create() {
-	struct tree_t* tree = (struct tree_t*)calloc(1, sizeof(struct tree_t));
-	if (tree == NULL) {
-		tree = NULL;
-		return NULL;
-	}
-	return tree;
+	return (struct tree_t*)calloc(1, sizeof(struct tree_t));
 }
 
 /* Função para libertar toda a memória ocupada por uma árvore.

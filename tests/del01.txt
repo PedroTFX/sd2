@@ -1,3 +1,7 @@
+size
+height
+getvalues
+getkeys
 put cris ronaldo
 getvalues
 getkeys
@@ -28,6 +32,5 @@ get dinis
 del dinis
 size
 height
-
 getkeys
 quit
