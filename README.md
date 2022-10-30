@@ -1,5 +1,10 @@
 # sd-project2
 
+//make by:
+// João Santos 56380
+// Marcos Gomes 56326
+// Pedro Trindade 56342
+
 For a better understaing of the problem:
 
 client-server   ->    client_stub    ->    network_client

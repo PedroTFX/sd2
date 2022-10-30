@@ -1,3 +1,7 @@
+//make by:
+// João Santos 56380
+// Marcos Gomes 56326
+// Pedro Trindade 56342
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,3 +1,5 @@
+#ifndef _TREE_CLIENT_PRIVATE_
+#define _TREE_CLIENT_PRIVATE_
 void showMenu();
 
 void readOption(char* input, int size);
@@ -29,3 +31,5 @@ void executeHeight(struct rtree_t* r_tree);
 void executeGetKeys(struct rtree_t* rtree);
 
 void executeGetValues(struct rtree_t* rtree);
+
+#endif
