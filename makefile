@@ -64,7 +64,7 @@ tree-client: client-lib.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree_client $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c
 
 client_run: tree-client
-	./bin/tree_client 127.0.0.1:1337 < ./tests/del01.txt
+	./bin/tree_client 127.0.0.1:1337
 
 cclient_valgrind: tree-client
 	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree_client 127.0.0.1:1337 < ./tests/del01.txt
