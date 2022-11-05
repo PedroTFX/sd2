@@ -9,6 +9,7 @@ message message_t {
 		OP_PUT     	= 50;
 		OP_GETKEYS	= 60;
 		OP_GETVALUES	= 70;
+		OP_VERIFY	= 80;
 		OP_ERROR   	= 99;
 	}
 	Opcode opcode = 1;
@@ -36,7 +37,6 @@ message message_t {
 	repeated string keys = 7;
 	repeated bytes values = 8;
 
-
 	/* int32 size = 2;
 
 	int32 height = 3;
@@ -55,13 +55,3 @@ message message_t {
 
 	repeated bytes get_values_result = 12; */
 };
-
-/**
-int tree_size(struct tree_t *tree);
-int tree_height(struct tree_t *tree);
-int tree_put(struct tree_t *tree, char *key, struct data_t *value);
-struct data_t *tree_get(struct tree_t *tree, char *key);
-int tree_del(struct tree_t *tree, char *key);
-char **tree_get_keys(struct tree_t *tree);
-void **tree_get_values(struct tree_t *tree);
-*/

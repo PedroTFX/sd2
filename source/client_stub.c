@@ -57,7 +57,7 @@ int rtree_put(struct rtree_t* rtree, struct entry_t* entry) {
 	struct message_t* response = network_send_receive(rtree, request);
 	free(request->entry);
 	free(request);
-	int result = (response->opcode == MESSAGE_T__OPCODE__OP_PUT + 1) ? 0 : -1;
+	int result = response->opcode != MESSAGE_T__OPCODE__OP_ERROR ? response->result : -1;
 	message_t__free_unpacked(response, NULL);
 	return result;
 }
@@ -180,4 +180,23 @@ void** rtree_get_values(struct rtree_t* rtree) {
 	values[i] = NULL;
 	message_t__free_unpacked(response, NULL);
 	return (void**)values;
+}
+
+/* Verifica se a operação identificada por op_n foi executada.
+ */
+int rtree_verify(struct rtree_t *rtree, int op_n){
+	struct message_t* request = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(request);
+	request->opcode = MESSAGE_T__OPCODE__OP_VERIFY;
+	request->c_type = MESSAGE_T__C_TYPE__CT_RESULT;
+	request->result = op_n;
+	struct message_t* response = network_send_receive(rtree, request);
+	free(request);
+	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
+		message_t__free_unpacked(response, NULL);
+		return -1;
+	}
+	int result = response->result;
+	message_t__free_unpacked(response, NULL);
+	return result;
 }

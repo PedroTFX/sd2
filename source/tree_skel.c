@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "entry.h"
 #include "message-private.h"
@@ -10,12 +11,25 @@
 #include "tree_skel.h"
 
 struct tree_t* tree;
+struct request_t* queue_head;
+int last_assigned;
+struct op_proc op_procedure;
+pthread_t* threads;
+
 /* Inicia o skeleton da árvore.
  * O main() do servidor deve chamar esta função antes de poder usar a
  * função invoke().
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
-int tree_skel_init() {
+int tree_skel_init(int N) {
+	queue_head = NULL;
+	last_assigned = 1;
+	op_procedure.max_proc = 0;
+	op_procedure.in_progress = (int*)calloc(N, sizeof(int));
+	threads = (pthread_t*) malloc(N * sizeof(pthread_t));
+	for(int i = 0; i < N; i++) {
+		pthread_create(&threads[i], NULL, process_request, NULL);
+	}
 	return (tree = tree_create()) != NULL ? 0 : -1;
 }
 
@@ -48,19 +62,56 @@ int invoke(struct message_t* msg) {
 		invoke_get_keys(msg);
 	} else if (msg->opcode == M_OPCODE_GETVALUES) {
 		invoke_get_values(msg);
+	} else if(msg->opcode == M_OPCODE_VERIFY){
+		verify(msg->result);
 	}
 
 	return 0;
 }
 
 void invoke_put(struct message_t* msg) {
-	int result = tree_put(tree, msg->entry->key, (struct data_t*)&(msg->entry->value));
+	// Create new request
+	struct request_t* new_request = (struct request_t*)calloc(1, sizeof(struct request_t));
+	if(new_request != NULL) {
+		// Fulfill request
+		new_request->op_n = last_assigned++;
+		new_request->op = OP_PUT;
+		new_request->key = strdup(msg->entry->key);
+		new_request->data = (char*)malloc(msg->entry->value.len + 1);
+		memcpy(new_request->data, msg->entry->value.data, msg->entry->value.len);
+		new_request->data[msg->entry->value.len] = '\0';
+
+		// Place new request in queue
+		if(queue_head == NULL) {
+			queue_head = new_request;
+		} else {
+			struct request_t* queue_tail = queue_head;
+			while(queue_tail->next != NULL) {
+				queue_tail = queue_tail->next;
+			}
+			queue_tail->next = new_request;
+		}
+	}
+
+	// Free message values
 	free(msg->entry->key);
 	free(msg->entry->value.data);
 	free(msg->entry);
+
+	// Create message to send
 	message_t__init(msg);
-	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_PUT + 1) : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	msg->opcode = new_request != NULL ? MESSAGE_T__OPCODE__OP_PUT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = new_request != NULL ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+	if(new_request != NULL) {
+		msg->result = new_request->op_n;
+	}
+
+	struct request_t* cursor = queue_head;
+	while(cursor != NULL) {
+		printf("Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
+		cursor = cursor->next;
+	}
+	printf("\n");
 }
 
 void invoke_get(struct message_t* msg) {
@@ -141,6 +192,40 @@ void invoke_get_values(struct message_t* msg) {
 		data_destroy(values[j]);
 	}
 	free(values);
+}
+
+/* Verifica se a operação identificada por op_n foi executada.
+ */
+int verify(int op_n){
+	struct message_t* msg = (struct message_t*)malloc(sizeof(struct message_t));
+	message_t__init(msg);
+	msg->result = tree_height(tree);
+	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+}
+
+void* process_request(void *params) {
+	
+	while(1) {
+		if(queue_head != NULL) {
+			// Process request
+			if(queue_head->op == OP_PUT) {
+				int size = strlen(queue_head->data) - 1;
+				void* value = malloc(size);
+				memcpy(value, queue_head->data, size);
+				struct data_t* data = data_create2(size, value);
+				int result = tree_put(tree, queue_head->key, data);
+				data_destroy(data);
+			}/*  else if(queue_head->op == OP_DEL) {
+
+			} */
+
+			// Update queue
+			struct request_t* to_free = queue_head;
+			queue_head = queue_head->next;
+			free(to_free);
+		}
+	}
 }
 
 /**
