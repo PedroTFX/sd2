@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "entry.h"
 #include "message-private.h"
 #include "sdmessage.pb-c.h"
 #include "tree.h"
+#include "tree-private.h"
 #include "tree_skel-private.h"
 #include "tree_skel.h"
 
@@ -124,11 +126,50 @@ void invoke_get(struct message_t* msg) {
 }
 
 void invoke_del(struct message_t* msg) {
-	int result = tree_del(tree, msg->key);
+// Create new request
+	struct request_t* new_request = (struct request_t*)calloc(1, sizeof(struct request_t));
+	if(new_request != NULL) {
+		// Fulfill request
+		new_request->op_n = last_assigned++;
+		new_request->op = OP_DEL;
+		new_request->key = strdup(msg->entry->key);
+
+		// Place new request in queue
+		if(queue_head == NULL) {
+			queue_head = new_request;
+		} else {
+			struct request_t* queue_tail = queue_head;
+			while(queue_tail->next != NULL) {
+				queue_tail = queue_tail->next;
+			}
+			queue_tail->next = new_request;
+		}
+	}
+
+	// Free message values
+	free(msg->entry->key);
+	free(msg->entry->value.data);
+	free(msg->entry);
+
+	// Create message to send
+	message_t__init(msg);
+	msg->opcode = new_request != NULL ? MESSAGE_T__OPCODE__OP_DEL + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = new_request != NULL ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+	if(new_request != NULL) {
+		msg->result = new_request->op_n;
+	}
+
+	struct request_t* cursor = queue_head;
+	while(cursor != NULL) {
+		printf("Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
+		cursor = cursor->next;
+	}
+	printf("\n");
+/* 	int result = tree_del(tree, msg->key);
 	free(msg->key);
 	message_t__init(msg);
 	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_DEL + 1) : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
+	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE; */
 }
 
 void invoke_size(struct message_t* msg) {
@@ -202,24 +243,29 @@ int verify(int op_n){
 	msg->result = tree_height(tree);
 	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+	return -50;
 }
 
 void* process_request(void *params) {
-	
 	while(1) {
 		if(queue_head != NULL) {
+			sleep(3);
 			// Process request
 			if(queue_head->op == OP_PUT) {
+				printf("printing...\n");
+				print_tree(tree);
+				printf("Printed...\n");
 				int size = strlen(queue_head->data) - 1;
 				void* value = malloc(size);
 				memcpy(value, queue_head->data, size);
 				struct data_t* data = data_create2(size, value);
 				int result = tree_put(tree, queue_head->key, data);
+				printf("resultPut: %d\n", result);
 				data_destroy(data);
-			}/*  else if(queue_head->op == OP_DEL) {
-
-			} */
-
+			} else if(queue_head->op == OP_DEL) {
+				int result = tree_del(tree, queue_head->key);
+				printf("resultDel: %d\n", result);
+			}
 			// Update queue
 			struct request_t* to_free = queue_head;
 			queue_head = queue_head->next;

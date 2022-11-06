@@ -50,6 +50,7 @@ int main(int argc, char const* argv[]) {
 }
 
 void tree_server_close(int signum) {
+	printf("Closing\n");
 	// Close server
 	if (network_server_close() != 0) {
 		printf("Error in network_server_close()\n");

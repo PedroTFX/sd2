@@ -41,7 +41,7 @@
 			"program": "${workspaceFolder}/bin/tree-server",
 			"args": [
 				"1337",
-				"2"
+				"1"
 
 			],
 			"stopAtEntry": false,

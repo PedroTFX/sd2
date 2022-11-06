@@ -153,6 +153,7 @@ int network_main_loop(int listening_socket) {
 			}
 		}
 	}
+	return 0;
 }
 
 /* Esta função deve:
