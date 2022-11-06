@@ -3,9 +3,9 @@ EXTENSION := c
 CC := gcc
 
 INCLUDEDIR := include
-OBJDIR := obj
+OBJDIR := object
 SRCDIR := source
-BINDIR := bin
+BINDIR := binary
 LIBDIR := lib
 ASMDIR := asm
 
