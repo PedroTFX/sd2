@@ -1,7 +1,3 @@
-//make by:
-// João Santos 56380
-// Marcos Gomes 56326
-// Pedro Trindade 56342
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +17,7 @@
 #define HEIGHT "height"
 #define GET_KEYS "getkeys"
 #define GET_VALUES "getvalues"
+#define VERIFY "verify"
 
 int main(int argc, char const* argv[]) {
 	if (argc < 2) {
@@ -68,6 +65,7 @@ void showMenu() {
 	printf("height\n");
 	printf("getkeys\n");
 	printf("getvalues\n");
+	printf("verify <operation number>\n");
 	printf("quit\n");
 	printf("Option: ");
 }
@@ -105,17 +103,22 @@ int commandIsGetValues(char* option) {
 	return strncmp(option, GET_VALUES, strlen(GET_VALUES)) == 0;
 }
 
+int commandIsVerify(char* option) {
+	return strncmp(option, VERIFY, strlen(VERIFY)) == 0;
+}
+
 void executePut(struct rtree_t* rtree, char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
 	char* value = strdup(strtok(NULL, " "));
 	struct entry_t* entry = entry_create(key, data_create2(strlen(value), value));
-	if (rtree_put(rtree, entry) == -1) {
+	int op_num;
+	if ((op_num = rtree_put(rtree, entry)) == -1) {
 		printf("\nput failed\n");
 		return;
 	}
 	entry_destroy(entry);
-	printf("\n#######put successful#######\n");
+	printf("\n#######Put operation queued with number %d#######\n", op_num);
 }
 
 void executeGet(struct rtree_t* rtree, char* option) {
@@ -138,13 +141,14 @@ void executeGet(struct rtree_t* rtree, char* option) {
 void executeDel(struct rtree_t* rtree, char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
-	int result = rtree_del(rtree, key);
-	if (result == -1) {
+	int op_num = rtree_del(rtree, key);
+	if (op_num == -1) {
 		printf("\nDel failed\n");
+		free(key);
 		return;
 	}
 	free(key);
-	printf("\n #######Del successful####### \n");
+	printf("\n#######Del operation queued with number %d#######\n", op_num);
 }
 
 void executeSize(struct rtree_t* rtree) {
@@ -209,6 +213,19 @@ void executeGetValues(struct rtree_t* rtree) {
 		i++;
 	}
 	free(values);
+}
+
+void executeVerify(struct rtree_t* rtree, int op_n) {
+	int verified = rtree_verify(rtree, op_n);
+	if (verified == -1) {
+		printf("There was an error executing verify() on the server.\n");
+		return;
+	}
+	if(verified) {
+		printf("The operation %d was completed!\n", op_n);
+	} else {
+		printf("The operation %d was not completed yet!\n", op_n);
+	}
 }
 
 // tentar imprimir o pedido do cliente

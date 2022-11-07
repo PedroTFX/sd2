@@ -1,0 +1,7 @@
+put jeronimo sousa
+put cris ronaldo
+del cris
+put joao andre
+put mario rui
+del mario
+put jeronimo sousa

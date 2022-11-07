@@ -8,7 +8,7 @@
 			"name": "Client",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/tree_client",
+			"program": "${workspaceFolder}/binary/tree-client",
 			"args": ["127.0.0.1:1337", "< ./tests/del01.txt"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
@@ -38,9 +38,10 @@
 			"name": "Server",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/tree_server",
+			"program": "${workspaceFolder}/binary/tree-server",
 			"args": [
-				"1337"
+				"1337",
+				"1"
 			],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",

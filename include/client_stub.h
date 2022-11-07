@@ -8,13 +8,13 @@
  */
 struct rtree_t;
 
-/* Função para estabelecer uma associação entre o cliente e o servidor, 
+/* Função para estabelecer uma associação entre o cliente e o servidor,
  * em que address_port é uma string no formato <hostname>:<port>.
  * Retorna NULL em caso de erro.
  */
 struct rtree_t *rtree_connect(const char *address_port);
 
-/* Termina a associação entre o cliente e o servidor, fechando a 
+/* Termina a associação entre o cliente e o servidor, fechando a
  * ligação com o servidor e libertando toda a memória local.
  * Retorna 0 se tudo correr bem e -1 em caso de erro.
  */
@@ -31,7 +31,7 @@ int rtree_put(struct rtree_t *rtree, struct entry_t *entry);
  */
 struct data_t *rtree_get(struct rtree_t *rtree, char *key);
 
-/* Função para remover um elemento da árvore. Vai libertar 
+/* Função para remover um elemento da árvore. Vai libertar
  * toda a memoria alocada na respetiva operação rtree_put().
  * Devolve: 0 (ok), -1 (key not found ou problemas).
  */
@@ -55,5 +55,7 @@ char **rtree_get_keys(struct rtree_t *rtree);
  */
 void **rtree_get_values(struct rtree_t *rtree);
 
-
+/* Verifica se a operação identificada por op_n foi executada.
+ */
+int rtree_verify(struct rtree_t *rtree, int op_n);
 #endif

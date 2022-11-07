@@ -1,13 +1,9 @@
-//make by:
-// João Santos 56380
-// Marcos Gomes 56326
-// Pedro Trindade 56342
 #include <errno.h>
+
 #include "util.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-
 int write_all(int sock, char* buf, int len) {
 	int bufsize = len;
 	while (len > 0) {
