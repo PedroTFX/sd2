@@ -1,35 +1,6 @@
-size
-height
-getvalues
-getkeys
-put cris ronaldo
-getvalues
-getkeys
-put leo messi
-getvalues
-getkeys
-put fer santos
-getvalues
-getkeys
-put antonio costa
-getvalues
-getkeys
-put adeus xau
-getvalues
-getkeys
-put dinis I
-getvalues
-getkeys
-put ie ieieie
-getvalues
-getkeys
-put xau tassa
-getvalues
-getkeys
-get xau
-get ie
-get dinis
-del dinis
-size
-height
-getkeys
+put joao andre
+put mario rui
+put jeronimo sousa
+put manuel arriaga
+del manuel
+quit

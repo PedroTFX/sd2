@@ -132,7 +132,7 @@ void invoke_del(struct message_t* msg) {
 		// Fulfill request
 		new_request->op_n = last_assigned++;
 		new_request->op = OP_DEL;
-		new_request->key = strdup(msg->entry->key);
+		new_request->key = strdup(msg->key);
 
 		// Place new request in queue
 		if(queue_head == NULL) {
@@ -147,9 +147,10 @@ void invoke_del(struct message_t* msg) {
 	}
 
 	// Free message values
-	free(msg->entry->key);
-	free(msg->entry->value.data);
-	free(msg->entry);
+	//free(msg->entry->key);
+	free(msg->key);
+	//free(msg->entry->value.data);
+	//free(msg->entry);
 
 	// Create message to send
 	message_t__init(msg);
@@ -247,14 +248,17 @@ int verify(int op_n){
 }
 
 void* process_request(void *params) {
+	//sleep(2);
 	while(1) {
 		if(queue_head != NULL) {
-			sleep(3);
+			printf("queue #BEFORE# processing request:\n");
+			print_queue(queue_head);
+			printf("done\n");
 			// Process request
 			if(queue_head->op == OP_PUT) {
-				printf("printing...\n");
+				printf("Printing tree...\n\n");
 				print_tree(tree);
-				printf("Printed...\n");
+				printf("Printed...\n\n");
 				int size = strlen(queue_head->data) - 1;
 				void* value = malloc(size);
 				memcpy(value, queue_head->data, size);
@@ -270,14 +274,36 @@ void* process_request(void *params) {
 			struct request_t* to_free = queue_head;
 			queue_head = queue_head->next;
 			free(to_free);
+			printf("queue #AFTER# processing request:\n\n");
+			print_queue(queue_head);
+			printf("done\n\n");
+			printf("Printing tree...\n\n");
+			print_tree(tree);
+			printf("Printed...\n\n");
 		}
 	}
 }
 
 /**
 msg->values
-
 [struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
 [struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
 [struct ProtobufCBinaryData { int len = 0; void* data = NULL;}
 */
+
+void print_queue(struct request_t* queue){
+	if (queue != NULL) {
+		struct request_t* printable_queue = queue;
+		while (printable_queue != NULL) {
+			printf("op_n:%d\n", printable_queue->op_n);
+			printf("op:%d\n", printable_queue->op);
+			printf("key:%s\n", printable_queue->key);
+			if (printable_queue->data != NULL) {
+				printf("value:%s\n", printable_queue->data);
+			}
+			printable_queue = printable_queue->next;
+		}
+	} else{
+		printf("queue empty!\n");
+	}
+}

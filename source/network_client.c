@@ -31,7 +31,6 @@ int network_connect(struct rtree_t* rtree) {
 	server_info.sin_family = AF_INET;
 	// Store this IP address in struct sockaddr_in
 	inet_pton(AF_INET, rtree->address, &(server_info.sin_addr));
-	// server_info.sin_addr.s_addr = htonl(rtree->address);
 	server_info.sin_port = htons(atoi(rtree->port));
 	socklen_t server_info_len = sizeof(server_info);
 
@@ -67,12 +66,8 @@ int network_connect(struct rtree_t* rtree) {
  */
 struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* msg) {
 	int sfd = rtree->socket_id;
-	//uint8_t buffer[BUFFER_MAX_SIZE];
 	char* buffer = (char*) malloc(message_t__get_packed_size(msg));
 	int buffer_size = message_t__pack(msg, (uint8_t*) buffer);
-/* 	if (send(sfd, buffer, buffer_size, 0) == -1) {
-		perror("could not send data\n");
-	} */
 	if (write_all(sfd, buffer, buffer_size) < 0) {
 		perror("could not send data\n");
 	}

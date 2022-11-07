@@ -61,7 +61,10 @@ tree-client: client-lib.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree-client $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread
 
 ccclient_run: tree-client
-	./bin/tree-client 127.0.0.1:1337
+	./$(BINDIR)/tree-client 127.0.0.1:1337
+
+fccclient_run: tree-client
+	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01.txt
 
 cclient_valgrind: tree-client
 	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree_client 127.0.0.1:1337 < ./tests/del01.txt
@@ -80,7 +83,7 @@ tree-server: data.o entry.o tree.o sdmessage.pb-c.o util.o network_server.o tree
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree-server $(OBJDIR)/tree_skel.o $(OBJDIR)/network_server.o $(OBJDIR)/util.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread
 
 ssserver_run: tree-server
-	./bin/tree-server 1337 1
+	./$(BINDIR)/tree-server 1337 1
 
 sserver_valgrind: tree-server
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree_server 1337
