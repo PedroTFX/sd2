@@ -3,3 +3,14 @@ bin/
 tests/test_data.c
 tests/test_entry.c
 tests/test_tree.c
+binary/tree-client
+binary/tree-server
+object/client_stub.o
+object/data.o
+object/entry.o
+object/network_client.o
+object/network_server.o
+object/sdmessage.pb-c.o
+object/tree_skel.o
+object/tree.o
+object/util.o
