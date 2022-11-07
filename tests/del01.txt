@@ -1,6 +1,2 @@
-put joao andre
-put mario rui
-put jeronimo sousa
-put manuel arriaga
 del manuel
 quit

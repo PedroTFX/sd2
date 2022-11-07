@@ -15,15 +15,17 @@
 struct tree_t* tree;
 struct request_t* queue_head;
 int last_assigned;
+int n_threads;
 struct op_proc op_procedure;
 pthread_t* threads;
-
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 /* Inicia o skeleton da árvore.
  * O main() do servidor deve chamar esta função antes de poder usar a
  * função invoke().
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int tree_skel_init(int N) {
+	n_threads = N;
 	queue_head = NULL;
 	last_assigned = 1;
 	op_procedure.max_proc = 0;
@@ -72,6 +74,7 @@ int invoke(struct message_t* msg) {
 }
 
 void invoke_put(struct message_t* msg) {
+
 	// Create new request
 	struct request_t* new_request = (struct request_t*)calloc(1, sizeof(struct request_t));
 	if(new_request != NULL) {
@@ -114,6 +117,7 @@ void invoke_put(struct message_t* msg) {
 		cursor = cursor->next;
 	}
 	printf("\n");
+
 }
 
 void invoke_get(struct message_t* msg) {
@@ -251,6 +255,7 @@ void* process_request(void *params) {
 	//sleep(2);
 	while(1) {
 		if(queue_head != NULL) {
+			//pthread_mutex_lock(&mutex1);
 			printf("queue #BEFORE# processing request:\n");
 			print_queue(queue_head);
 			printf("done\n");
@@ -280,6 +285,7 @@ void* process_request(void *params) {
 			printf("Printing tree...\n\n");
 			print_tree(tree);
 			printf("Printed...\n\n");
+			//pthread_mutex_unlock(&mutex1);
 		}
 	}
 }
