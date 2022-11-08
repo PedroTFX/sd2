@@ -20,4 +20,7 @@ int tree_get_values_aux(struct tree_t *tree, struct data_t **values, int index);
 struct tree_t* tree_dup(struct tree_t* tree);
 
 void print_tree(struct tree_t* tree);
+
+void print_tree_aux(struct tree_t* tree);
+
 #endif

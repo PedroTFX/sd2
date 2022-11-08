@@ -29,3 +29,5 @@ void invoke_get_keys(struct message_t*);
 void invoke_get_values(struct message_t*);
 
 void print_queue(struct request_t*);
+
+void request_destroy(struct request_t*);

@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/binary/tree-client",
-			"args": ["127.0.0.1:1337", "< ./tests/del01.txt"],
+			"args": ["127.0.0.1:1337", " < ./tests/del01.txt"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],

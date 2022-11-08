@@ -208,7 +208,10 @@ void executeGetValues(struct rtree_t* rtree) {
 	printf("\nValues: \n");
 	int i = 0;
 	while (values[i] != NULL) {
-		printf("%s\n", (char*)values[i]->data);
+		for (int j = 0; j < values[i]->datasize; j++) {
+			printf("%c", ((char*)values[i]->data)[j]);
+		}
+		printf("\n");
 		data_destroy(values[i]);
 		i++;
 	}

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "entry.h"
 #include "message-private.h"
@@ -18,7 +19,11 @@ int last_assigned;
 int n_threads;
 struct op_proc op_procedure;
 pthread_t* threads;
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+int close_threads;
+pthread_mutex_t mutex_queue = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_op_proc = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_tree = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condition_cond = PTHREAD_COND_INITIALIZER;
 /* Inicia o skeleton da árvore.
  * O main() do servidor deve chamar esta função antes de poder usar a
  * função invoke().
@@ -31,6 +36,7 @@ int tree_skel_init(int N) {
 	op_procedure.max_proc = 0;
 	op_procedure.in_progress = (int*)calloc(N, sizeof(int));
 	threads = (pthread_t*) malloc(N * sizeof(pthread_t));
+	close_threads = 0;
 	for(int i = 0; i < N; i++) {
 		pthread_create(&threads[i], NULL, process_request, NULL);
 	}
@@ -40,6 +46,12 @@ int tree_skel_init(int N) {
 /* Liberta toda a memória e recursos alocados pela função tree_skel_init.
  */
 void tree_skel_destroy() {
+	close_threads = 1;
+ 	for (int i = 0; i < n_threads; i++) {
+		pthread_join(threads[i], NULL);
+	}
+	printf("Threads returned successfully\n");
+	//pthread_mutex_destroy(&mutex1);
 	tree_destroy(tree);
 }
 
@@ -74,7 +86,6 @@ int invoke(struct message_t* msg) {
 }
 
 void invoke_put(struct message_t* msg) {
-
 	// Create new request
 	struct request_t* new_request = (struct request_t*)calloc(1, sizeof(struct request_t));
 	if(new_request != NULL) {
@@ -110,14 +121,6 @@ void invoke_put(struct message_t* msg) {
 	if(new_request != NULL) {
 		msg->result = new_request->op_n;
 	}
-
-	struct request_t* cursor = queue_head;
-	while(cursor != NULL) {
-		printf("Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
-		cursor = cursor->next;
-	}
-	printf("\n");
-
 }
 
 void invoke_get(struct message_t* msg) {
@@ -163,13 +166,6 @@ void invoke_del(struct message_t* msg) {
 	if(new_request != NULL) {
 		msg->result = new_request->op_n;
 	}
-
-	struct request_t* cursor = queue_head;
-	while(cursor != NULL) {
-		printf("Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
-		cursor = cursor->next;
-	}
-	printf("\n");
 /* 	int result = tree_del(tree, msg->key);
 	free(msg->key);
 	message_t__init(msg);
@@ -252,42 +248,69 @@ int verify(int op_n){
 }
 
 void* process_request(void *params) {
-	//sleep(2);
-	while(1) {
-		if(queue_head != NULL) {
-			//pthread_mutex_lock(&mutex1);
-			printf("queue #BEFORE# processing request:\n");
-			print_queue(queue_head);
-			printf("done\n");
-			// Process request
-			if(queue_head->op == OP_PUT) {
-				printf("Printing tree...\n\n");
-				print_tree(tree);
-				printf("Printed...\n\n");
-				int size = strlen(queue_head->data) - 1;
-				void* value = malloc(size);
-				memcpy(value, queue_head->data, size);
-				struct data_t* data = data_create2(size, value);
-				int result = tree_put(tree, queue_head->key, data);
-				printf("resultPut: %d\n", result);
-				data_destroy(data);
-			} else if(queue_head->op == OP_DEL) {
-				int result = tree_del(tree, queue_head->key);
-				printf("resultDel: %d\n", result);
-			}
-			// Update queue
-			struct request_t* to_free = queue_head;
-			queue_head = queue_head->next;
-			free(to_free);
-			printf("queue #AFTER# processing request:\n\n");
-			print_queue(queue_head);
-			printf("done\n\n");
-			printf("Printing tree...\n\n");
-			print_tree(tree);
-			printf("Printed...\n\n");
-			//pthread_mutex_unlock(&mutex1);
+	while(close_threads == 0) {
+
+		// Sleep until there are requests in the queue
+		//pthread_cond_wait(&condition_cond, NULL);
+
+		//printf("Running thread...\n");
+		struct request_t* request;
+		pthread_mutex_lock(&mutex_queue); // Lock access to queue
+		if(queue_head == NULL) { // Check if there are requests in the queue
+			pthread_mutex_unlock(&mutex_queue); // Unlock access to queue
+			continue;
 		}
+		request = queue_head;
+		queue_head = queue_head->next;
+		pthread_mutex_unlock(&mutex_queue); // Unlock access to queue
+
+		// Execute request
+		if(request->op == OP_PUT) {
+			printf("\nThread will execute put operation.\n");
+
+			int size = strlen(request->data);
+			void* value = malloc(size);
+			memcpy(value, request->data, size);
+			struct data_t* data = data_create2(size, value);
+
+			pthread_mutex_lock(&mutex_tree); // Lock access to tree
+			print_tree(tree); // Print tree
+			int result = tree_put(tree, request->key, data);
+			print_tree(tree); // Print tree
+			pthread_mutex_unlock(&mutex_tree); // Unlock access to tree
+
+			// Free request and data
+			data_destroy(data);
+
+			// Check for error
+			if(result == -1) {
+				printf("Error processing put request!\n");
+				continue;
+			}
+			printf("PUT successful!\n");
+		} else if(request->op == OP_DEL) {
+			printf("\nThread will execute delete operation.\n");
+
+			// Execute delete
+			pthread_mutex_lock(&mutex_tree); // Lock access to tree
+			print_tree(tree); // Print tree
+			int result = tree_del(tree, request->key);
+			print_tree(tree); // Print tree
+			pthread_mutex_unlock(&mutex_tree); // Unlock access to tree
+
+			// Check for error
+			if(result == -1) {
+				printf("Error processing delete request!\n");
+				continue;
+			}
+			printf("DELETE successful!\n");
+		}
+
+		// Free request
+		request_destroy(request);
 	}
+	printf("Closing thread.\n");
+	return NULL;
 }
 
 /**
@@ -297,19 +320,21 @@ msg->values
 [struct ProtobufCBinaryData { int len = 0; void* data = NULL;}
 */
 
-void print_queue(struct request_t* queue){
-	if (queue != NULL) {
-		struct request_t* printable_queue = queue;
-		while (printable_queue != NULL) {
-			printf("op_n:%d\n", printable_queue->op_n);
-			printf("op:%d\n", printable_queue->op);
-			printf("key:%s\n", printable_queue->key);
-			if (printable_queue->data != NULL) {
-				printf("value:%s\n", printable_queue->data);
-			}
-			printable_queue = printable_queue->next;
-		}
-	} else{
-		printf("queue empty!\n");
+void print_queue(struct request_t* queue) {
+	if(queue == NULL) {
+		printf("QUEUE: empty\n");
+		return;
 	}
+
+	struct request_t* cursor = queue_head;
+	while(cursor != NULL) {
+		printf("QUEUE: Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
+		cursor = cursor->next;
+	}
+}
+
+void request_destroy(struct request_t* request){
+	free(request->key);
+	free(request->data);
+	free(request);
 }

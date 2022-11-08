@@ -1,2 +1,12 @@
-del manuel
+put manuel arriaga
+put jeronimo sousa
+put cris ronaldo
+del cris
+put joao andre
+put mario rui
+del mario
+size
+height
+getkeys
+getvalues
 quit

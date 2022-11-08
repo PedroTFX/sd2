@@ -56,6 +56,8 @@ void tree_server_close(int signum) {
 		printf("Error in network_server_close()\n");
 	}
 
+	printf("Network server close\n");
+
 	// Destroy tree
 	tree_skel_destroy();
 }
