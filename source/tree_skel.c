@@ -20,6 +20,7 @@ int n_threads;
 struct op_proc op_procedure;
 pthread_t* threads;
 int close_threads;
+int *thread_ids;
 pthread_mutex_t mutex_queue = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_op_proc = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_tree = PTHREAD_MUTEX_INITIALIZER;
@@ -30,6 +31,7 @@ pthread_cond_t condition_cond = PTHREAD_COND_INITIALIZER;
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int tree_skel_init(int N) {
+	pthread_cond_init(&condition_cond, NULL);
 	n_threads = N;
 	queue_head = NULL;
 	last_assigned = 1;
@@ -37,21 +39,25 @@ int tree_skel_init(int N) {
 	op_procedure.in_progress = (int*)calloc(N, sizeof(int));
 	threads = (pthread_t*) malloc(N * sizeof(pthread_t));
 	close_threads = 0;
+	thread_ids = (int*)malloc(N*sizeof(int));
+	tree = tree_create();
 	for(int i = 0; i < N; i++) {
-		pthread_create(&threads[i], NULL, process_request, NULL);
+		thread_ids[i] = i;
+		pthread_create(&threads[i], NULL, process_request, (void*)&(thread_ids[i]));
 	}
-	return (tree = tree_create()) != NULL ? 0 : -1;
+	return tree != NULL ? 0 : -1;
 }
 
 /* Liberta toda a memória e recursos alocados pela função tree_skel_init.
  */
 void tree_skel_destroy() {
 	close_threads = 1;
+	pthread_cond_broadcast(&condition_cond);
  	for (int i = 0; i < n_threads; i++) {
 		pthread_join(threads[i], NULL);
 	}
 	printf("Threads returned successfully\n");
-	//pthread_mutex_destroy(&mutex1);
+	free(thread_ids);
 	tree_destroy(tree);
 }
 
@@ -63,7 +69,6 @@ int invoke(struct message_t* msg) {
 	if (tree == NULL) {
 		return -1;
 	}
-
 	if (msg->opcode == M_OPCODE_PUT) {
 		invoke_put(msg);
 	} else if (msg->opcode == M_OPCODE_GET) {
@@ -79,9 +84,9 @@ int invoke(struct message_t* msg) {
 	} else if (msg->opcode == M_OPCODE_GETVALUES) {
 		invoke_get_values(msg);
 	} else if(msg->opcode == M_OPCODE_VERIFY){
-		verify(msg->result);
+		invoke_verify(msg);
+		//verify(msg->result);
 	}
-
 	return 0;
 }
 
@@ -96,8 +101,8 @@ void invoke_put(struct message_t* msg) {
 		new_request->data = (char*)malloc(msg->entry->value.len + 1);
 		memcpy(new_request->data, msg->entry->value.data, msg->entry->value.len);
 		new_request->data[msg->entry->value.len] = '\0';
-
 		// Place new request in queue
+		pthread_mutex_lock(&mutex_queue);
 		if(queue_head == NULL) {
 			queue_head = new_request;
 		} else {
@@ -107,6 +112,7 @@ void invoke_put(struct message_t* msg) {
 			}
 			queue_tail->next = new_request;
 		}
+		pthread_mutex_unlock(&mutex_queue);
 	}
 
 	// Free message values
@@ -121,10 +127,13 @@ void invoke_put(struct message_t* msg) {
 	if(new_request != NULL) {
 		msg->result = new_request->op_n;
 	}
+	pthread_cond_signal(&condition_cond);
 }
 
 void invoke_get(struct message_t* msg) {
+	pthread_mutex_lock(&mutex_tree);
 	struct data_t* result = tree_get(tree, msg->key);
+	pthread_mutex_unlock(&mutex_tree);
 	message_t__init(msg);
 	msg->opcode = MESSAGE_T__OPCODE__OP_GET + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_VALUE;
@@ -142,6 +151,7 @@ void invoke_del(struct message_t* msg) {
 		new_request->key = strdup(msg->key);
 
 		// Place new request in queue
+		pthread_mutex_lock(&mutex_queue);
 		if(queue_head == NULL) {
 			queue_head = new_request;
 		} else {
@@ -151,6 +161,7 @@ void invoke_del(struct message_t* msg) {
 			}
 			queue_tail->next = new_request;
 		}
+		pthread_mutex_unlock(&mutex_queue);
 	}
 
 	// Free message values
@@ -166,29 +177,32 @@ void invoke_del(struct message_t* msg) {
 	if(new_request != NULL) {
 		msg->result = new_request->op_n;
 	}
-/* 	int result = tree_del(tree, msg->key);
-	free(msg->key);
-	message_t__init(msg);
-	msg->opcode = (result == 0) ? (MESSAGE_T__OPCODE__OP_DEL + 1) : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = MESSAGE_T__C_TYPE__CT_NONE; */
+
+	pthread_cond_signal(&condition_cond);
 }
 
 void invoke_size(struct message_t* msg) {
 	message_t__init(msg);
+	pthread_mutex_lock(&mutex_tree);
 	msg->result = tree_size(tree);
+	pthread_mutex_unlock(&mutex_tree);
 	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_SIZE + 1 : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_heigth(struct message_t* msg) {
 	message_t__init(msg);
+	pthread_mutex_lock(&mutex_tree);
 	msg->result = tree_height(tree);
+	pthread_mutex_unlock(&mutex_tree);
 	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
 	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
 }
 
 void invoke_get_keys(struct message_t* msg) {
+	pthread_mutex_lock(&mutex_tree);
 	char** keys = tree_get_keys(tree);
+	pthread_mutex_unlock(&mutex_tree);
 	message_t__init(msg);
 	if (keys == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
@@ -212,7 +226,9 @@ void invoke_get_keys(struct message_t* msg) {
 }
 
 void invoke_get_values(struct message_t* msg) {
+	pthread_mutex_lock(&mutex_tree);
 	struct data_t** values = (struct data_t**)tree_get_values(tree);
+	pthread_mutex_unlock(&mutex_tree);
 	message_t__init(msg);
 	if (values == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
@@ -236,37 +252,64 @@ void invoke_get_values(struct message_t* msg) {
 	free(values);
 }
 
+void invoke_verify(struct message_t* msg){
+	msg->result = verify(msg->result);
+	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_VERIFY + 1 : MESSAGE_T__OPCODE__OP_ERROR;
+	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
+}
 /* Verifica se a operação identificada por op_n foi executada.
  */
 int verify(int op_n){
-	struct message_t* msg = (struct message_t*)malloc(sizeof(struct message_t));
-	message_t__init(msg);
-	msg->result = tree_height(tree);
-	msg->opcode = (msg->result) >= 0 ? MESSAGE_T__OPCODE__OP_HEIGHT + 1 : MESSAGE_T__OPCODE__OP_ERROR;
-	msg->c_type = (msg->result) >= 0 ? MESSAGE_T__C_TYPE__CT_RESULT : MESSAGE_T__C_TYPE__CT_NONE;
-	return -50;
+	pthread_mutex_lock(&mutex_op_proc);
+	if (op_n > op_procedure.max_proc) {
+		return 0;
+	}
+
+	if (op_n == op_procedure.max_proc) {
+	}
+
+	for (int i = 0; i < n_threads; i++) {
+		if (op_procedure.in_progress[i] == op_n) {
+			pthread_mutex_unlock(&mutex_op_proc);
+			return 1;
+		}
+	}
+	pthread_mutex_unlock(&mutex_op_proc);
+	return 0;
 }
 
 void* process_request(void *params) {
+	int id = *((int*)params);
+	//int num = (int)*params;
+	printf("Thread ID: %d\n", id);
 	while(close_threads == 0) {
-
-		// Sleep until there are requests in the queue
-		//pthread_cond_wait(&condition_cond, NULL);
-
-		//printf("Running thread...\n");
+		//pthread_cond_wait(&condition_cond, &mutex_tree);
+		//pthread_cond_wait(&condition_cond, &mutex_queue);
 		struct request_t* request;
+		printf("Sleeping thread %d.\n", id);
 		pthread_mutex_lock(&mutex_queue); // Lock access to queue
+		printf("Between lock and wait %d.\n", id);
+		pthread_cond_wait(&condition_cond, &mutex_queue); // Sleep until there are requests in the queue, ver este cond_wait (ver slides aula anterior)
+		printf("Waking up thread %d.\n", id);
 		if(queue_head == NULL) { // Check if there are requests in the queue
 			pthread_mutex_unlock(&mutex_queue); // Unlock access to queue
 			continue;
 		}
+		print_queue(id, queue_head);
 		request = queue_head;
 		queue_head = queue_head->next;
+		print_queue(id, queue_head);
 		pthread_mutex_unlock(&mutex_queue); // Unlock access to queue
+
+		pthread_mutex_lock(&mutex_op_proc);
+		print_op_proc(id, &op_procedure);
+		op_procedure.in_progress[id] = request->op_n;
+		print_op_proc(id, &op_procedure);
+		pthread_mutex_unlock(&mutex_op_proc);
 
 		// Execute request
 		if(request->op == OP_PUT) {
-			printf("\nThread will execute put operation.\n");
+			printf("\n%d: Thread will execute put operation.\n", id);
 
 			int size = strlen(request->data);
 			void* value = malloc(size);
@@ -274,11 +317,21 @@ void* process_request(void *params) {
 			struct data_t* data = data_create2(size, value);
 
 			pthread_mutex_lock(&mutex_tree); // Lock access to tree
-			print_tree(tree); // Print tree
+			print_tree(id, tree); // Print tree
+			//print_tree(tree); // Print tree
 			int result = tree_put(tree, request->key, data);
-			print_tree(tree); // Print tree
+			print_tree(id, tree); // Print tree
+			//print_tree(tree); // Print tree
 			pthread_mutex_unlock(&mutex_tree); // Unlock access to tree
 
+			pthread_mutex_lock(&mutex_op_proc);
+			//print_op_proc(id, &op_procedure);
+			if (request->op_n > op_procedure.max_proc) {
+				op_procedure.max_proc = request->op_n;
+			}
+			op_procedure.in_progress[id] = request->op_n;
+			print_op_proc(id, &op_procedure);
+			pthread_mutex_unlock(&mutex_op_proc);
 			// Free request and data
 			data_destroy(data);
 
@@ -287,48 +340,52 @@ void* process_request(void *params) {
 				printf("Error processing put request!\n");
 				continue;
 			}
-			printf("PUT successful!\n");
+			printf("%d: PUT successful!\n", id);
 		} else if(request->op == OP_DEL) {
-			printf("\nThread will execute delete operation.\n");
+			printf("\n%d: Thread will execute delete operation.\n", id);
 
 			// Execute delete
 			pthread_mutex_lock(&mutex_tree); // Lock access to tree
-			print_tree(tree); // Print tree
+			print_tree(id, tree); // Print tree
+			//print_tree(tree); // Print tree
 			int result = tree_del(tree, request->key);
-			print_tree(tree); // Print tree
+			print_tree(id, tree); // Print tree
+			//print_tree(tree); // Print tree
 			pthread_mutex_unlock(&mutex_tree); // Unlock access to tree
+
+
+			pthread_mutex_lock(&mutex_op_proc);
+			//print_op_proc(id, &op_procedure);
+			if (request->op_n > op_procedure.max_proc) {
+				op_procedure.max_proc = request->op_n;
+			}
+			op_procedure.in_progress[id] = request->op_n;
+			print_op_proc(id, &op_procedure);
+			pthread_mutex_unlock(&mutex_op_proc);
 
 			// Check for error
 			if(result == -1) {
 				printf("Error processing delete request!\n");
 				continue;
 			}
-			printf("DELETE successful!\n");
+			printf("%d: DELETE successful!\n", id);
 		}
 
 		// Free request
 		request_destroy(request);
 	}
-	printf("Closing thread.\n");
+	printf("Closing thread %d.\n", id);
 	return NULL;
 }
-
-/**
-msg->values
-[struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
-[struct ProtobufCBinaryData { int len; void* data;} -> [r][o][n][a][l][d][o][\0]]
-[struct ProtobufCBinaryData { int len = 0; void* data = NULL;}
-*/
-
-void print_queue(struct request_t* queue) {
+void print_queue(int id, struct request_t* queue) {
 	if(queue == NULL) {
-		printf("QUEUE: empty\n");
+		printf("%d: QUEUE: empty\n", id);
 		return;
 	}
 
 	struct request_t* cursor = queue_head;
 	while(cursor != NULL) {
-		printf("QUEUE: Num: %d, %s, key: %s, value: %s\n", cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
+		printf("%d: QUEUE: Num: %d, %s, key: %s, value: %s\n", id, cursor->op_n, cursor->op == 0 ? "DEL" : "PUT", cursor->key, cursor->data);
 		cursor = cursor->next;
 	}
 }
@@ -337,4 +394,15 @@ void request_destroy(struct request_t* request){
 	free(request->key);
 	free(request->data);
 	free(request);
+}
+
+void print_op_proc(int id, struct op_proc* op_procedure){
+	if (op_procedure != NULL) {
+		printf("%d: max_proc: %d\n", id, op_procedure->max_proc);
+	}
+	if (op_procedure->in_progress != NULL) {
+		for (int i = 0; i < n_threads; i++) {
+			printf("%d, Thread:  %d, op: %d\n", id, i, op_procedure->in_progress[i]);
+		}
+	}
 }

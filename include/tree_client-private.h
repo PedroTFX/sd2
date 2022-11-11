@@ -29,3 +29,9 @@ void executeHeight(struct rtree_t* r_tree);
 void executeGetKeys(struct rtree_t* rtree);
 
 void executeGetValues(struct rtree_t* rtree);
+
+static char* rand_string(char* str, size_t size);
+
+void executeRandom(struct rtree_t* rtree, char* option);
+
+int commandIsRandom(char*option);

@@ -18,6 +18,7 @@
 #define GET_KEYS "getkeys"
 #define GET_VALUES "getvalues"
 #define VERIFY "verify"
+#define RANDOM "random"
 
 int main(int argc, char const* argv[]) {
 	if (argc < 2) {
@@ -49,6 +50,8 @@ int main(int argc, char const* argv[]) {
 			executeSize(rtree);
 		} else if (commandIsHeight(option)) {
 			executeHeight(rtree);
+		} else if (commandIsRandom(option)) {
+			executeRandom(rtree, option);
 		}
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
 	rtree_disconnect(rtree);
@@ -66,6 +69,7 @@ void showMenu() {
 	printf("getkeys\n");
 	printf("getvalues\n");
 	printf("verify <operation number>\n");
+	printf("random <number>\n");
 	printf("quit\n");
 	printf("Option: ");
 }
@@ -105,6 +109,10 @@ int commandIsGetValues(char* option) {
 
 int commandIsVerify(char* option) {
 	return strncmp(option, VERIFY, strlen(VERIFY)) == 0;
+}
+
+int commandIsRandom(char* option) {
+	return strncmp(option, RANDOM, strlen(RANDOM)) == 0;
 }
 
 void executePut(struct rtree_t* rtree, char* option) {
@@ -224,11 +232,66 @@ void executeVerify(struct rtree_t* rtree, int op_n) {
 		printf("There was an error executing verify() on the server.\n");
 		return;
 	}
-	if(verified) {
+	if (verified) {
 		printf("The operation %d was completed!\n", op_n);
 	} else {
 		printf("The operation %d was not completed yet!\n", op_n);
 	}
 }
 
+void executeRandom(struct rtree_t* rtree, char* option) {
+	strtok(option, " ");
+	int num_operations = atoi(strtok(NULL, " "));
+	char** keys = (char**)malloc(num_operations * sizeof(char*));
+	int j = 0;
+	for (int i = 0; i < num_operations; i++) {
+		int operation = rand() % 2;	// Random integer between [0, 1]
+		if (operation == 0) {
+			char* key = (char*) malloc(11);
+			rand_string(key, 10);
+			keys[j++] = key;
+			struct entry_t* entry = entry_create(key, data_create2(strlen(key), key));
+			int op_num;
+			if ((op_num = rtree_put(rtree, entry)) == -1) {
+				printf("\nput failed\n");
+				return;
+			}
+			printf("\n#######Put operation queued with number %d#######\n", op_num);
+		} else {
+			int index;
+			if(j == 0) {
+				i--;
+				continue;
+			} else if(j == 1) {
+				index = 0;
+			} else {
+				index = rand() % j;
+			}
+			char* key = keys[index];
+			int op_num = rtree_del(rtree, key);
+			if (op_num == -1) {
+				printf("\nDel failed\n");
+				return;
+			}
+			printf("\n#######Del operation queued with number %d#######\n", op_num);
+		}
+	}
+	free(keys);
+}
+
+static char* rand_string(char* str, size_t size) {
+	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	if (size) {
+		--size;
+		for (size_t n = 0; n < size; n++) {
+			int key = rand() % (int)(sizeof charset - 1);
+			str[n] = charset[key];
+		}
+		str[size] = '\0';
+	}
+	return str;
+}
+
 // tentar imprimir o pedido do cliente
+
+// cp /home/joao_santos/sd2 /mnt/c/Users/João/Desktop

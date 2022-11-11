@@ -19,8 +19,13 @@ int tree_get_values_aux(struct tree_t *tree, struct data_t **values, int index);
 
 struct tree_t* tree_dup(struct tree_t* tree);
 
-void print_tree(struct tree_t* tree);
+void print_tree(int id, struct tree_t* tree);
 
-void print_tree_aux(struct tree_t* tree);
+void print_tree_aux(int id, struct tree_t* tree);
 
+struct tree_t* get_parent(struct tree_t* tree, struct tree_t* child);
+
+struct tree_t* mind(struct tree_t* tree);
+
+//void print_tree(struct tree_t* tree);
 #endif

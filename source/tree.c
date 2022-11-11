@@ -159,35 +159,129 @@ struct entry_t* min(struct tree_t* tree) {
 	return temp->node;
 }
 
-void print_tree(struct tree_t* tree) {
+void print_tree(int id, struct tree_t* tree) {
 	if(tree_size(tree) == 0) {
-		printf("TREE: empty\n");
+		printf("%d: TREE: empty\n", id);
 		return;
 	}
-	print_tree_aux(tree);
+	print_tree_aux(id, tree);
 }
 
-void print_tree_aux(struct tree_t* tree) {
+void print_tree_aux(int id, struct tree_t* tree) {
 	if (tree->node) {
-		printf("TREE: Key: %s, Value (%d): ", tree->node->key, tree->node->value->datasize);
+		printf("%d: TREE: Key: %s, Value (%d): ", id, tree->node->key, tree->node->value->datasize);
 		for (int i = 0; i < tree->node->value->datasize; i++) {
 			printf("%c", ((char*)tree->node->value->data)[i]);
 		}
 		printf("\n");
 	}
 	if (tree->tree_left) {
-		print_tree_aux(tree->tree_left);
+		print_tree_aux(id, tree->tree_left);
 	}
 	if (tree->tree_right) {
-		print_tree_aux(tree->tree_right);
+		print_tree_aux(id, tree->tree_right);
 	}
 }
+
+/* void print_tree(struct tree_t* tree) {
+	if (tree->tree_left) {
+		print_tree(tree->tree_left);
+	}
+	if (tree->node) {
+		printf("%s\n", tree->node->key);
+	}
+
+	if (tree->tree_right) {
+		print_tree(tree->tree_right);
+	}
+}
+ */
 
 /* Função para remover um elemento da árvore, indicado pela chave key,
  * libertando toda a memória alocada na respetiva operação tree_put.
  * Retorna 0 (ok) ou -1 (key not found).
  */
+struct tree_t* get_parent(struct tree_t* tree, struct tree_t* child) {
+	struct entry_t* child_entry = entry_create(strdup(child->node->key), data_create(1));
+	while (tree->node != NULL) {
+		if(tree->tree_left == child || tree->tree_right == child) {
+			entry_destroy(child_entry);
+			return tree;
+		}
+		int comp = entry_compare(child_entry, tree->node);
+		if (comp == 0) {
+			entry_destroy(child_entry);
+			return NULL;
+		} else if (comp == -1 && tree->tree_left) {
+			tree = tree->tree_left;
+		} else if (comp == 1 && tree->tree_right) {
+			tree = tree->tree_right;
+		} else { // Node doesn't exist in tree
+			break;
+		}
+	}
+	entry_destroy(child_entry);
+	return NULL;
+}
+
+/* Função para remover um elemento da árvore, indicado pela chave key,
+ * libertando toda a memória alocada na respetiva operação tree_put.
+ * Retorna 0 (ok) ou -1 (key not found)
+ */
 int tree_del(struct tree_t* tree, char* key) {
+	struct tree_t* sub_tree = get_tree(tree, key);
+	if (!sub_tree) {
+		return -1;
+	}
+	if (sub_tree->tree_left && sub_tree->tree_right) {  // if the node has left and right
+		struct tree_t* tree_mind = mind(sub_tree->tree_right); // Find the minimum of the maximums
+		struct tree_t* parent = get_parent(tree, tree_mind);
+		entry_replace(sub_tree->node, tree_mind->node->key, tree_mind->node->value);
+		if(parent != NULL && parent->tree_left == tree_mind) {
+			parent->tree_left = tree_mind->tree_right;
+		} else if(parent != NULL && parent->tree_right == tree_mind) { // Node to delete only has this tree_mind node
+			parent->tree_right = tree_mind->tree_right;
+		}
+	} else if (sub_tree->tree_left) {
+		entry_replace(sub_tree->node, sub_tree->tree_left->node->key, sub_tree->tree_left->node->value);
+		//tree_del(sub_tree->tree_left, sub_tree->tree_left->node->key);
+		sub_tree->tree_right = sub_tree->tree_left->tree_right;
+		sub_tree->tree_left = sub_tree->tree_left->tree_left;
+	} else if (sub_tree->tree_right) {
+		entry_replace(sub_tree->node, sub_tree->tree_right->node->key, sub_tree->tree_right->node->value);
+		//tree_del(sub_tree->tree_right, sub_tree->tree_right->node->key);
+		sub_tree->tree_left = sub_tree->tree_right->tree_left;
+		sub_tree->tree_right = sub_tree->tree_right->tree_right;
+	} else { // If node is leaf
+		struct tree_t* parent = get_parent(tree, sub_tree);
+		if(parent != NULL && parent->tree_left == sub_tree) {
+			parent->tree_left = NULL;
+		} else if(parent != NULL && parent->tree_right == sub_tree) {
+			parent->tree_right = NULL;
+		}
+		entry_destroy(sub_tree->node);
+		sub_tree->node = NULL;
+		sub_tree = NULL;
+	}
+	return 0;
+}
+
+/* struct entry_t* mind(struct tree_t* tree) {
+	struct tree_t* temp = tree;
+	while (temp->tree_left) {
+		temp = temp->tree_left;
+	}
+	return temp->node;
+} */
+struct tree_t* mind(struct tree_t* tree) {
+	struct tree_t* temp = tree;
+	while (temp->tree_left) {
+		temp = temp->tree_left;
+	}
+	return temp;
+}
+
+/* int tree_del(struct tree_t* tree, char* key) {
 	struct tree_t* sub_tree = get_tree(tree, key);
 	if (!sub_tree) {
 		return -1;
@@ -213,7 +307,7 @@ int tree_del(struct tree_t* tree, char* key) {
 	}
 
 	return 0;
-}
+} */
 
 /* Função que devolve a altura da árvore.
  */

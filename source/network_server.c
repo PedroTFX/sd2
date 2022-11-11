@@ -70,53 +70,6 @@ int network_server_init(short port) {
  * - Esperar a resposta do skeleton;
  * - Enviar a resposta ao cliente usando a função network_send.
  */
-
-// FUNCAO CORRETA
-/* int network_main_loop(int listening_socket) {
-	struct sockaddr client_info = {0};
-	socklen_t client_info_len = sizeof(client_info);
-	int client_socket;
-	while ((client_socket = accept(listening_socket, &client_info, &client_info_len)) > 0) {
-		printf("Client connected\n");
-
-		struct message_t* msg;
-		while ((msg = network_receive(client_socket)) != NULL) {
-			invoke(msg);
-			network_send(client_socket, msg);
-		}
-		close(client_socket);
-		printf("Client disconnected\n");
-	}
-	return 0;
-} */
-
-/* Esboço do algoritmo a ser implementado na função network_main_loop */
-// adiciona listening_socket a desc_set. /* desc_set corresponde a um conjunto de file descriptors */
-/*
-while (poll(desc_set) >= 0) {				   // Espera por dados nos sockets abertos
-	if (listening_socket tem dados para ler) { //Verifica se tem novo pedido de conexão
-		connsockfd = accept(listening_socket);
-		adiciona connsockfd a desc_set
-	}
-	for (all socket s em desc_set, excluindo listening_socket) { // Verifica restantes sockets
-		if (s tem dados para ler) {
-			message = network_receive(s);
-			if (message é NULL) { // Sinal de que a conexão foi fechada pelo cliente
-				close(s);
-				remove s de desc_set
-			} else {
-				invoke(message);	   // Executa pedido contido em message
-				network_send(message); // Envia resposta contida em message
-			}
-		}
-		if (s com erro ou POLLHUP) {
-			close(s);
-			remove s de desc_set
-		}
-	}
-}
-*/
-
 int network_main_loop(int listening_socket) {
 	int num_fds = 1;  // Initialize connections array with the first position for the listening socket
 	struct pollfd* connections = (struct pollfd*) malloc(num_fds * sizeof(struct pollfd));
