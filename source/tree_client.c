@@ -52,6 +52,8 @@ int main(int argc, char const* argv[]) {
 			executeHeight(rtree);
 		} else if (commandIsRandom(option)) {
 			executeRandom(rtree, option);
+		} else if (commandIsVerify(option)) {
+			executeVerify(rtree, option);
 		}
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
 	rtree_disconnect(rtree);
@@ -226,7 +228,9 @@ void executeGetValues(struct rtree_t* rtree) {
 	free(values);
 }
 
-void executeVerify(struct rtree_t* rtree, int op_n) {
+void executeVerify(struct rtree_t* rtree, char* option) {
+	strtok(option, " ");
+	int op_n = atoi(strtok(NULL, ""));
 	int verified = rtree_verify(rtree, op_n);
 	if (verified == -1) {
 		printf("There was an error executing verify() on the server.\n");
@@ -256,7 +260,8 @@ void executeRandom(struct rtree_t* rtree, char* option) {
 				printf("\nput failed\n");
 				return;
 			}
-			printf("\n#######Put operation queued with number %d#######\n", op_num);
+			int verified = rtree_verify(rtree, op_num);
+			printf("Put made: %d. Verified? %s\n", op_num, verified ? "YES" : "NO");
 		} else {
 			int index;
 			if(j == 0) {
@@ -273,8 +278,17 @@ void executeRandom(struct rtree_t* rtree, char* option) {
 				printf("\nDel failed\n");
 				return;
 			}
-			printf("\n#######Del operation queued with number %d#######\n", op_num);
+			printf("Del made: %d\n", op_num);
 		}
+	}
+	for (int i = 0; i < j; i++) {
+		char* key = keys[i];
+		int op_num = rtree_del(rtree, key);
+		if (op_num == -1) {
+			printf("\nDel failed\n");
+			return;
+		}
+		printf("Del made: %d\n", op_num);
 	}
 	free(keys);
 }

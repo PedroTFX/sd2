@@ -120,3 +120,6 @@ test_tree: test_entry_run
 
 test_tree_run: test_tree
 	./bin/test_tree
+
+test_tree2: data.o entry.o tree.o
+	$(CC) $(DEBUGFLAGS) source/test_tree2.c -o binary/test_tree2 object/data.o object/entry.o object/tree.o -I $(INCLUDEDIR)

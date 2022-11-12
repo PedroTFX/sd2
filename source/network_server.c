@@ -128,7 +128,9 @@ struct message_t* network_receive(int client_socket) {
  * - Enviar a mensagem serializada, através do client_socket.
  */
 int network_send(int client_socket, struct message_t* msg) {
-	char* buffer = (char*)malloc(BUFFER_MAX_SIZE);
+	//char* buffer = (char*)malloc(BUFFER_MAX_SIZE);
+	char* buffer = (char*)malloc(message_t__get_packed_size(msg));
+	//buffer demasiado pequeno para a mensagem
 	int buffer_size = message_t__pack(msg, (uint8_t*)buffer);
 	message_t__free_unpacked(msg, NULL);
 	int num_bytes_written = write_all(client_socket, buffer, buffer_size);

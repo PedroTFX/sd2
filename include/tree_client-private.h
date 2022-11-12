@@ -16,6 +16,10 @@ int commandIsGetKeys(char* option);
 
 int commandIsGetValues(char* option);
 
+int commandIsRandom(char*option);
+
+int commandIsVerify(char* option);
+
 void executePut(struct rtree_t* r_tree, char* option);
 
 void executeGet(struct rtree_t* r_tree, char* option);
@@ -30,8 +34,8 @@ void executeGetKeys(struct rtree_t* rtree);
 
 void executeGetValues(struct rtree_t* rtree);
 
-static char* rand_string(char* str, size_t size);
+void executeVerify(struct rtree_t* rtree, char* option);
 
 void executeRandom(struct rtree_t* rtree, char* option);
 
-int commandIsRandom(char*option);
+static char* rand_string(char* str, size_t size);

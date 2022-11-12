@@ -159,7 +159,7 @@ struct entry_t* min(struct tree_t* tree) {
 	return temp->node;
 }
 
-void print_tree(int id, struct tree_t* tree) {
+void print_tree_id(int id, struct tree_t* tree) {
 	if(tree_size(tree) == 0) {
 		printf("%d: TREE: empty\n", id);
 		return;
@@ -183,7 +183,7 @@ void print_tree_aux(int id, struct tree_t* tree) {
 	}
 }
 
-/* void print_tree(struct tree_t* tree) {
+void print_tree(struct tree_t* tree) {
 	if (tree->tree_left) {
 		print_tree(tree->tree_left);
 	}
@@ -195,7 +195,7 @@ void print_tree_aux(int id, struct tree_t* tree) {
 		print_tree(tree->tree_right);
 	}
 }
- */
+
 
 /* Função para remover um elemento da árvore, indicado pela chave key,
  * libertando toda a memória alocada na respetiva operação tree_put.

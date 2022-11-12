@@ -41,7 +41,7 @@
 			"program": "${workspaceFolder}/binary/tree-server",
 			"args": [
 				"1337",
-				"1"
+				"3"
 			],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",

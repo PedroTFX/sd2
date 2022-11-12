@@ -345,4 +345,5 @@ del yaNSkxrzoh
 del wWNtZfDmWc
 del YDQYBPFcrH
 del yILXfHIoyC
+getkeys
 quit

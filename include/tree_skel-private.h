@@ -35,3 +35,7 @@ void request_destroy(struct request_t*);
 void invoke_verify(struct message_t* msg);
 
 void print_op_proc(int id, struct op_proc* op_procedure);
+
+void queue_add_task(struct request_t* task);
+
+struct request_t* queue_get_task(int id);

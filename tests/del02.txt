@@ -1,2 +1,2 @@
-random 750
+random 500
 quit
