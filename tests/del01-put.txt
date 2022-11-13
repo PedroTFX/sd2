@@ -11,8 +11,6 @@ put TIRDqOcroN dlaVouLGLX
 put HISvMgaFZb NunFJZphEO
 put XauPAXZkDa VeUqNyiCNP
 put gJYJRznPFZ sTYIFtYagv
-getkeys
-quit
 put virmybrIuj LLPXEoryDs
 put aIVtCyCCOg HKkCDsLUJw
 put LcOcprpHDq kplvvkaGrl
@@ -25,6 +23,7 @@ put GPCgluGiyL EhWJyAJvSR
 put tpNNnFfAhv ZibkDqNPfx
 put dcuDqoZzFT fHFSCKlHHi
 put LMZvxYjFhh hxhVnnsXhY
+quit
 put DcvLsKbDuY VYKVXtCZYj
 put XGMAwXnySj wECuiuXZvD
 put essEVJFmYO ORZLzUArdG

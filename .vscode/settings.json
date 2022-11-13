@@ -10,6 +10,9 @@
 		"tree_skel-private.h": "c",
 		"tree_skel.h": "c",
 		"types.h": "c",
-		"tree-private.h": "c"
+		"tree-private.h": "c",
+		"*.tcc": "c",
+		"algorithm": "c",
+		"random": "c"
 	}
 }

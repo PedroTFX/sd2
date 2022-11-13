@@ -54,6 +54,7 @@ int rtree_put(struct rtree_t* rtree, struct entry_t* entry) {
 	request->entry->key = entry->key;
 	request->entry->value.len = entry->value->datasize;
 	request->entry->value.data = entry->value->data;
+	
 	struct message_t* response = network_send_receive(rtree, request);
 	free(request->entry);
 	free(request);

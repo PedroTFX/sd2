@@ -260,6 +260,7 @@ void executeRandom(struct rtree_t* rtree, char* option) {
 				printf("\nput failed\n");
 				return;
 			}
+			entry_destroy(entry);
 			int verified = rtree_verify(rtree, op_num);
 			printf("Put made: %d. Verified? %s\n", op_num, verified ? "YES" : "NO");
 		} else {
@@ -291,6 +292,7 @@ void executeRandom(struct rtree_t* rtree, char* option) {
 		printf("Del made: %d\n", op_num);
 	}
 	free(keys);
+
 }
 
 static char* rand_string(char* str, size_t size) {
