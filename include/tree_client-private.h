@@ -40,6 +40,4 @@ void executeVerify(struct rtree_t* rtree, char* option);
 
 void executeRandom(struct rtree_t* rtree, char* option);
 
-static char* rand_string(char* str, size_t size);
-
 void sig_pipe_handler(int signal);

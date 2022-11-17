@@ -22,7 +22,6 @@ struct entry_t* entry_create(char* key, struct data_t* data) {
 	}
 	entry->key = key;
 	entry->value = data;//data_dup(data);
-	//data_destroy(data);
 	return entry;
 }
 

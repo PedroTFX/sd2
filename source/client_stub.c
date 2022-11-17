@@ -20,7 +20,6 @@ struct rtree_t* rtree_connect(const char* address_port) {
 	rtree->address = hostname;
 	rtree->port = port;
 	rtree->socket_id = -1;
-	// rtree->root = tree_create();
 	free(adrsport);
 	return network_connect(rtree) == -1 ? NULL : rtree;
 }

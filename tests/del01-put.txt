@@ -23,7 +23,6 @@ put GPCgluGiyL EhWJyAJvSR
 put tpNNnFfAhv ZibkDqNPfx
 put dcuDqoZzFT fHFSCKlHHi
 put LMZvxYjFhh hxhVnnsXhY
-quit
 put DcvLsKbDuY VYKVXtCZYj
 put XGMAwXnySj wECuiuXZvD
 put essEVJFmYO ORZLzUArdG
@@ -499,3 +498,8 @@ put yaNSkxrzoh JlpJZJjtvC
 put wWNtZfDmWc IVzESOqjpD
 put YDQYBPFcrH jMfbgJulAM
 put yILXfHIoyC YIiKvKDxwd
+getkeys
+getvalues
+size
+height
+quit

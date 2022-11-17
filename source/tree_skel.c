@@ -107,7 +107,6 @@ void invoke_put(struct message_t* msg) {
 		new_request->data[msg->entry->value.len] = '\0';
 		// Place new request in queue
 		queue_add_task(new_request);
-		//o request é consumido antes de ser usado na mensagem tambem???
 	}
 	// Free message values
 	free(msg->entry->key);
@@ -310,12 +309,10 @@ void* process_request(void* params) {
 
 
 			pthread_mutex_lock(&mutex_op_proc);
-			print_op_proc(id, &op_procedure);
 			if (request->op_n > op_procedure.max_proc) {
 				op_procedure.max_proc = request->op_n;
 			}
 			op_procedure.in_progress[id] = request->op_n;
-			print_op_proc(id, &op_procedure);
 			// Free request
 			request_destroy(request);
 			pthread_mutex_unlock(&mutex_op_proc);

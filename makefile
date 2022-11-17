@@ -104,28 +104,7 @@ tree-server: data.o entry.o tree.o sdmessage.pb-c.o util.o network_server.o tree
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree-server $(OBJDIR)/tree_skel.o $(OBJDIR)/network_server.o $(OBJDIR)/util.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread
 
 ssserver_run: tree-server
-	./$(BINDIR)/tree-server 1337 3
+	./$(BINDIR)/tree-server 1337 5
 
 sserver_valgrind: tree-server
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 3
-
-test_data:
-	$(CC) $(DEBUGFLAGS) -o obj/data.o -c source/data.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_data.c -o bin/test_data obj/data.o -I $(INCLUDEDIR)
-
-test_data_run: test_data
-	./bin/test_data
-
-test_entry: test_data_run
-	$(CC) $(DEBUGFLAGS) -o obj/entry.o -c source/entry.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_entry.c -o bin/test_entry obj/data.o obj/entry.o -I $(INCLUDEDIR)
-
-test_entry_run: test_entry
-	./bin/test_entry
-
-test_tree: test_entry_run
-	$(CC) $(DEBUGFLAGS) -o obj/tree.o -c source/tree.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_tree.c -o bin/test_tree obj/data.o obj/entry.o obj/tree.o -I $(INCLUDEDIR)
-
-test_tree_run: test_tree
-	./bin/test_tree
-
-test_tree2: data.o entry.o tree.o
-	$(CC) $(DEBUGFLAGS) source/test_tree2.c -o binary/test_tree2 object/data.o object/entry.o object/tree.o -I $(INCLUDEDIR)

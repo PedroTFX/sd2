@@ -93,7 +93,6 @@ int network_main_loop(int listening_socket) {
 
 		for (int i = 1; i < num_fds; i++) {
 			if (connections[i].revents & POLLIN) {	// If there's data to read
-				printf("Reading from socket... i: %d\n", i);
 				struct message_t* msg = network_receive(connections[i].fd);	 // [listening socket] [client1] [client2]
 				if (!msg) {
 					close(connections[i].fd);
@@ -103,7 +102,6 @@ int network_main_loop(int listening_socket) {
 					continue;
 				}
 				invoke(msg);
-				printf("Writing to socket... i: %d\n", i);
 				network_send(connections[i].fd, msg);
 			}
 		}

@@ -49,7 +49,7 @@ struct data_t *data_create2(int size, void *data) {
 		data_st = NULL;
 		return NULL;
 	}
-	
+
 	data_st->datasize = size;
 	data_st->data = data;
 	return data_st;
@@ -98,11 +98,10 @@ struct data_t *data_dup(struct data_t *data) {
  *  Deve assegurar que destroi o conteúdo antigo do mesmo.
  */
 void data_replace(struct data_t *data, int new_size, void *new_data) {
-	//memset(data, 0, data->datasize);	//clean mem
 	free(data->data);					//reclaim mem
 	data->data = new_data;
 	data->datasize = new_size;
-	
+
 }
 
 

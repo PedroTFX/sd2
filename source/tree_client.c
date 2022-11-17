@@ -86,8 +86,6 @@ void executeCommand(struct rtree_t* rtree, char* option) {
 		executeSize(rtree);
 	} else if (commandIsHeight(option)) {
 		executeHeight(rtree);
-	} else if (commandIsRandom(option)) {
-		executeRandom(rtree, option);
 	} else if (commandIsVerify(option)) {
 		executeVerify(rtree, option);
 	}
@@ -254,75 +252,6 @@ void executeVerify(struct rtree_t* rtree, char* option) {
 	} else {
 		printf("The operation %d was not completed yet!\n", op_n);
 	}
-}
-
-void executeRandom(struct rtree_t* rtree, char* command) {
-	// Get number of operations to execute
-	strtok(command, " ");
-	int num_operations = atoi(strtok(NULL, " "));
-
-	// Generate random keys
-	char** keys = (char**)calloc(num_operations + 1, sizeof(char*));
-	const static int key_size = 10;
-	for (int i = 0; i < num_operations; i++) {
-		// Generate random key
-		char* key = (char*)malloc(key_size + 1);
-		rand_string(key, key_size);
-
-		// Add random key to random keys array
-		keys[i] = key;
-	}
-
-	// Add null to last pointer
-	keys[num_operations] = NULL;
-
-	// Execute random commands
-	char commandsFormat[8][26] = {"put %s %s", "get %s", "del %s", "size", "height", "getkeys", "getvalues", "verify %d"};
-	char* randomCommand = (char*)malloc(26);
-	for (int i = 0; i < num_operations; i++) {
-		// Choose a random operation, excluding "random" and "quit"
-		//int command_index = rand() % 8;	 // [0, 7]
-		int command_index = rand() % 7;	 // [0, 6]
-
-		// Choose a random key (in case it's needed)
-		int key_index = rand() % num_operations;
-
-		// If is verify
-		if (command_index == 7) {
-
-		}
-
-		// Generate random command
-		sprintf(randomCommand, commandsFormat[command_index], keys[key_index], keys[key_index]);
-
-		printf("\n>> %s\n", randomCommand);
-
-		// Execute command
-		executeCommand(rtree, randomCommand);
-	}
-
-	// Delete and free all keys
-	for (int i = 0; keys[i]; i++) {
-		sprintf(randomCommand, commandsFormat[2], keys[i], keys[i]);
-		printf("\n>> %s\n", randomCommand);
-		executeCommand(rtree, randomCommand);
-		free(keys[i]);
-	}
-	free(randomCommand);
-	free(keys);
-}
-
-static char* rand_string(char* str, size_t size) {
-	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	if (size) {
-		--size;
-		for (size_t n = 0; n < size; n++) {
-			int key = rand() % (int)(sizeof charset - 1);
-			str[n] = charset[key];
-		}
-		str[size] = '\0';
-	}
-	return str;
 }
 
 void sig_pipe_handler(int signal){
