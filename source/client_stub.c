@@ -54,8 +54,11 @@ int rtree_put(struct rtree_t* rtree, struct entry_t* entry) {
 	request->entry->key = entry->key;
 	request->entry->value.len = entry->value->datasize;
 	request->entry->value.data = entry->value->data;
-	
+
 	struct message_t* response = network_send_receive(rtree, request);
+	if(response == NULL) {
+		return -1;
+	}
 	free(request->entry);
 	free(request);
 	int result = response->opcode != MESSAGE_T__OPCODE__OP_ERROR ? response->result : -1;
@@ -140,6 +143,11 @@ char** rtree_get_keys(struct rtree_t* rtree) {
 	request->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 	struct message_t* response = network_send_receive(rtree, request);
 	free(request);
+
+	if(response == NULL) {
+		return NULL;
+	}
+
 	if (response->opcode == MESSAGE_T__OPCODE__OP_ERROR) {
 		message_t__free_unpacked(response, NULL);
 		return NULL;

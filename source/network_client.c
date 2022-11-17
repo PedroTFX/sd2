@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <netinet/ip.h> /* superset of previous */
 #include <signal.h>
@@ -8,7 +9,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
 
 #include "client_stub-private.h"
 #include "message-private.h"
@@ -41,7 +41,7 @@ int network_connect(struct rtree_t* rtree) {
 	new_actn.sa_flags = 0;
 	sigaction(SIGPIPE, &new_actn, NULL);
 	// socket
-	int sfd = socket(AF_INET, SOCK_STREAM, 0);
+	int sfd = socket(AF_INET, SOCK_STREAM, 0);	// Using TCP/IP
 	if (sfd < 0) {
 		perror("socket");
 		return -1;
@@ -65,20 +65,38 @@ int network_connect(struct rtree_t* rtree) {
  * - Retornar a mensagem de-serializada ou NULL em caso de erro.
  */
 struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* msg) {
-	int sfd = rtree->socket_id;
-	char* buffer = (char*) malloc(message_t__get_packed_size(msg));
-	int buffer_size = message_t__pack(msg, (uint8_t*) buffer);
-	if (write_all(sfd, buffer, buffer_size) < 0) {
-		perror("could not send data\n");
+	// Allocate memory for buffer
+	char* buffer_to_send = (char*)malloc(message_t__get_packed_size(msg));
+
+	// Generate buffer
+	int buffer_size = message_t__pack(msg, (uint8_t*)buffer_to_send);
+
+	// Write to network
+	int bytes_written = write_all(rtree->socket_id, buffer_to_send, buffer_size);
+
+	// Free buffer
+	free(buffer_to_send);
+
+	// Check for errors
+	if (bytes_written < 0) {
+		perror("Write failed!\n");
+		return NULL;
+	} else if (bytes_written == 0) {
+		printf("Server closed.\n");
+		return NULL;
 	}
-	//int size = read(sfd, buffer, BUFFER_MAX_SIZE);
-	buffer = (char*)realloc(buffer, BUFFER_MAX_SIZE);
-	int size = read_all(sfd, &buffer, BUFFER_MAX_SIZE);
-	struct message_t* response = message_t__unpack(NULL, size, (uint8_t*)buffer);
-	free(buffer);
-	//message_t__free_unpacked(msg, NULL);
+	// Read to buffer
+	char* buffer_to_receive;
+	int size = read_all2(rtree->socket_id, &buffer_to_receive);
+
+	// Generate message
+	struct message_t* response = message_t__unpack(NULL, size, (uint8_t*)buffer_to_receive);
+
+	// Free buffer_to_receive
+	free(buffer_to_receive);
+
+	// Return response
 	return response;
-	//return message_t__unpack(NULL, size, (uint8_t*)buffer);
 }
 
 /* A função network_close() fecha a ligação estabelecida por
@@ -87,4 +105,3 @@ struct message_t* network_send_receive(struct rtree_t* rtree, struct message_t* 
 int network_close(struct rtree_t* rtree) {
 	return close(rtree->socket_id);
 }
-

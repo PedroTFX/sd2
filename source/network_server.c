@@ -19,7 +19,7 @@
 #include "util.h"
 
 int listening_socket;
-
+int buf_size;
 /* Função para preparar uma socket de receção de pedidos de ligação
  * num determinado porto.
  * Retornar descritor do socket (OK) ou -1 (erro).
@@ -39,8 +39,7 @@ int network_server_init(short port) {
 	sigaction(SIGPIPE, &new_actn, NULL);
 
 	// socket
-	//  +++int listening_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if ((listening_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+	if ((listening_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {	 // Using TCP/IP
 		perror("socket");
 		return -1;
 	}
@@ -72,40 +71,44 @@ int network_server_init(short port) {
  */
 int network_main_loop(int listening_socket) {
 	int num_fds = 1;  // Initialize connections array with the first position for the listening socket
-	struct pollfd* connections = (struct pollfd*) malloc(num_fds * sizeof(struct pollfd));
+	struct pollfd* connections = (struct pollfd*)malloc(num_fds * sizeof(struct pollfd));
 	if (connections == NULL) {
 		perror("Could not initialize connections array.\n");
 		return -1;
 	}
-	connections->events = POLLIN;		 // There is data to read...
-	connections->fd = listening_socket;	 // ...on the welcoming socket
-	while ((poll(connections, num_fds, TIMEOUT)) > 0) {  // kfds == 0 significa timeout sem eventos
+	connections->events = POLLIN;						 // There is data to read...
+	connections->fd = listening_socket;					 // ...on the welcoming socket
+	while ((poll(connections, num_fds, TIMEOUT)) > 0) {	 // kfds == 0 significa timeout sem eventos
 		// If there are new clients wanting to connect, let's accept their connection (indice 0 implicito)
 		struct sockaddr client_info = {0};
 		socklen_t client_info_len = sizeof(client_info);
 		int new_client_fd;
 		if ((connections->revents & POLLIN) && (new_client_fd = accept(connections->fd, (struct sockaddr*)&client_info, &client_info_len)) > 0) {
-			connections = (struct pollfd*) realloc(connections, (++num_fds)*sizeof(struct pollfd));
-			connections[num_fds-1].events = POLLIN;		 // There is data to read...
-			connections[num_fds-1].fd = new_client_fd;	 // ...on the client socket
+			connections = (struct pollfd*)realloc(connections, (++num_fds) * sizeof(struct pollfd));
+			connections[num_fds - 1].events = POLLIN;	  // There is data to read...
+			connections[num_fds - 1].fd = new_client_fd;  // ...on the client socket
 			printf("Client connected\n");
+			continue;
 		}
 
 		for (int i = 1; i < num_fds; i++) {
 			if (connections[i].revents & POLLIN) {	// If there's data to read
-				struct message_t* msg;
-				if ((msg = network_receive(connections[i].fd)) == NULL) {
+				printf("Reading from socket... i: %d\n", i);
+				struct message_t* msg = network_receive(connections[i].fd);	 // [listening socket] [client1] [client2]
+				if (!msg) {
 					close(connections[i].fd);
 					printf("Client disconnected\n");
-					memcpy(&connections[i], &connections[i+1], (--num_fds-i)*sizeof(struct pollfd));
-					connections = (struct pollfd*) realloc(connections, num_fds*sizeof(struct pollfd));
+					memcpy(&connections[i], &connections[i + 1], (--num_fds - i) * sizeof(struct pollfd));
+					connections = (struct pollfd*)realloc(connections, num_fds * sizeof(struct pollfd));
 					continue;
 				}
 				invoke(msg);
+				printf("Writing to socket... i: %d\n", i);
 				network_send(connections[i].fd, msg);
 			}
 		}
 	}
+	free(connections);
 	return 0;
 }
 
@@ -114,10 +117,14 @@ int network_main_loop(int listening_socket) {
  * - De-serializar estes bytes e construir a mensagem com o pedido,
  *   reservando a memória necessária para a estrutura message_t.
  */
+
 struct message_t* network_receive(int client_socket) {
-	char* buff = (char*)malloc(BUFFER_MAX_SIZE);
-	int size = read_all(client_socket, &buff, BUFFER_MAX_SIZE);
-	struct message_t* result = size > 0 ? message_t__unpack(NULL, size, (uint8_t*)buff) : NULL;
+	char* buff;
+	int size = read_all2(client_socket, &buff);
+	if (size == 0) {
+		return NULL;
+	}
+	struct message_t* result = message_t__unpack(NULL, size, (uint8_t*)buff);
 	free(buff);
 	return result;
 }
@@ -128,9 +135,9 @@ struct message_t* network_receive(int client_socket) {
  * - Enviar a mensagem serializada, através do client_socket.
  */
 int network_send(int client_socket, struct message_t* msg) {
-	//char* buffer = (char*)malloc(BUFFER_MAX_SIZE);
+	// char* buffer = (char*)malloc(BUFFER_MAX_SIZE);
 	char* buffer = (char*)malloc(message_t__get_packed_size(msg));
-	//buffer demasiado pequeno para a mensagem
+	// buffer demasiado pequeno para a mensagem
 	int buffer_size = message_t__pack(msg, (uint8_t*)buffer);
 	message_t__free_unpacked(msg, NULL);
 	int num_bytes_written = write_all(client_socket, buffer, buffer_size);

@@ -13,6 +13,9 @@
  * Em caso de erro retorna NULL.
  */
 struct tree_t* tree_create() {
+	return (struct tree_t*)calloc(1, sizeof(struct tree_t));
+}
+/* struct tree_t* tree_create() {
 	struct tree_t* tree = malloc(sizeof(struct tree_t));
 	if (tree == NULL) {
 		tree = NULL;
@@ -20,7 +23,7 @@ struct tree_t* tree_create() {
 	}
 	memset(tree, 0, sizeof(struct tree_t));
 	return tree;
-}
+} */
 
 /* Função para libertar toda a memória ocupada por uma árvore.
  */
@@ -36,7 +39,7 @@ void tree_destroy(struct tree_t* tree) {
 			tree_destroy(tree->tree_right);
 		}
 		free(tree);
-		tree = NULL;
+		//tree = NULL;
 	}
 }
 
@@ -228,6 +231,7 @@ struct tree_t* get_parent(struct tree_t* tree, struct tree_t* child) {
  * libertando toda a memória alocada na respetiva operação tree_put.
  * Retorna 0 (ok) ou -1 (key not found)
  */
+//del 1
 int tree_del(struct tree_t* tree, char* key) {
 	struct tree_t* sub_tree = get_tree(tree, key);
 	if (!sub_tree) {
@@ -266,13 +270,6 @@ int tree_del(struct tree_t* tree, char* key) {
 	return 0;
 }
 
-/* struct entry_t* mind(struct tree_t* tree) {
-	struct tree_t* temp = tree;
-	while (temp->tree_left) {
-		temp = temp->tree_left;
-	}
-	return temp->node;
-} */
 struct tree_t* mind(struct tree_t* tree) {
 	struct tree_t* temp = tree;
 	while (temp->tree_left) {
@@ -280,34 +277,6 @@ struct tree_t* mind(struct tree_t* tree) {
 	}
 	return temp;
 }
-
-/* int tree_del(struct tree_t* tree, char* key) {
-	struct tree_t* sub_tree = get_tree(tree, key);
-	if (!sub_tree) {
-		return -1;
-	}
-
-	if (tree_size(sub_tree) == 1) {	 // works				//if the PD is a leaf
-		entry_destroy(sub_tree->node);
-		sub_tree->node = NULL;
-		sub_tree = NULL;
-		return 0;
-
-	} else if (sub_tree->tree_left && sub_tree->tree_right) {  // if the PD is not a leaf and has two trees duplicate the next biggest value(tree_right)
-		struct entry_t* tree_min = min(sub_tree->tree_right);
-		entry_replace(sub_tree->node, tree_min->key, tree_min->value);
-		tree_del(sub_tree->tree_right, tree_min->key);
-	} else if (sub_tree->tree_left) {
-		entry_replace(sub_tree->node, sub_tree->tree_left->node->key, sub_tree->tree_left->node->value);
-		tree_del(sub_tree->tree_left, sub_tree->tree_left->node->key);
-
-	} else if (sub_tree->tree_right) {
-		entry_replace(sub_tree->node, sub_tree->tree_right->node->key, sub_tree->tree_right->node->value);
-		tree_del(sub_tree->tree_right, sub_tree->tree_right->node->key);
-	}
-
-	return 0;
-} */
 
 /* Função que devolve a altura da árvore.
  */

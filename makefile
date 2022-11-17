@@ -84,6 +84,12 @@ f6cclient_run: tree-client
 cclient_valgrind: tree-client
 	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337 < ./tests/del01-del.txt
 
+2cclient_valgrind: tree-client
+	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337 < ./tests/del01.txt
+
+3cclient_valgrind: tree-client
+	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337
+
 # Server
 tree.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree.c -o $(OBJDIR)/tree.o -I $(INCLUDEDIR)
@@ -101,7 +107,7 @@ ssserver_run: tree-server
 	./$(BINDIR)/tree-server 1337 3
 
 sserver_valgrind: tree-server
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 3
 
 test_data:
 	$(CC) $(DEBUGFLAGS) -o obj/data.o -c source/data.c -I $(INCLUDEDIR) && $(CC) $(DEBUGFLAGS) tests/test_data.c -o bin/test_data obj/data.o -I $(INCLUDEDIR)

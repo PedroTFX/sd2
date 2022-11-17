@@ -1,3 +1,16 @@
-random 5000
+random 8000
+verify 2000
+random 2000
+verify 8000
+verify 8001
+random 1000
+verify 9000
+random 1000
+verify 500
+random 1000
+verify 500
+random 1000
+verify 500
+random 60000
 verify 500
 quit

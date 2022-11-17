@@ -60,7 +60,9 @@ void tree_skel_destroy() {
 	printf("max_proc:%d\n", op_procedure.max_proc);
 	print_queue(-1, queue_head);
 	print_tree_id(-1, tree);
+	free(op_procedure.in_progress);
 	free(thread_ids);
+	free(threads);
 	tree_destroy(tree);
 }
 
@@ -88,7 +90,6 @@ int invoke(struct message_t* msg) {
 		invoke_get_values(msg);
 	} else if (msg->opcode == M_OPCODE_VERIFY) {
 		invoke_verify(msg);
-		// verify(msg->result);
 	}
 	return 0;
 }
@@ -106,8 +107,8 @@ void invoke_put(struct message_t* msg) {
 		new_request->data[msg->entry->value.len] = '\0';
 		// Place new request in queue
 		queue_add_task(new_request);
+		//o request é consumido antes de ser usado na mensagem tambem???
 	}
-
 	// Free message values
 	free(msg->entry->key);
 	free(msg->entry->value.data);
@@ -120,6 +121,7 @@ void invoke_put(struct message_t* msg) {
 	if (new_request != NULL) {
 		msg->result = new_request->op_n;
 	}
+
 	pthread_cond_signal(&queue_not_empty);
 }
 
@@ -148,10 +150,7 @@ void invoke_del(struct message_t* msg) {
 	}
 
 	// Free message values
-	// free(msg->entry->key);
 	free(msg->key);
-	// free(msg->entry->value.data);
-	// free(msg->entry);
 
 	// Create message to send
 	message_t__init(msg);
@@ -309,13 +308,16 @@ void* process_request(void* params) {
 			// print_tree(tree); // Print tree
 			pthread_mutex_unlock(&mutex_tree);	// Unlock access to tree
 
+
 			pthread_mutex_lock(&mutex_op_proc);
-			// print_op_proc(id, &op_procedure);
+			print_op_proc(id, &op_procedure);
 			if (request->op_n > op_procedure.max_proc) {
 				op_procedure.max_proc = request->op_n;
 			}
 			op_procedure.in_progress[id] = request->op_n;
-			// print_op_proc(id, &op_procedure);
+			print_op_proc(id, &op_procedure);
+			// Free request
+			request_destroy(request);
 			pthread_mutex_unlock(&mutex_op_proc);
 			// Free request and data
 			data_destroy(data);
@@ -343,7 +345,9 @@ void* process_request(void* params) {
 				op_procedure.max_proc = request->op_n;
 			}
 			op_procedure.in_progress[id] = request->op_n;
-			// print_op_proc(id, &op_procedure);
+			//print_op_proc(id, &op_procedure);
+			// Free request
+			request_destroy(request);
 			pthread_mutex_unlock(&mutex_op_proc);
 
 			// Check for error
@@ -353,9 +357,6 @@ void* process_request(void* params) {
 			}
 			printf("%d: DELETE successful!\n", id);
 		}
-
-		// Free request
-		request_destroy(request);
 	}
 	printf("Closing thread %d.\n", id);
 	return NULL;

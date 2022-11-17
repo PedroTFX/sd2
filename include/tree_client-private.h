@@ -2,6 +2,8 @@ void showMenu();
 
 void readOption(char* input, int size);
 
+void executeCommand(struct rtree_t* rtree, char* option);
+
 int commandIsPut(char* option);
 
 int commandIsGet(char* option);
@@ -39,3 +41,5 @@ void executeVerify(struct rtree_t* rtree, char* option);
 void executeRandom(struct rtree_t* rtree, char* option);
 
 static char* rand_string(char* str, size_t size);
+
+void sig_pipe_handler(int signal);

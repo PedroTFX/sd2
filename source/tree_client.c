@@ -20,13 +20,22 @@
 #define VERIFY "verify"
 #define RANDOM "random"
 
+struct rtree_t* rtree;
+
 int main(int argc, char const* argv[]) {
+	// Ignore SIGPIPE signal so server doesn't crash if socket closes unexpectedly
+	struct sigaction new_actn;
+	new_actn.sa_handler = SIG_IGN;
+	sigemptyset(&new_actn.sa_mask);
+	new_actn.sa_flags = 0;
+	sigaction(SIGPIPE, &new_actn, NULL);
+
 	if (argc < 2) {
 		printf("Usage: ./tree_client <server>:<port>\n");
 		return -1;
 	}
 
-	struct rtree_t* rtree = rtree_connect(argv[1]);
+	rtree = rtree_connect(argv[1]);
 	if (rtree == NULL) {
 		perror("could not connect client\n");
 		return -1;
@@ -36,25 +45,7 @@ int main(int argc, char const* argv[]) {
 	do {
 		showMenu();
 		readOption(option, 1024);
-		if (commandIsPut(option)) {
-			executePut(rtree, option);
-		} else if (commandIsGetKeys(option)) {
-			executeGetKeys(rtree);
-		} else if (commandIsGetValues(option)) {
-			executeGetValues(rtree);
-		} else if (commandIsGet(option)) {
-			executeGet(rtree, option);
-		} else if (commandIsDel(option)) {
-			executeDel(rtree, option);
-		} else if (commandIsSize(option)) {
-			executeSize(rtree);
-		} else if (commandIsHeight(option)) {
-			executeHeight(rtree);
-		} else if (commandIsRandom(option)) {
-			executeRandom(rtree, option);
-		} else if (commandIsVerify(option)) {
-			executeVerify(rtree, option);
-		}
+		executeCommand(rtree, option);
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
 	rtree_disconnect(rtree);
 	printf("Client exiting. Bye.\n");
@@ -71,7 +62,6 @@ void showMenu() {
 	printf("getkeys\n");
 	printf("getvalues\n");
 	printf("verify <operation number>\n");
-	printf("random <number>\n");
 	printf("quit\n");
 	printf("Option: ");
 }
@@ -79,6 +69,28 @@ void showMenu() {
 void readOption(char* input, int size) {
 	fgets(input, size, stdin);	// char* input <- stdin até um máximo de size bytes
 	input[strlen(input) - 1] = '\0';
+}
+
+void executeCommand(struct rtree_t* rtree, char* option) {
+	if (commandIsPut(option)) {
+		executePut(rtree, option);
+	} else if (commandIsGetKeys(option)) {
+		executeGetKeys(rtree);
+	} else if (commandIsGetValues(option)) {
+		executeGetValues(rtree);
+	} else if (commandIsGet(option)) {
+		executeGet(rtree, option);
+	} else if (commandIsDel(option)) {
+		executeDel(rtree, option);
+	} else if (commandIsSize(option)) {
+		executeSize(rtree);
+	} else if (commandIsHeight(option)) {
+		executeHeight(rtree);
+	} else if (commandIsRandom(option)) {
+		executeRandom(rtree, option);
+	} else if (commandIsVerify(option)) {
+		executeVerify(rtree, option);
+	}
 }
 
 int commandIsPut(char* option) {
@@ -122,12 +134,12 @@ void executePut(struct rtree_t* rtree, char* option) {
 	char* key = strdup(strtok(NULL, " "));
 	char* value = strdup(strtok(NULL, " "));
 	struct entry_t* entry = entry_create(key, data_create2(strlen(value), value));
-	int op_num;
-	if ((op_num = rtree_put(rtree, entry)) == -1) {
-		printf("\nput failed\n");
+	int op_num = rtree_put(rtree, entry);
+	entry_destroy(entry);
+	if (op_num == -1) {
+		printf("\nPut failed.\n");
 		return;
 	}
-	entry_destroy(entry);
 	printf("\n#######Put operation queued with number %d#######\n", op_num);
 }
 
@@ -152,12 +164,11 @@ void executeDel(struct rtree_t* rtree, char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
 	int op_num = rtree_del(rtree, key);
+	free(key);
 	if (op_num == -1) {
 		printf("\nDel failed\n");
-		free(key);
 		return;
 	}
-	free(key);
 	printf("\n#######Del operation queued with number %d#######\n", op_num);
 }
 
@@ -184,12 +195,13 @@ void executeHeight(struct rtree_t* rtree) {
 void executeGetKeys(struct rtree_t* rtree) {
 	char** keys = rtree_get_keys(rtree);
 	if (keys == NULL) {
-		printf("There was an error executing get_keys() on the server.\n");
+		printf("\nGetkeys failed\n");
 		return;
 	}
 
 	if (keys[0] == NULL) {
 		printf("\nThere are no keys.\n");
+		free(keys);
 		return;
 	}
 
@@ -206,12 +218,13 @@ void executeGetKeys(struct rtree_t* rtree) {
 void executeGetValues(struct rtree_t* rtree) {
 	struct data_t** values = (struct data_t**)rtree_get_values(rtree);
 	if (values == NULL) {
-		printf("There was an error executing get_values() on the server.\n");
+		printf("\nGetvalues failed\n");
 		return;
 	}
 
 	if (values[0] == NULL) {
 		printf("\nThere are no values.\n");
+		free(values);
 		return;
 	}
 
@@ -233,7 +246,7 @@ void executeVerify(struct rtree_t* rtree, char* option) {
 	int op_n = atoi(strtok(NULL, ""));
 	int verified = rtree_verify(rtree, op_n);
 	if (verified == -1) {
-		printf("There was an error executing verify() on the server.\n");
+		printf("\nVerify failed\n");
 		return;
 	}
 	if (verified) {
@@ -243,56 +256,60 @@ void executeVerify(struct rtree_t* rtree, char* option) {
 	}
 }
 
-void executeRandom(struct rtree_t* rtree, char* option) {
-	strtok(option, " ");
+void executeRandom(struct rtree_t* rtree, char* command) {
+	// Get number of operations to execute
+	strtok(command, " ");
 	int num_operations = atoi(strtok(NULL, " "));
-	char** keys = (char**)malloc(num_operations * sizeof(char*));
-	int j = 0;
-	for (int i = 0; i < num_operations; i++) {
-		int operation = rand() % 2;	// Random integer between [0, 1]
-		if (operation == 0) {
-			char* key = (char*) malloc(11);
-			rand_string(key, 10);
-			keys[j++] = key;
-			struct entry_t* entry = entry_create(key, data_create2(strlen(key), key));
-			int op_num;
-			if ((op_num = rtree_put(rtree, entry)) == -1) {
-				printf("\nput failed\n");
-				return;
-			}
-			entry_destroy(entry);
-			int verified = rtree_verify(rtree, op_num);
-			printf("Put made: %d. Verified? %s\n", op_num, verified ? "YES" : "NO");
-		} else {
-			int index;
-			if(j == 0) {
-				i--;
-				continue;
-			} else if(j == 1) {
-				index = 0;
-			} else {
-				index = rand() % j;
-			}
-			char* key = keys[index];
-			int op_num = rtree_del(rtree, key);
-			if (op_num == -1) {
-				printf("\nDel failed\n");
-				return;
-			}
-			printf("Del made: %d\n", op_num);
-		}
-	}
-	for (int i = 0; i < j; i++) {
-		char* key = keys[i];
-		int op_num = rtree_del(rtree, key);
-		if (op_num == -1) {
-			printf("\nDel failed\n");
-			return;
-		}
-		printf("Del made: %d\n", op_num);
-	}
-	free(keys);
 
+	// Generate random keys
+	char** keys = (char**)calloc(num_operations + 1, sizeof(char*));
+	const static int key_size = 10;
+	for (int i = 0; i < num_operations; i++) {
+		// Generate random key
+		char* key = (char*)malloc(key_size + 1);
+		rand_string(key, key_size);
+
+		// Add random key to random keys array
+		keys[i] = key;
+	}
+
+	// Add null to last pointer
+	keys[num_operations] = NULL;
+
+	// Execute random commands
+	char commandsFormat[8][26] = {"put %s %s", "get %s", "del %s", "size", "height", "getkeys", "getvalues", "verify %d"};
+	char* randomCommand = (char*)malloc(26);
+	for (int i = 0; i < num_operations; i++) {
+		// Choose a random operation, excluding "random" and "quit"
+		//int command_index = rand() % 8;	 // [0, 7]
+		int command_index = rand() % 7;	 // [0, 6]
+
+		// Choose a random key (in case it's needed)
+		int key_index = rand() % num_operations;
+
+		// If is verify
+		if (command_index == 7) {
+
+		}
+
+		// Generate random command
+		sprintf(randomCommand, commandsFormat[command_index], keys[key_index], keys[key_index]);
+
+		printf("\n>> %s\n", randomCommand);
+
+		// Execute command
+		executeCommand(rtree, randomCommand);
+	}
+
+	// Delete and free all keys
+	for (int i = 0; keys[i]; i++) {
+		sprintf(randomCommand, commandsFormat[2], keys[i], keys[i]);
+		printf("\n>> %s\n", randomCommand);
+		executeCommand(rtree, randomCommand);
+		free(keys[i]);
+	}
+	free(randomCommand);
+	free(keys);
 }
 
 static char* rand_string(char* str, size_t size) {
@@ -308,6 +325,7 @@ static char* rand_string(char* str, size_t size) {
 	return str;
 }
 
-// tentar imprimir o pedido do cliente
-
-// cp /home/joao_santos/sd2 /mnt/c/Users/João/Desktop
+void sig_pipe_handler(int signal){
+	printf("Client exiting after server crash. Bye.\n");
+	rtree_disconnect(rtree);
+}
