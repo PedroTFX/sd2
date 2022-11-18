@@ -1,3 +1,7 @@
+// Trabalho realizado por:
+// Pedro Trindade 56342
+// Joao Santos 56380
+// Marcus Gomes 56326
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

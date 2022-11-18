@@ -1,5 +1,8 @@
 # sd-project3
-
-Provavel problema de concorrencia que da origem a um double free
-max_proc a dar valor errado
+Pequeno memory leak.
+Não há outras limitações aparentes no projeto
+Membros do grupo:
+João Santos, 56380
+Marcos Gomes, 56326
+Pedro Trindade, 56342
 
