@@ -6,3 +6,7 @@ João Santos, 56380
 Marcos Gomes, 56326
 Pedro Trindade, 56342
 
+
+
+escrita na cabeca
+leituras na cauda
