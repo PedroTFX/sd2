@@ -1,0 +1,168 @@
+2022-11-30 17:16:29,890 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../conf/zoo.cfg
+2022-11-30 17:16:29,893 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
+2022-11-30 17:16:29,893 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
+2022-11-30 17:16:29,894 [myid:] - INFO  [main:DatadirCleanupManager@78] - autopurge.snapRetainCount set to 3
+2022-11-30 17:16:29,895 [myid:] - INFO  [main:DatadirCleanupManager@79] - autopurge.purgeInterval set to 0
+2022-11-30 17:16:29,895 [myid:] - INFO  [main:DatadirCleanupManager@101] - Purge task is not scheduled.
+2022-11-30 17:16:29,895 [myid:] - WARN  [main:QuorumPeerMain@125] - Either no config or no quorum defined in config, running  in standalone mode
+2022-11-30 17:16:29,897 [myid:] - INFO  [main:ManagedUtil@45] - Log4j 1.2 jmx support found and enabled.
+2022-11-30 17:16:29,903 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../conf/zoo.cfg
+2022-11-30 17:16:29,903 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
+2022-11-30 17:16:29,903 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
+2022-11-30 17:16:29,903 [myid:] - INFO  [main:ZooKeeperServerMain@118] - Starting server
+2022-11-30 17:16:29,905 [myid:] - INFO  [main:FileTxnSnapLog@115] - zookeeper.snapshot.trust.empty : false
+2022-11-30 17:16:29,910 [myid:] - INFO  [main:Environment@109] - Server environment:zookeeper.version=3.5.9-83df9301aa5c2a5d284a9940177808c01bc35cef, built on 01/06/2021 19:49 GMT
+2022-11-30 17:16:29,910 [myid:] - INFO  [main:Environment@109] - Server environment:host.name=DESKTOP-RSEBCQ4.localdomain
+2022-11-30 17:16:29,910 [myid:] - INFO  [main:Environment@109] - Server environment:java.version=17.0.5
+2022-11-30 17:16:29,911 [myid:] - INFO  [main:Environment@109] - Server environment:java.vendor=Private Build
+2022-11-30 17:16:29,911 [myid:] - INFO  [main:Environment@109] - Server environment:java.home=/usr/lib/jvm/java-17-openjdk-amd64
+2022-11-30 17:16:29,911 [myid:] - INFO  [main:Environment@109] - Server environment:java.class.path=/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../zookeeper-server/target/classes:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../build/classes:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../zookeeper-server/target/lib/*.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../build/lib/*.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/zookeeper-jute-3.5.9.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/zookeeper-3.5.9.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/slf4j-log4j12-1.7.25.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/slf4j-api-1.7.25.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-transport-native-unix-common-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-transport-native-epoll-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-transport-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-resolver-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-handler-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-common-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-codec-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/netty-buffer-4.1.50.Final.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/log4j-1.2.17.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/json-simple-1.1.1.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jline-2.14.6.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-util-ajax-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-util-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-servlet-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-server-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-security-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-io-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jetty-http-9.4.35.v20201120.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/javax.servlet-api-3.1.0.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jackson-databind-2.10.5.1.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jackson-core-2.10.5.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/jackson-annotations-2.10.5.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/commons-cli-1.2.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../lib/audience-annotations-0.5.0.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../zookeeper-*.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../zookeeper-server/src/main/resources/lib/*.jar:/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin/../conf:
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:java.library.path=/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:java.io.tmpdir=/tmp
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:java.compiler=<NA>
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:os.name=Linux
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:os.arch=amd64
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:os.version=5.10.16.3-microsoft-standard-WSL2
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:user.name=joao_santos
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:user.home=/home/joao_santos
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:user.dir=/home/joao_santos/sd2/apache-zookeeper-3.5.9-bin/bin
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.free=89MB
+2022-11-30 17:16:29,912 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.max=1000MB
+2022-11-30 17:16:29,913 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.total=100MB
+2022-11-30 17:16:29,913 [myid:] - INFO  [main:ZooKeeperServer@953] - minSessionTimeout set to 4000
+2022-11-30 17:16:29,914 [myid:] - INFO  [main:ZooKeeperServer@962] - maxSessionTimeout set to 40000
+2022-11-30 17:16:29,914 [myid:] - INFO  [main:ZooKeeperServer@181] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /tmp/zookeeper/version-2 snapdir /tmp/zookeeper/version-2
+2022-11-30 17:16:29,930 [myid:] - INFO  [main:Log@169] - Logging initialized @302ms to org.eclipse.jetty.util.log.Slf4jLog
+2022-11-30 17:16:29,975 [myid:] - WARN  [main:ContextHandler@1660] - o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STOPPED} contextPath ends with /*
+2022-11-30 17:16:29,976 [myid:] - WARN  [main:ContextHandler@1671] - Empty contextPath
+2022-11-30 17:16:29,989 [myid:] - INFO  [main:Server@375] - jetty-9.4.35.v20201120; built: 2020-11-20T21:17:03.964Z; git: bdc54f03a5e0a7e280fab27f55c3c75ee8da89fb; jvm 17.0.5+8-Ubuntu-2ubuntu120.04
+2022-11-30 17:16:30,009 [myid:] - INFO  [main:DefaultSessionIdManager@334] - DefaultSessionIdManager workerName=node0
+2022-11-30 17:16:30,009 [myid:] - INFO  [main:DefaultSessionIdManager@339] - No SessionScavenger set, using defaults
+2022-11-30 17:16:30,010 [myid:] - INFO  [main:HouseKeeper@132] - node0 Scavenging every 660000ms
+2022-11-30 17:16:30,013 [myid:] - WARN  [main:ConstraintSecurityHandler@758] - ServletContext@o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STARTING} has uncovered http methods for path: /*
+2022-11-30 17:16:30,021 [myid:] - INFO  [main:ContextHandler@916] - Started o.e.j.s.ServletContextHandler@1dde4cb2{/,null,AVAILABLE}
+2022-11-30 17:16:30,031 [myid:] - INFO  [main:AbstractConnector@331] - Started ServerConnector@778d1062{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2022-11-30 17:16:30,032 [myid:] - INFO  [main:Server@415] - Started @406ms
+2022-11-30 17:16:30,032 [myid:] - INFO  [main:JettyAdminServer@116] - Started AdminServer on address 0.0.0.0, port 8080 and command URL /commands
+2022-11-30 17:16:30,036 [myid:] - INFO  [main:ServerCnxnFactory@135] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+2022-11-30 17:16:30,038 [myid:] - INFO  [main:NIOServerCnxnFactory@673] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 24 worker threads, and 64 kB direct buffers.
+2022-11-30 17:16:30,039 [myid:] - INFO  [main:NIOServerCnxnFactory@686] - binding to port 0.0.0.0/0.0.0.0:2181
+2022-11-30 17:16:30,049 [myid:] - INFO  [main:ZKDatabase@117] - zookeeper.snapshotSizeFactor = 0.33
+2022-11-30 17:16:30,050 [myid:] - INFO  [main:FileSnap@83] - Reading snapshot /tmp/zookeeper/version-2/snapshot.222
+2022-11-30 17:16:30,055 [myid:] - INFO  [main:FileTxnSnapLog@404] - Snapshotting: 0x222 to /tmp/zookeeper/version-2/snapshot.222
+2022-11-30 17:16:30,062 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@132] - PrepRequestProcessor (sid:0) started, reconfigEnabled=false
+2022-11-30 17:16:30,065 [myid:] - INFO  [main:ContainerManager@64] - Using checkIntervalMs=60000 maxPerMinute=10000
+2022-11-30 17:16:37,907 [myid:] - INFO  [NIOWorkerThread-1:FourLetterCommands@234] - The list of known four letter word commands is : [{1936881266=srvr, 1937006964=stat, 2003003491=wchc, 1685417328=dump, 1668445044=crst, 1936880500=srst, 1701738089=envi, 1668247142=conf, -720899=telnet close, 2003003507=wchs, 2003003504=wchp, 1684632179=dirs, 1668247155=cons, 1835955314=mntr, 1769173615=isro, 1920298859=ruok, 1735683435=gtmk, 1937010027=stmk}]
+2022-11-30 17:16:37,907 [myid:] - INFO  [NIOWorkerThread-1:FourLetterCommands@235] - The list of enabled four letter word commands is : [[srvr]]
+2022-11-30 17:16:37,907 [myid:] - INFO  [NIOWorkerThread-1:NIOServerCnxn@518] - Processing srvr command from /127.0.0.1:48588
+2022-11-30 17:17:02,283 [myid:] - INFO  [SyncThread:0:FileTxnLog@218] - Creating new log file: log.223
+2022-11-30 17:24:57,609 [myid:] - WARN  [NIOWorkerThread-9:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48640; will be dropped if server is in r-o mode
+2022-11-30 17:28:35,616 [myid:] - WARN  [NIOWorkerThread-3:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48656; will be dropped if server is in r-o mode
+2022-11-30 17:47:43,926 [myid:] - WARN  [NIOWorkerThread-5:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48850; will be dropped if server is in r-o mode
+2022-11-30 17:48:47,549 [myid:] - WARN  [NIOWorkerThread-23:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48858; will be dropped if server is in r-o mode
+2022-11-30 17:49:17,884 [myid:] - WARN  [NIOWorkerThread-1:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0002, likely client has closed socket
+2022-11-30 17:49:18,287 [myid:] - WARN  [NIOWorkerThread-4:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0001, likely client has closed socket
+2022-11-30 17:49:19,839 [myid:] - WARN  [NIOWorkerThread-8:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0004, likely client has closed socket
+2022-11-30 17:49:22,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0001, timeout of 4000ms exceeded
+2022-11-30 17:49:22,957 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0002, timeout of 4000ms exceeded
+2022-11-30 17:49:24,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0004, timeout of 4000ms exceeded
+2022-11-30 17:49:35,957 [myid:] - WARN  [NIOWorkerThread-14:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48872; will be dropped if server is in r-o mode
+2022-11-30 17:49:46,541 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48876; will be dropped if server is in r-o mode
+2022-11-30 17:50:00,580 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48880; will be dropped if server is in r-o mode
+2022-11-30 17:50:18,751 [myid:] - WARN  [NIOWorkerThread-2:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0003, likely client has closed socket
+2022-11-30 17:50:22,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0003, timeout of 4000ms exceeded
+2022-11-30 17:50:41,517 [myid:] - WARN  [NIOWorkerThread-13:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48894; will be dropped if server is in r-o mode
+2022-11-30 17:51:17,726 [myid:] - WARN  [NIOWorkerThread-3:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0008, likely client has closed socket
+2022-11-30 17:51:22,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0008, timeout of 4000ms exceeded
+2022-11-30 17:51:23,298 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48904; will be dropped if server is in r-o mode
+2022-11-30 17:51:30,710 [myid:] - WARN  [NIOWorkerThread-7:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0005, likely client has closed socket
+2022-11-30 17:51:34,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0005, timeout of 4000ms exceeded
+2022-11-30 17:51:59,423 [myid:] - WARN  [NIOWorkerThread-24:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:48916; will be dropped if server is in r-o mode
+2022-11-30 17:52:07,545 [myid:] - WARN  [NIOWorkerThread-13:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee000a, likely client has closed socket
+2022-11-30 17:52:08,442 [myid:] - WARN  [NIOWorkerThread-16:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0006, likely client has closed socket
+2022-11-30 17:52:09,222 [myid:] - WARN  [NIOWorkerThread-21:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0007, likely client has closed socket
+2022-11-30 17:52:12,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0006, timeout of 4000ms exceeded
+2022-11-30 17:52:12,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0007, timeout of 4000ms exceeded
+2022-11-30 17:52:12,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee000a, timeout of 4000ms exceeded
+2022-11-30 18:04:58,056 [myid:] - WARN  [NIOWorkerThread-8:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0009, likely client has closed socket
+2022-11-30 18:05:00,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0009, timeout of 4000ms exceeded
+2022-11-30 18:10:01,987 [myid:] - WARN  [NIOWorkerThread-22:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0000, likely client has closed socket
+2022-11-30 18:10:26,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0000, timeout of 30000ms exceeded
+2022-11-30 18:11:58,849 [myid:] - WARN  [NIOWorkerThread-3:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49154; will be dropped if server is in r-o mode
+2022-11-30 18:12:35,267 [myid:] - WARN  [NIOWorkerThread-17:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49162; will be dropped if server is in r-o mode
+2022-11-30 18:20:09,896 [myid:] - WARN  [NIOWorkerThread-21:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee000d, likely client has closed socket
+2022-11-30 18:20:10,725 [myid:] - WARN  [NIOWorkerThread-20:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee000c, likely client has closed socket
+2022-11-30 18:20:14,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee000d, timeout of 4000ms exceeded
+2022-11-30 18:20:14,958 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee000c, timeout of 4000ms exceeded
+2022-11-30 18:20:20,557 [myid:] - WARN  [NIOWorkerThread-24:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49246; will be dropped if server is in r-o mode
+2022-11-30 18:20:34,773 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49254; will be dropped if server is in r-o mode
+2022-11-30 18:20:51,167 [myid:] - WARN  [NIOWorkerThread-12:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49260; will be dropped if server is in r-o mode
+2022-11-30 18:20:59,748 [myid:] - WARN  [NIOWorkerThread-13:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0010, likely client has closed socket
+2022-11-30 18:21:00,569 [myid:] - WARN  [NIOWorkerThread-18:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee000f, likely client has closed socket
+2022-11-30 18:21:02,546 [myid:] - WARN  [NIOWorkerThread-23:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee000e, likely client has closed socket
+2022-11-30 18:21:04,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0010, timeout of 4000ms exceeded
+2022-11-30 18:21:04,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee000f, timeout of 4000ms exceeded
+2022-11-30 18:21:06,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee000e, timeout of 4000ms exceeded
+2022-11-30 18:22:05,146 [myid:] - WARN  [NIOWorkerThread-1:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49292; will be dropped if server is in r-o mode
+2022-11-30 18:22:18,020 [myid:] - WARN  [NIOWorkerThread-1:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49302; will be dropped if server is in r-o mode
+2022-11-30 18:22:22,416 [myid:] - WARN  [NIOWorkerThread-17:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49306; will be dropped if server is in r-o mode
+2022-11-30 18:22:29,894 [myid:] - WARN  [NIOWorkerThread-13:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0013, likely client has closed socket
+2022-11-30 18:22:30,586 [myid:] - WARN  [NIOWorkerThread-17:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0012, likely client has closed socket
+2022-11-30 18:22:34,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0013, timeout of 4000ms exceeded
+2022-11-30 18:22:34,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0012, timeout of 4000ms exceeded
+2022-11-30 18:34:17,649 [myid:] - WARN  [NIOWorkerThread-23:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0011, likely client has closed socket
+2022-11-30 18:34:20,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0011, timeout of 4000ms exceeded
+2022-11-30 18:46:48,627 [myid:] - WARN  [NIOWorkerThread-1:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49806; will be dropped if server is in r-o mode
+2022-11-30 18:47:12,102 [myid:] - WARN  [NIOWorkerThread-18:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49816; will be dropped if server is in r-o mode
+2022-11-30 18:47:12,123 [myid:] - WARN  [NIOWorkerThread-6:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0014, likely client has closed socket
+2022-11-30 18:47:16,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0014, timeout of 4000ms exceeded
+2022-11-30 18:47:16,960 [myid:] - WARN  [NIOWorkerThread-16:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0015, likely client has closed socket
+2022-11-30 18:47:22,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0015, timeout of 4000ms exceeded
+2022-11-30 18:47:49,496 [myid:] - WARN  [NIOWorkerThread-17:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49830; will be dropped if server is in r-o mode
+2022-11-30 18:47:52,478 [myid:] - WARN  [NIOWorkerThread-22:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0016, likely client has closed socket
+2022-11-30 18:47:53,813 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49834; will be dropped if server is in r-o mode
+2022-11-30 18:48:05,384 [myid:] - WARN  [NIOWorkerThread-20:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0016, likely client has closed socket
+2022-11-30 18:48:08,754 [myid:] - WARN  [NIOWorkerThread-24:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49838; will be dropped if server is in r-o mode
+2022-11-30 18:48:08,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0016, timeout of 4000ms exceeded
+2022-11-30 18:48:14,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0017, timeout of 4000ms exceeded
+2022-11-30 18:53:33,714 [myid:] - WARN  [NIOWorkerThread-15:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49902; will be dropped if server is in r-o mode
+2022-11-30 18:53:42,117 [myid:] - WARN  [NIOWorkerThread-8:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49906; will be dropped if server is in r-o mode
+2022-11-30 18:53:42,127 [myid:] - WARN  [NIOWorkerThread-20:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0018, likely client has closed socket
+2022-11-30 18:53:46,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0018, timeout of 4000ms exceeded
+2022-11-30 18:53:46,968 [myid:] - WARN  [NIOWorkerThread-10:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0019, likely client has closed socket
+2022-11-30 18:53:52,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0019, timeout of 4000ms exceeded
+2022-11-30 18:53:57,288 [myid:] - WARN  [NIOWorkerThread-12:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49912; will be dropped if server is in r-o mode
+2022-11-30 18:54:14,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001a, timeout of 4000ms exceeded
+2022-11-30 18:54:24,166 [myid:] - WARN  [NIOWorkerThread-16:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49924; will be dropped if server is in r-o mode
+2022-11-30 18:54:24,167 [myid:] - INFO  [NIOWorkerThread-16:ZooKeeperServer@777] - Invalid session 0x100000301ee001a for client /127.0.0.1:49924, probably expired
+2022-11-30 18:54:43,355 [myid:] - WARN  [NIOWorkerThread-19:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49930; will be dropped if server is in r-o mode
+2022-11-30 18:54:55,568 [myid:] - WARN  [NIOWorkerThread-23:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49938; will be dropped if server is in r-o mode
+2022-11-30 18:55:00,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001b, timeout of 4000ms exceeded
+2022-11-30 18:55:00,970 [myid:] - WARN  [NIOWorkerThread-24:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee001c, likely client has closed socket
+2022-11-30 18:55:06,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001c, timeout of 4000ms exceeded
+2022-11-30 18:55:52,221 [myid:] - WARN  [NIOWorkerThread-3:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49954; will be dropped if server is in r-o mode
+2022-11-30 18:55:54,113 [myid:] - WARN  [NIOWorkerThread-10:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49958; will be dropped if server is in r-o mode
+2022-11-30 18:55:58,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001d, timeout of 4000ms exceeded
+2022-11-30 18:55:58,970 [myid:] - WARN  [NIOWorkerThread-12:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee001e, likely client has closed socket
+2022-11-30 18:56:04,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001e, timeout of 4000ms exceeded
+2022-11-30 18:57:48,572 [myid:] - WARN  [NIOWorkerThread-13:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49992; will be dropped if server is in r-o mode
+2022-11-30 18:57:50,323 [myid:] - WARN  [NIOWorkerThread-20:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:49996; will be dropped if server is in r-o mode
+2022-11-30 18:57:54,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee001f, timeout of 4000ms exceeded
+2022-11-30 18:57:54,966 [myid:] - WARN  [NIOWorkerThread-24:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0020, likely client has closed socket
+2022-11-30 18:58:00,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0020, timeout of 4000ms exceeded
+2022-11-30 18:58:45,954 [myid:] - WARN  [NIOWorkerThread-3:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:50014; will be dropped if server is in r-o mode
+2022-11-30 18:58:48,742 [myid:] - WARN  [NIOWorkerThread-13:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:50016; will be dropped if server is in r-o mode
+2022-11-30 18:59:40,011 [myid:] - WARN  [NIOWorkerThread-11:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0021, likely client has closed socket
+2022-11-30 18:59:44,270 [myid:] - WARN  [NIOWorkerThread-18:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:50030; will be dropped if server is in r-o mode
+2022-11-30 18:59:44,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0021, timeout of 4000ms exceeded
+2022-11-30 19:02:19,226 [myid:] - WARN  [NIOWorkerThread-21:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0023, likely client has closed socket
+2022-11-30 19:02:22,906 [myid:] - WARN  [NIOWorkerThread-22:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:50076; will be dropped if server is in r-o mode
+2022-11-30 19:02:22,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0023, timeout of 4000ms exceeded
+2022-11-30 19:02:27,789 [myid:] - WARN  [NIOWorkerThread-14:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0022, likely client has closed socket
+2022-11-30 19:02:30,506 [myid:] - WARN  [NIOWorkerThread-16:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:50088; will be dropped if server is in r-o mode
+2022-11-30 19:02:32,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0022, timeout of 4000ms exceeded
+2022-11-30 21:01:01,642 [myid:] - WARN  [NIOWorkerThread-11:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0024, likely client has closed socket
+2022-11-30 21:01:06,956 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0024, timeout of 4000ms exceeded
+2022-11-30 21:01:21,026 [myid:] - WARN  [NIOWorkerThread-15:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100000301ee0025, likely client has closed socket
+2022-11-30 21:01:24,955 [myid:] - INFO  [SessionTracker:ZooKeeperServer@413] - Expiring session 0x100000301ee0025, timeout of 4000ms exceeded
+2022-11-30 21:02:25,321 [myid:] - INFO  [NIOWorkerThread-19:NIOServerCnxn@518] - Processing srvr command from /127.0.0.1:50148
