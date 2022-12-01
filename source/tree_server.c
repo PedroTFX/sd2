@@ -10,15 +10,18 @@
 
 int main(int argc, char const* argv[]) {
 	if (argc != 3) {
-		printf("Usage: tree-server <port> <N_threads>\n");
+		printf("Usage: tree-server <port> <zookeeper address>:<zookeeper port>\n");
 		return -1;
 	}
 	short port = (short)atoi(argv[1]);
 	if (port == 0) {
-		printf("Usage: tree-server <port> <N_threads\n");
+		printf("Usage: tree-server <port> <zookeeper address>:<zookeeper port>\n");
 		printf("Port should be a number.\n");
 		return -1;
 	}
+
+	server_port = argv[1];
+	zook_address_port = argv[2];
 
 	// Initialize server
 	int listening_socket;
@@ -28,13 +31,7 @@ int main(int argc, char const* argv[]) {
 	}
 
 	// Initialize tree
-	int n_threads = atoi(argv[2]);
-	if (n_threads == 0) {
-		printf("Usage: tree-server <port> <N_threads\n");
-		printf("<N_threads> should be a number.\n");
-		return -1;
-	}
-	if (tree_skel_init(n_threads)) {
+	if (tree_skel_init(1)) {
 		printf("Could not initialize tree.\n");
 		if (network_server_close() != 0) {
 			printf("Error in network_server_close()\n");

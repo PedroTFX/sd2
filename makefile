@@ -3,6 +3,7 @@ EXTENSION := c
 CC := gcc
 
 INCLUDEDIR := include
+LIBINCLUDEDIR := /usr/include/zookeeper
 OBJDIR := object
 SRCDIR := source
 BINDIR := binary
@@ -19,6 +20,7 @@ DEBUGFLAGS := $(BASEFLAGS) -g -Wall
 RELEASEFLAGS := $(BASEFLAGS) -O2
 
 run: clean setup tree-server tree-client
+
 #clean directory
 clean:
 	rm -rf $(OBJDIR)
@@ -55,14 +57,13 @@ client_stub.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/client_stub.c -o $(OBJDIR)/client_stub.o -I $(INCLUDEDIR)
 
 client-lib.o: data.o entry.o sdmessage.pb-c.o util.o network_client.o client_stub.o
-	ld -r $(OBJDIR)/data.o $(OBJDIR)/entry.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/util.o $(OBJDIR)/network_client.o $(OBJDIR)/client_stub.o -o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR)
+	ld -r $(OBJDIR)/data.o $(OBJDIR)/entry.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/util.o $(OBJDIR)/network_client.o $(OBJDIR)/client_stub.o -o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR)
 
 tree-client: client-lib.o
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree-client $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree-client $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread -lzookeeper_mt
 
 ccclient_run: tree-client
 	./$(BINDIR)/tree-client 127.0.0.1:1337
-	
 
 f1cclient_run: tree-client
 	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01.txt
@@ -99,13 +100,42 @@ network_server.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/network_server.c -o $(OBJDIR)/network_server.o -I $(INCLUDEDIR)
 
 tree_skel.o:
-	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR)
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/tree_skel.c -o $(OBJDIR)/tree_skel.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR)
 
-tree-server: data.o entry.o tree.o sdmessage.pb-c.o util.o network_server.o tree_skel.o
-	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_server.c -o $(BINDIR)/tree-server $(OBJDIR)/tree_skel.o $(OBJDIR)/network_server.o $(OBJDIR)/util.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/tree.o $(OBJDIR)/entry.o $(OBJDIR)/data.o -I $(INCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread
+tree-server: tree.o network_server.o tree_skel.o client-lib.o
+	$(CC) $(DEBUGFLAGS) $(SRCDIR)/zookeeper.c $(SRCDIR)/tree_server.c -o $(BINDIR)/tree-server $(OBJDIR)/tree.o $(OBJDIR)/network_server.o $(OBJDIR)/tree_skel.o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -I$(LIBINCLUDEDIR) -L/usr/include -lprotobuf-c -lpthread -lzookeeper_mt
 
 ssserver_run: tree-server
-	./$(BINDIR)/tree-server 1337 5
+	./$(BINDIR)/tree-server 1337 127.0.0.1:2181
+
+ssserver_run2: tree-server
+	./$(BINDIR)/tree-server $(args) 127.0.0.1:2181
 
 sserver_valgrind: tree-server
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 3
+
+
+zoo: compile_zoo
+
+compile_zoo:
+	gcc ./ZooKeeper/examples/zoo.c -o ./ZooKeeper/examples/zoo -lzookeeper_mt
+	gcc ./ZooKeeper/examples/zchildmaker.c -o ./ZooKeeper/examples/zchildmaker -lzookeeper_mt
+	gcc ./ZooKeeper/examples/zchildwatcher.c -o ./ZooKeeper/examples/zchildwatcher -lzookeeper_mt
+	gcc ./ZooKeeper/examples/zdataupdater.c -o ./ZooKeeper/examples/zdataupdater -lzookeeper_mt
+	gcc ./ZooKeeper/examples/zdataupdater.c -o ./ZooKeeper/examples/zdataupdater -lzookeeper_mt
+	gcc ./ZooKeeper/examples/zdatawatcher.c -o ./ZooKeeper/examples/zdatawatcher -lzookeeper_mt
+
+zoo_cw:
+	./ZooKeeper/examples/zchildwatcher 127.0.0.1:2181
+
+zoo_dw:
+	./ZooKeeper/examples/zdatawatcher 127.0.0.1:2181
+
+zoo_cm:
+	./ZooKeeper/examples/zchildmaker 127.0.0.1:2181
+
+zoo_du:
+	./ZooKeeper/examples/zdataupdater 127.0.0.1:2181
+
+zoo_z:
+	./ZooKeeper/examples/zoo 127.0.0.1:2181

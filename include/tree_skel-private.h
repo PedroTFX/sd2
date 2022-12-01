@@ -1,3 +1,5 @@
+#include <zookeeper.h>
+
 #define OP_DEL 0
 #define OP_PUT 1
 
@@ -13,6 +15,8 @@ struct op_proc {
 	int max_proc;	   // Maior número da operação já executada
 	int* in_progress;  // Array de numeros de operações em execução por cada thread
 };
+
+static void child_watcher(zhandle_t* wzh, int type, int state, const char* zpath, void* watcher_ctx);
 
 void invoke_size(struct message_t*);
 

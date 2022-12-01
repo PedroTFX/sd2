@@ -18,7 +18,6 @@
 #include "message-private.h"
 #include "network_server-private.h"
 #include "network_server.h"
-#include "tree_skel-private.h"
 #include "tree_skel.h"
 #include "util.h"
 
