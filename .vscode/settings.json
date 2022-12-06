@@ -18,6 +18,9 @@
 		"network_client.h": "c",
 		"client_stub-private.h": "c",
 		"client_zookeeper-private.h": "c",
-		"tree.h": "c"
+		"tree.h": "c",
+		"network_client-private.h": "c",
+		"util.h": "c",
+		"sdmessage.pb-c.h": "c"
 	}
 }

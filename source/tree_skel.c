@@ -10,20 +10,16 @@
 #include <unistd.h>
 #include <zookeeper.h>
 
-#include "client_zookeeper-private.h"
 #include "client_stub-private.h"
 #include "client_stub.h"
+#include "client_zookeeper-private.h"
 #include "entry.h"
 #include "message-private.h"
-#include "sdmessage.pb-c.h"
 #include "tree-private.h"
 #include "tree.h"
-#include "tree_server-private.h"
 #include "tree_skel-private.h"
 #include "tree_skel.h"
-
-/* ZooKeeper Znode Data Length (1MB, the max supported) */
-#define ZDATALEN 1024 * 1024
+#include "tree_server-private.h"
 
 struct tree_t* tree;
 struct request_t* queue_head;
@@ -37,52 +33,6 @@ pthread_mutex_t mutex_queue = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_op_proc = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_tree = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t queue_not_empty = PTHREAD_COND_INITIALIZER;
-
-struct rtree_t* next_server;
-
-void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh/* zoo_string* children_list, char* root_path */) {
-	// Process children list
-	printf("Callback function was called on the server!\n");
-	int i;
-	for (i = 0; i < children_list->count; i++) {
-		if(i == 0 && strcmp(children_list->data[i], zk_node_id) == 0) {
-			printf("I'm the head!\n");
-		}
-
-		// If we find next node
-		if (strcmp(children_list->data[i], zk_node_id) > 0) {
-			// Get next node's IP and port
-			int watch = 0;
-			int node_metadata_length = ZDATALEN;
-			char* node_metadata = malloc(node_metadata_length * sizeof(char));
-			struct Stat* stat = NULL;
-			char node_path[120] = "";
-			strcat(node_path, root_path);
-			strcat(node_path, "/");
-			strcat(node_path, children_list->data[i]);
-			if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
-				fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
-			}
-
-			// Connext to the next server
-			next_server = rtree_connect(node_metadata);
-			if (next_server == NULL) {
-				fprintf(stderr, "Error connecting to the next server %s:%s!\n", next_server->address, next_server->port);
-			} else {
-				fprintf(stdout, "Connected to the next server %s:%s!\n", next_server->address, next_server->port);
-			}
-
-			// We're done, leave cycle
-			break;
-		}
-	}
-
-	// If we didn't find a node higher than ours, then there's no next node
-	if (i == children_list->count) {
-		printf("I'm the tail!\n");
-	}
-}
-
 
 /* Inicia o skeleton da árvore.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -380,16 +330,16 @@ void* process_request(void* params) {
 
 			// Send request down the chain
 			struct entry_t* entry = entry_create(request->key, data);
-			if(next_server != NULL){
-				if(rtree_put(next_server, entry) == -1) {
+			if (next_server != NULL) {
+				if (rtree_put(next_server, entry) == -1) {
 					printf("Error processing remote put request!\n");
 				} else {
 					printf("Remote PUT successful!\n");
 				}
-			} else{
+			} else {
 				printf("Request not forwarded because this is the tail. Probably...\n");
 			}
-			//entry_destroy(entry);
+			// entry_destroy(entry);
 
 			// Update operatino procedure
 			pthread_mutex_lock(&mutex_op_proc);
@@ -423,7 +373,7 @@ void* process_request(void* params) {
 			}
 
 			// Send request down the chain
-			if(rtree_del(next_server, request->key) == -1) {
+			if (rtree_del(next_server, request->key) == -1) {
 				printf("Error processing remote del request!\n");
 			} else {
 				printf("Remote del successful!\n");

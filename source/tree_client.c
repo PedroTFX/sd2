@@ -2,16 +2,18 @@
 // Pedro Trindade 56342
 // Joao Santos 56380
 // Marcus Gomes 56326
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "client_stub-private.h"
 #include "client_stub.h"
+#include "client_zookeeper-private.h"
 #include "data.h"
 #include "entry.h"
 #include "tree_client-private.h"
-#include "client_zookeeper-private.h"
 
 #define PUT "put"
 #define GET "get"
@@ -25,6 +27,8 @@
 #define RANDOM "random"
 
 zhandle_t* zh;
+struct rtree_t* head = NULL;
+struct rtree_t* tail = NULL;
 
 int main(int argc, char const* argv[]) {
 	// Ignore SIGPIPE signal so server doesn't crash if socket closes unexpectedly
@@ -40,7 +44,8 @@ int main(int argc, char const* argv[]) {
 	}
 
 	// Connect to ZooKeeper
-	zh = zk_connect(argv[1]);
+	char* root_path = "/chain";
+	zh = zk_connect(argv[1], root_path);
 	if (zh == NULL) {
 		fprintf(stderr, "Error connecting to ZooKeeper!\n");
 		exit(EXIT_FAILURE);
@@ -57,9 +62,41 @@ int main(int argc, char const* argv[]) {
 		readOption(option, 1024);
 		executeCommand(option);
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
-	zk_disconnect(zh); // Disconnect from ZooKeeper
+	zk_disconnect(zh);	// Disconnect from ZooKeeper
 	printf("Client exiting. Bye.\n");
 	return 0;
+}
+
+// Process children list
+void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zhandle_t* zh) {
+
+	printf("Callback function was called on the client!\n");
+	if (children_list->count > 0) {
+		// Get next node's IP and port
+		int watch = 0;
+		int node_metadata_length = ZDATALEN;
+		char* node_metadata = malloc(node_metadata_length * sizeof(char));
+		struct Stat* stat = NULL;
+		char node_path[120] = "";
+		strcat(node_path, root_path);
+		strcat(node_path, "/");
+		strcat(node_path, children_list->data[0]);
+		if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+		}
+
+		head = rtree_connect(node_metadata);
+
+		node_path[0] = '\0';
+		strcat(node_path, root_path);
+		strcat(node_path, "/");
+		strcat(node_path, children_list->data[children_list->count - 1]);
+		if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+		}
+
+		tail = rtree_connect(node_metadata);
+	}
 }
 
 void showMenu() {
@@ -264,7 +301,7 @@ void executeVerify(char* option) {
 	}
 }
 
-void sig_pipe_handler(int signal){
+void sig_pipe_handler(int signal) {
 	printf("Client exiting after server crash. Bye.\n");
 	zk_disconnect(zh);
 }

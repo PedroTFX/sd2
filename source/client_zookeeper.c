@@ -8,18 +8,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "client_stub.h"
 #include "client_zookeeper-private.h"
-#include "message-private.h"
-#include "network_client.h"
 
-/* ZooKeeper Znode Data Length (1MB, the max supported) */
-#define ZDATALEN 1024 * 1024
-
-char* root_path = "/chain";
+char* root_path = NULL;
 int zk_node_id_length = 1024;
 
-zhandle_t* zk_connect(const char* address_port) {
+zhandle_t* zk_connect(const char* address_port, char* rp) {
+	// Save root path
+	root_path = rp;
+
 	/* Connect to ZooKeeper server */
 	int recv_timeout = 2000;
 	const clientid_t* client_id = NULL;
@@ -91,7 +88,7 @@ void zk_get_children(zhandle_t* zh, void* watcher_ctx) {
 	}
 
 	// Call callback function
-	((struct watcher_ctx*) watcher_ctx)->callback(children_list, root_path, zh/* children_list, root_path */);
+	((struct watcher_ctx*) watcher_ctx)->callback(children_list, root_path, zh);
 
 	// Free children list
 	free(children_list);

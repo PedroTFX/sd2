@@ -1,69 +1,57 @@
-2022-12-06 13:55:12,444 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/ZooKeeper/bin/../conf/zoo.cfg
-2022-12-06 13:55:12,450 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
-2022-12-06 13:55:12,450 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
-2022-12-06 13:55:12,454 [myid:] - INFO  [main:DatadirCleanupManager@78] - autopurge.snapRetainCount set to 3
-2022-12-06 13:55:12,454 [myid:] - INFO  [main:DatadirCleanupManager@79] - autopurge.purgeInterval set to 0
-2022-12-06 13:55:12,454 [myid:] - INFO  [main:DatadirCleanupManager@101] - Purge task is not scheduled.
-2022-12-06 13:55:12,454 [myid:] - WARN  [main:QuorumPeerMain@125] - Either no config or no quorum defined in config, running  in standalone mode
-2022-12-06 13:55:12,458 [myid:] - INFO  [main:ManagedUtil@45] - Log4j 1.2 jmx support found and enabled.
-2022-12-06 13:55:12,465 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/ZooKeeper/bin/../conf/zoo.cfg
-2022-12-06 13:55:12,465 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
-2022-12-06 13:55:12,465 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
-2022-12-06 13:55:12,465 [myid:] - INFO  [main:ZooKeeperServerMain@118] - Starting server
-2022-12-06 13:55:12,470 [myid:] - INFO  [main:FileTxnSnapLog@115] - zookeeper.snapshot.trust.empty : false
-2022-12-06 13:55:12,481 [myid:] - INFO  [main:Environment@109] - Server environment:zookeeper.version=3.5.9-83df9301aa5c2a5d284a9940177808c01bc35cef, built on 01/06/2021 19:49 GMT
-2022-12-06 13:55:12,481 [myid:] - INFO  [main:Environment@109] - Server environment:host.name=DESKTOP-RSEBCQ4.localdomain
-2022-12-06 13:55:12,481 [myid:] - INFO  [main:Environment@109] - Server environment:java.version=17.0.5
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.vendor=Private Build
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.home=/usr/lib/jvm/java-17-openjdk-amd64
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.class.path=/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/target/classes:/home/joao_santos/sd2/ZooKeeper/bin/../build/classes:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/target/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../build/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/zookeeper-jute-3.5.9.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/zookeeper-3.5.9.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/slf4j-log4j12-1.7.25.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/slf4j-api-1.7.25.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-native-unix-common-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-native-epoll-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-resolver-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-handler-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-common-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-codec-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-buffer-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/log4j-1.2.17.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/json-simple-1.1.1.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jline-2.14.6.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-util-ajax-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-util-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-servlet-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-server-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-security-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-io-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-http-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/javax.servlet-api-3.1.0.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-databind-2.10.5.1.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-core-2.10.5.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-annotations-2.10.5.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/commons-cli-1.2.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/audience-annotations-0.5.0.jar:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/src/main/resources/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../conf:
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.library.path=/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.io.tmpdir=/tmp
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:java.compiler=<NA>
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:os.name=Linux
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:os.arch=amd64
-2022-12-06 13:55:12,482 [myid:] - INFO  [main:Environment@109] - Server environment:os.version=5.10.16.3-microsoft-standard-WSL2
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:user.name=joao_santos
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:user.home=/home/joao_santos
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:user.dir=/home/joao_santos/sd2/ZooKeeper/bin
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.free=89MB
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.max=1000MB
-2022-12-06 13:55:12,483 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.total=100MB
-2022-12-06 13:55:12,484 [myid:] - INFO  [main:ZooKeeperServer@953] - minSessionTimeout set to 4000
-2022-12-06 13:55:12,484 [myid:] - INFO  [main:ZooKeeperServer@962] - maxSessionTimeout set to 40000
-2022-12-06 13:55:12,485 [myid:] - INFO  [main:ZooKeeperServer@181] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /tmp/zookeeper/version-2 snapdir /tmp/zookeeper/version-2
-2022-12-06 13:55:12,513 [myid:] - INFO  [main:Log@169] - Logging initialized @481ms to org.eclipse.jetty.util.log.Slf4jLog
-2022-12-06 13:55:12,591 [myid:] - WARN  [main:ContextHandler@1660] - o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STOPPED} contextPath ends with /*
-2022-12-06 13:55:12,592 [myid:] - WARN  [main:ContextHandler@1671] - Empty contextPath
-2022-12-06 13:55:12,613 [myid:] - INFO  [main:Server@375] - jetty-9.4.35.v20201120; built: 2020-11-20T21:17:03.964Z; git: bdc54f03a5e0a7e280fab27f55c3c75ee8da89fb; jvm 17.0.5+8-Ubuntu-2ubuntu120.04
-2022-12-06 13:55:12,638 [myid:] - INFO  [main:DefaultSessionIdManager@334] - DefaultSessionIdManager workerName=node0
-2022-12-06 13:55:12,638 [myid:] - INFO  [main:DefaultSessionIdManager@339] - No SessionScavenger set, using defaults
-2022-12-06 13:55:12,640 [myid:] - INFO  [main:HouseKeeper@132] - node0 Scavenging every 600000ms
-2022-12-06 13:55:12,643 [myid:] - WARN  [main:ConstraintSecurityHandler@758] - ServletContext@o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STARTING} has uncovered http methods for path: /*
-2022-12-06 13:55:12,653 [myid:] - INFO  [main:ContextHandler@916] - Started o.e.j.s.ServletContextHandler@1dde4cb2{/,null,AVAILABLE}
-2022-12-06 13:55:12,665 [myid:] - INFO  [main:AbstractConnector@331] - Started ServerConnector@778d1062{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
-2022-12-06 13:55:12,665 [myid:] - INFO  [main:Server@415] - Started @636ms
-2022-12-06 13:55:12,665 [myid:] - INFO  [main:JettyAdminServer@116] - Started AdminServer on address 0.0.0.0, port 8080 and command URL /commands
-2022-12-06 13:55:12,671 [myid:] - INFO  [main:ServerCnxnFactory@135] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
-2022-12-06 13:55:12,675 [myid:] - INFO  [main:NIOServerCnxnFactory@673] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 24 worker threads, and 64 kB direct buffers.
-2022-12-06 13:55:12,676 [myid:] - INFO  [main:NIOServerCnxnFactory@686] - binding to port 0.0.0.0/0.0.0.0:2181
-2022-12-06 13:55:12,688 [myid:] - INFO  [main:ZKDatabase@117] - zookeeper.snapshotSizeFactor = 0.33
-2022-12-06 13:55:12,695 [myid:] - INFO  [main:FileSnap@83] - Reading snapshot /tmp/zookeeper/version-2/snapshot.415
-2022-12-06 13:55:12,716 [myid:] - INFO  [main:FileTxnSnapLog@404] - Snapshotting: 0x4c2 to /tmp/zookeeper/version-2/snapshot.4c2
-2022-12-06 13:55:12,724 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@132] - PrepRequestProcessor (sid:0) started, reconfigEnabled=false
-2022-12-06 13:55:12,727 [myid:] - INFO  [main:ContainerManager@64] - Using checkIntervalMs=60000 maxPerMinute=10000
-2022-12-06 14:03:27,312 [myid:] - WARN  [NIOWorkerThread-1:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42568; will be dropped if server is in r-o mode
-2022-12-06 14:03:27,314 [myid:] - INFO  [SyncThread:0:FileTxnLog@218] - Creating new log file: log.4c3
-2022-12-06 14:03:40,183 [myid:] - WARN  [NIOWorkerThread-3:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42574; will be dropped if server is in r-o mode
-2022-12-06 14:03:45,184 [myid:] - WARN  [NIOWorkerThread-4:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42580; will be dropped if server is in r-o mode
-2022-12-06 14:04:20,078 [myid:] - WARN  [NIOWorkerThread-24:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0002, likely client has closed socket
-2022-12-06 14:04:21,793 [myid:] - WARN  [NIOWorkerThread-11:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0001, likely client has closed socket
-2022-12-06 14:04:22,839 [myid:] - WARN  [NIOWorkerThread-16:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0000, likely client has closed socket
-2022-12-06 14:05:51,556 [myid:] - WARN  [NIOWorkerThread-17:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42618; will be dropped if server is in r-o mode
-2022-12-06 14:05:58,235 [myid:] - WARN  [NIOWorkerThread-7:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42622; will be dropped if server is in r-o mode
-2022-12-06 14:06:07,303 [myid:] - WARN  [NIOWorkerThread-24:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0004, likely client has closed socket
-2022-12-06 14:06:08,232 [myid:] - WARN  [NIOWorkerThread-8:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0003, likely client has closed socket
-2022-12-06 14:06:12,031 [myid:] - WARN  [NIOWorkerThread-6:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42632; will be dropped if server is in r-o mode
-2022-12-06 14:06:17,873 [myid:] - WARN  [NIOWorkerThread-22:ZooKeeperServer@1028] - Connection request from old client /127.0.0.1:42636; will be dropped if server is in r-o mode
-2022-12-06 14:08:02,157 [myid:] - WARN  [NIOWorkerThread-12:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0005, likely client has closed socket
-2022-12-06 14:08:02,823 [myid:] - WARN  [NIOWorkerThread-18:NIOServerCnxn@366] - Unable to read additional data from client sessionid 0x100006529dc0006, likely client has closed socket
+2022-12-06 17:37:44,166 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/ZooKeeper/bin/../conf/zoo.cfg
+2022-12-06 17:37:44,171 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
+2022-12-06 17:37:44,171 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
+2022-12-06 17:37:44,175 [myid:] - INFO  [main:DatadirCleanupManager@78] - autopurge.snapRetainCount set to 3
+2022-12-06 17:37:44,175 [myid:] - INFO  [main:DatadirCleanupManager@79] - autopurge.purgeInterval set to 0
+2022-12-06 17:37:44,175 [myid:] - INFO  [main:DatadirCleanupManager@101] - Purge task is not scheduled.
+2022-12-06 17:37:44,176 [myid:] - WARN  [main:QuorumPeerMain@125] - Either no config or no quorum defined in config, running  in standalone mode
+2022-12-06 17:37:44,179 [myid:] - INFO  [main:ManagedUtil@45] - Log4j 1.2 jmx support found and enabled.
+2022-12-06 17:37:44,186 [myid:] - INFO  [main:QuorumPeerConfig@136] - Reading configuration from: /home/joao_santos/sd2/ZooKeeper/bin/../conf/zoo.cfg
+2022-12-06 17:37:44,186 [myid:] - INFO  [main:QuorumPeerConfig@388] - clientPortAddress is 0.0.0.0:2181
+2022-12-06 17:37:44,186 [myid:] - INFO  [main:QuorumPeerConfig@392] - secureClientPort is not set
+2022-12-06 17:37:44,186 [myid:] - INFO  [main:ZooKeeperServerMain@118] - Starting server
+2022-12-06 17:37:44,191 [myid:] - INFO  [main:FileTxnSnapLog@115] - zookeeper.snapshot.trust.empty : false
+2022-12-06 17:37:44,202 [myid:] - INFO  [main:Environment@109] - Server environment:zookeeper.version=3.5.9-83df9301aa5c2a5d284a9940177808c01bc35cef, built on 01/06/2021 19:49 GMT
+2022-12-06 17:37:44,202 [myid:] - INFO  [main:Environment@109] - Server environment:host.name=DESKTOP-RSEBCQ4.localdomain
+2022-12-06 17:37:44,202 [myid:] - INFO  [main:Environment@109] - Server environment:java.version=17.0.5
+2022-12-06 17:37:44,203 [myid:] - INFO  [main:Environment@109] - Server environment:java.vendor=Private Build
+2022-12-06 17:37:44,203 [myid:] - INFO  [main:Environment@109] - Server environment:java.home=/usr/lib/jvm/java-17-openjdk-amd64
+2022-12-06 17:37:44,203 [myid:] - INFO  [main:Environment@109] - Server environment:java.class.path=/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/target/classes:/home/joao_santos/sd2/ZooKeeper/bin/../build/classes:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/target/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../build/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/zookeeper-jute-3.5.9.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/zookeeper-3.5.9.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/slf4j-log4j12-1.7.25.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/slf4j-api-1.7.25.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-native-unix-common-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-native-epoll-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-transport-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-resolver-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-handler-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-common-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-codec-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/netty-buffer-4.1.50.Final.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/log4j-1.2.17.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/json-simple-1.1.1.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jline-2.14.6.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-util-ajax-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-util-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-servlet-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-server-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-security-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-io-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jetty-http-9.4.35.v20201120.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/javax.servlet-api-3.1.0.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-databind-2.10.5.1.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-core-2.10.5.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/jackson-annotations-2.10.5.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/commons-cli-1.2.jar:/home/joao_santos/sd2/ZooKeeper/bin/../lib/audience-annotations-0.5.0.jar:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../zookeeper-server/src/main/resources/lib/*.jar:/home/joao_santos/sd2/ZooKeeper/bin/../conf:
+2022-12-06 17:37:44,203 [myid:] - INFO  [main:Environment@109] - Server environment:java.library.path=/usr/java/packages/lib:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:java.io.tmpdir=/tmp
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:java.compiler=<NA>
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.name=Linux
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.arch=amd64
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.version=5.10.16.3-microsoft-standard-WSL2
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:user.name=joao_santos
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:user.home=/home/joao_santos
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:user.dir=/home/joao_santos/sd2/ZooKeeper/bin
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.free=89MB
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.max=1000MB
+2022-12-06 17:37:44,204 [myid:] - INFO  [main:Environment@109] - Server environment:os.memory.total=100MB
+2022-12-06 17:37:44,206 [myid:] - INFO  [main:ZooKeeperServer@953] - minSessionTimeout set to 4000
+2022-12-06 17:37:44,206 [myid:] - INFO  [main:ZooKeeperServer@962] - maxSessionTimeout set to 40000
+2022-12-06 17:37:44,206 [myid:] - INFO  [main:ZooKeeperServer@181] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /tmp/zookeeper/version-2 snapdir /tmp/zookeeper/version-2
+2022-12-06 17:37:44,233 [myid:] - INFO  [main:Log@169] - Logging initialized @467ms to org.eclipse.jetty.util.log.Slf4jLog
+2022-12-06 17:37:44,313 [myid:] - WARN  [main:ContextHandler@1660] - o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STOPPED} contextPath ends with /*
+2022-12-06 17:37:44,313 [myid:] - WARN  [main:ContextHandler@1671] - Empty contextPath
+2022-12-06 17:37:44,333 [myid:] - INFO  [main:Server@375] - jetty-9.4.35.v20201120; built: 2020-11-20T21:17:03.964Z; git: bdc54f03a5e0a7e280fab27f55c3c75ee8da89fb; jvm 17.0.5+8-Ubuntu-2ubuntu120.04
+2022-12-06 17:37:44,357 [myid:] - INFO  [main:DefaultSessionIdManager@334] - DefaultSessionIdManager workerName=node0
+2022-12-06 17:37:44,358 [myid:] - INFO  [main:DefaultSessionIdManager@339] - No SessionScavenger set, using defaults
+2022-12-06 17:37:44,359 [myid:] - INFO  [main:HouseKeeper@132] - node0 Scavenging every 660000ms
+2022-12-06 17:37:44,362 [myid:] - WARN  [main:ConstraintSecurityHandler@758] - ServletContext@o.e.j.s.ServletContextHandler@1dde4cb2{/,null,STARTING} has uncovered http methods for path: /*
+2022-12-06 17:37:44,373 [myid:] - INFO  [main:ContextHandler@916] - Started o.e.j.s.ServletContextHandler@1dde4cb2{/,null,AVAILABLE}
+2022-12-06 17:37:44,384 [myid:] - INFO  [main:AbstractConnector@331] - Started ServerConnector@778d1062{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2022-12-06 17:37:44,385 [myid:] - INFO  [main:Server@415] - Started @622ms
+2022-12-06 17:37:44,385 [myid:] - INFO  [main:JettyAdminServer@116] - Started AdminServer on address 0.0.0.0, port 8080 and command URL /commands
+2022-12-06 17:37:44,390 [myid:] - INFO  [main:ServerCnxnFactory@135] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+2022-12-06 17:37:44,393 [myid:] - INFO  [main:NIOServerCnxnFactory@673] - Configuring NIO connection handler with 10s sessionless connection timeout, 2 selector thread(s), 24 worker threads, and 64 kB direct buffers.
+2022-12-06 17:37:44,394 [myid:] - INFO  [main:NIOServerCnxnFactory@686] - binding to port 0.0.0.0/0.0.0.0:2181
+2022-12-06 17:37:44,406 [myid:] - INFO  [main:ZKDatabase@117] - zookeeper.snapshotSizeFactor = 0.33
+2022-12-06 17:37:44,413 [myid:] - INFO  [main:FileSnap@83] - Reading snapshot /tmp/zookeeper/version-2/snapshot.4c2
+2022-12-06 17:37:44,428 [myid:] - INFO  [main:FileTxnSnapLog@404] - Snapshotting: 0x4de to /tmp/zookeeper/version-2/snapshot.4de
+2022-12-06 17:37:44,435 [myid:] - INFO  [ProcessThread(sid:0 cport:2181)::PrepRequestProcessor@132] - PrepRequestProcessor (sid:0) started, reconfigEnabled=false
+2022-12-06 17:37:44,438 [myid:] - INFO  [main:ContainerManager@64] - Using checkIntervalMs=60000 maxPerMinute=10000
+2022-12-06 17:37:49,891 [myid:] - INFO  [NIOWorkerThread-1:FourLetterCommands@234] - The list of known four letter word commands is : [{1936881266=srvr, 1937006964=stat, 2003003491=wchc, 1685417328=dump, 1668445044=crst, 1936880500=srst, 1701738089=envi, 1668247142=conf, -720899=telnet close, 2003003507=wchs, 2003003504=wchp, 1684632179=dirs, 1668247155=cons, 1835955314=mntr, 1769173615=isro, 1920298859=ruok, 1735683435=gtmk, 1937010027=stmk}]
+2022-12-06 17:37:49,891 [myid:] - INFO  [NIOWorkerThread-1:FourLetterCommands@235] - The list of enabled four letter word commands is : [[srvr]]
+2022-12-06 17:37:49,891 [myid:] - INFO  [NIOWorkerThread-1:NIOServerCnxn@518] - Processing srvr command from /127.0.0.1:49888

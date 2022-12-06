@@ -2,6 +2,9 @@
 #define _TREE_SKEL_PRIVATE_H
 #include <zookeeper.h>
 
+#include "client_zookeeper-private.h"
+#include "message-private.h"
+
 #define OP_DEL 0
 #define OP_PUT 1
 
@@ -13,14 +16,12 @@ struct request_t {
 	struct request_t* next;
 };
 
-struct rtree_t* next_rtree;
-
 struct op_proc {
 	int max_proc;	   // Maior número da operação já executada
 	int* in_progress;  // Array de numeros de operações em execução por cada thread
 };
 
-void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh/* zoo_string* children_list, char* root_path */);
+void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh);
 
 void invoke_size(struct message_t*);
 

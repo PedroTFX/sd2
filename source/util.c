@@ -2,7 +2,6 @@
 // Pedro Trindade 56342
 // Joao Santos 56380
 // Marcus Gomes 56326
-#include "util.h"
 #include <errno.h>
 #include <poll.h>
 #include <stdio.h>
@@ -11,6 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+
+#include "util.h"
 
 int write_all(int sock, char* buf, int len) {
 	char* buf_with_self_size = malloc(sizeof(int) + len);

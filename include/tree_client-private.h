@@ -3,9 +3,6 @@
 
 #include "client_zookeeper-private.h"
 
-struct rtree_t* head/*  = NULL */;
-struct rtree_t* tail/*  = NULL */;
-
 void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zhandle_t* zh);
 
 void showMenu();

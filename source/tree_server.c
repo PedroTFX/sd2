@@ -5,11 +5,16 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "client_stub.h"
+#include "client_stub-private.h"
 #include "client_zookeeper-private.h"
 #include "network_server.h"
 #include "tree_server-private.h"
 #include "tree_skel-private.h"
+
+zhandle_t* zh;
 
 int main(int argc, const char* argv[]) {
 	if (argc != 3) {
@@ -27,8 +32,8 @@ int main(int argc, const char* argv[]) {
 	}
 
 	// Connect to ZooKeeper to forward client requests
-	zook_address_port = argv[2];
-	zh = zk_connect(zook_address_port);
+	char* root_node = "/chain";
+	zh = zk_connect(argv[2], root_node);
 	if (zh == NULL) {
 		fprintf(stderr, "Error connecting to ZooKeeper!\n");
 		exit(EXIT_FAILURE);
@@ -68,6 +73,49 @@ int main(int argc, const char* argv[]) {
 	}
 
 	return 0;
+}
+
+void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh) {
+	// Process children list
+	printf("Callback function was called on the server!\n");
+	int i;
+	for (i = 0; i < children_list->count; i++) {
+		if(i == 0 && strcmp(children_list->data[i], zk_node_id) == 0) {
+			printf("I'm the head!\n");
+		}
+
+		// If we find next node
+		if (strcmp(children_list->data[i], zk_node_id) > 0) {
+			// Get next node's IP and port
+			int watch = 0;
+			int node_metadata_length = ZDATALEN;
+			char* node_metadata = malloc(node_metadata_length * sizeof(char));
+			struct Stat* stat = NULL;
+			char node_path[120] = "";
+			strcat(node_path, root_path);
+			strcat(node_path, "/");
+			strcat(node_path, children_list->data[i]);
+			if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+				fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+			}
+
+			// Connext to the next server
+			next_server = rtree_connect(node_metadata);
+			if (next_server == NULL) {
+				fprintf(stderr, "Error connecting to the next server %s:%s!\n", next_server->address, next_server->port);
+			} else {
+				fprintf(stdout, "Connected to the next server %s:%s!\n", next_server->address, next_server->port);
+			}
+
+			// We're done, leave cycle
+			break;
+		}
+	}
+
+	// If we didn't find a node higher than ours, then there's no next node
+	if (i == children_list->count) {
+		printf("I'm the tail!\n");
+	}
 }
 
 void tree_server_close(int signum) {

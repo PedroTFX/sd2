@@ -3,8 +3,11 @@
 
 #include <zookeeper.h>
 
+/* ZooKeeper Znode Data Length (1MB, the max supported) */
+#define ZDATALEN 1024 * 1024
+
 typedef struct String_vector zoo_string;
-/* zoo_string* children_list, char* root_path */
+
 typedef void (*call_back_fn)(zoo_string* children_list, char* root_path, zhandle_t* zh);
 
 struct watcher_ctx {
@@ -13,14 +16,7 @@ struct watcher_ctx {
 
 char* zk_node_id;
 
-/* struct head_tail_servers {
-	struct rtree_t* head;
-	struct rtree_t* tail;
-};
-
-struct head_tail_servers* servers; */
-
-zhandle_t* zk_connect(const char* address_port);
+zhandle_t* zk_connect(const char* address_port, char* rp);
 
 void zk_create_root_node_if_doesnt_exist(zhandle_t* zh);
 
