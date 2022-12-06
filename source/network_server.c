@@ -79,9 +79,10 @@ int network_main_loop(int listening_socket) {
 		perror("Could not initialize connections array.\n");
 		return -1;
 	}
-	connections->events = POLLIN;						 // There is data to read...
-	connections->fd = listening_socket;					 // ...on the welcoming socket
-	while ((poll(connections, num_fds, TIMEOUT)) > 0) {	 // kfds == 0 significa timeout sem eventos
+
+	connections->events = POLLIN;	// There is data to read...
+	connections->fd = listening_socket;	// ...on the welcoming socket
+	while ((poll(connections, num_fds, TIMEOUT)) > 0) {	// kfds == 0 significa timeout sem eventos
 		// If there are new clients wanting to connect, let's accept their connection (indice 0 implicito)
 		struct sockaddr client_info = {0};
 		socklen_t client_info_len = sizeof(client_info);
@@ -118,7 +119,6 @@ int network_main_loop(int listening_socket) {
  * - De-serializar estes bytes e construir a mensagem com o pedido,
  *   reservando a memória necessária para a estrutura message_t.
  */
-
 struct message_t* network_receive(int client_socket) {
 	char* buff;
 	int size = read_all2(client_socket, &buff);

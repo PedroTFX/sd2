@@ -7,7 +7,6 @@ Marcos Gomes, 56326
 Pedro Trindade, 56342
 
 
-
 escrita na cabeca
 leituras na cauda
 
@@ -34,7 +33,11 @@ Ver qual o ID do próximo servidor ao qual nos temos que ligar ✅
 Pedir ao ZooKeeper para nos dar o IP:PORT desse servidor ✅
 Guardar e ligar a esse servidor como next_server ✅
 
-# Cliente
+make ssserver_run2 args="1337"
+make ssserver_run2 args="1338"
+make ssserver_run2 args="1339"
+make ssserver_run2 args="1340"
 
+# Cliente
 ⚠️
 

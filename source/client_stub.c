@@ -11,6 +11,42 @@
 #include "client_stub.h"
 #include "message-private.h"
 #include "network_client.h"
+#include "client_zookeeper-private.h"
+#include "tree_client-private.h"
+
+#define ZDATALEN 1024 * 1024
+
+// Process children list
+void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zhandle_t* zh) {
+
+	printf("Callback function was called on the client!\n");
+	if (children_list->count > 0) {
+		// Get next node's IP and port
+		int watch = 0;
+		int node_metadata_length = ZDATALEN;
+		char* node_metadata = malloc(node_metadata_length * sizeof(char));
+		struct Stat* stat = NULL;
+		char node_path[120] = "";
+		strcat(node_path, root_path);
+		strcat(node_path, "/");
+		strcat(node_path, children_list->data[0]);
+		if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+		}
+
+		head = rtree_connect(node_metadata);
+
+		node_path[0] = '\0';
+		strcat(node_path, root_path);
+		strcat(node_path, "/");
+		strcat(node_path, children_list->data[children_list->count - 1]);
+		if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+		}
+
+		tail = rtree_connect(node_metadata);
+	}
+}
 
 /* Função para estabelecer uma associação entre o cliente e o servidor,
  * em que address_port é uma string no formato <hostname>:<port>.

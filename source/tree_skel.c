@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <zookeeper.h>
 
+#include "client_zookeeper-private.h"
 #include "client_stub-private.h"
 #include "client_stub.h"
 #include "entry.h"
@@ -37,71 +38,51 @@ pthread_mutex_t mutex_op_proc = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_tree = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t queue_not_empty = PTHREAD_COND_INITIALIZER;
 
-const char* root_path = "/chain";
-static zhandle_t* zk;
-int zk_node_id_length = 1024;
-char* zk_node_id;
-struct rtree_t* rtree = NULL;
+struct rtree_t* next_server;
 
-typedef struct String_vector zoo_string;
-
-static void child_watcher(zhandle_t* zh, int type, int state, const char* zpath, void* watcher_ctx) {
-	zoo_string* children_list = (zoo_string*)malloc(sizeof(zoo_string));
-
-	if (state == ZOO_CONNECTED_STATE && type == ZOO_CHILD_EVENT) {
-		/* Get the updated children and reset the watch */
-		if (ZOK != zoo_wget_children(zk, root_path, child_watcher, watcher_ctx, children_list)) {
-			fprintf(stderr, "Error setting watch at %s!\n", root_path);
-		}
-
-		fprintf(stderr, "\n=== znode listing === [ %s ]", root_path);
-		int i = 0;
-
-		if(strcmp(children_list->data[0], zk_node_id) == 0) {
+void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh/* zoo_string* children_list, char* root_path */) {
+	// Process children list
+	printf("Callback function was called on the server!\n");
+	int i;
+	for (i = 0; i < children_list->count; i++) {
+		if(i == 0 && strcmp(children_list->data[i], zk_node_id) == 0) {
 			printf("I'm the head!\n");
 		}
 
-		for (; i < children_list->count; i++) {
-			fprintf(stderr, "\n(%d): %s", i + 1, children_list->data[i]);
-
-			// If we find next node
-			if (strcmp(children_list->data[i], zk_node_id) > 0) {
-				// Get next node's IP and port
-				int watch = 0;
-				int node_metadata_length = ZDATALEN;
-				char* node_metadata = malloc(node_metadata_length * sizeof(char));
-				struct Stat* stat = NULL;
-				char node_path[120] = "";
-				strcat(node_path, root_path);
-				strcat(node_path, "/");
-				strcat(node_path, children_list->data[i]);
-				if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
-					fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
-				}
-
-				// Connext to the next server
-				rtree = rtree_connect(node_metadata);
-				if (rtree == NULL) {
-					fprintf(stderr, "Error connecting to the next server %s:%s!\n", rtree->address, rtree->port);
-				} else {
-					fprintf(stdout, "Connected to the next server %s:%s!\n", rtree->address, rtree->port);
-				}
-
-				//^We're done, leave cycle
-				break;
+		// If we find next node
+		if (strcmp(children_list->data[i], zk_node_id) > 0) {
+			// Get next node's IP and port
+			int watch = 0;
+			int node_metadata_length = ZDATALEN;
+			char* node_metadata = malloc(node_metadata_length * sizeof(char));
+			struct Stat* stat = NULL;
+			char node_path[120] = "";
+			strcat(node_path, root_path);
+			strcat(node_path, "/");
+			strcat(node_path, children_list->data[i]);
+			if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
+				fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
 			}
-		}
-		fprintf(stderr, "\n=== done ===\n");
 
-		// If we didn't find a node higher than ours, then there's no next node
-		if (i == children_list->count) {
-			printf("I'm the tail!\n");
-			rtree = NULL;
+			// Connext to the next server
+			next_server = rtree_connect(node_metadata);
+			if (next_server == NULL) {
+				fprintf(stderr, "Error connecting to the next server %s:%s!\n", next_server->address, next_server->port);
+			} else {
+				fprintf(stdout, "Connected to the next server %s:%s!\n", next_server->address, next_server->port);
+			}
+
+			// We're done, leave cycle
+			break;
 		}
 	}
 
-	free(children_list);
+	// If we didn't find a node higher than ours, then there's no next node
+	if (i == children_list->count) {
+		printf("I'm the tail!\n");
+	}
 }
+
 
 /* Inicia o skeleton da árvore.
  * O main() do servidor deve chamar esta função antes de poder usar a
@@ -109,57 +90,6 @@ static void child_watcher(zhandle_t* zh, int type, int state, const char* zpath,
  * Retorna 0 (OK) ou -1 (erro, por exemplo OUT OF MEMORY)
  */
 int tree_skel_init(int N) {
-	/* Connect to ZooKeeper server */
-	int recv_timeout = 2000;
-	const clientid_t* client_id = NULL;
-	void* context = NULL;
-	int flags = 0;
-	zk = zookeeper_init(zook_address_port, NULL, recv_timeout, client_id, context, flags);
-	if (zk == NULL) {
-		fprintf(stderr, "Error connecting to ZooKeeper server!\n");
-		exit(EXIT_FAILURE);
-	}
-
-	// Create root node if it doesn't exist
-	int error = zoo_exists(zk, root_path, 0, NULL);
-	if (error == ZNONODE) {
-		if (zoo_create(zk, root_path, NULL, -1, &ZOO_OPEN_ACL_UNSAFE, 0, NULL, 0) == ZOK) {
-			fprintf(stderr, "%s created!\n", root_path);
-		} else {
-			fprintf(stderr, "Error Creating %s!\n", root_path);
-			exit(EXIT_FAILURE);
-		}
-	}
-
-	// Register server in ZooKeeper
-	char node_path[120] = "";
-	strcat(node_path, root_path);
-	strcat(node_path, "/node");
-	zk_node_id = malloc(zk_node_id_length);
-	char value[100];
-	const char* server_address = "127.0.0.1";
-	sprintf(value, "%s:%s", server_address, server_port);
-	int value_length = strlen(value) + 1;
-	int create_result = zoo_create(zk, node_path, value, value_length, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE, zk_node_id, zk_node_id_length);
-	if (create_result != ZOK) {
-		fprintf(stderr, "Error creating znode from path %s!\n", node_path);
-		fprintf(stderr, "Error: %d!\n", create_result);
-		exit(EXIT_FAILURE);
-	}
-	printf("Ephemeral Sequencial ZNode created! ZNode path: %s\n", zk_node_id);
-
-	// Watch ZooKeeper root node's children
-	void* watcher_ctx = NULL;
-	zoo_string* children_list = (zoo_string*)malloc(sizeof(zoo_string));
-	if (ZOK != zoo_wget_children(zk, root_path, &child_watcher, watcher_ctx, children_list)) {
-		fprintf(stderr, "Error setting watch at %s!\n", root_path);
-	}
-	fprintf(stderr, "\n=== znode listing === [ %s ]", root_path);
-	for (int i = 0; i < children_list->count; i++) {
-		fprintf(stderr, "\n(%d): %s", i + 1, children_list->data[i]);
-	}
-	fprintf(stderr, "\n=== done ===\n");
-
 	pthread_cond_init(&queue_not_empty, NULL);
 	n_threads = N;
 	queue_head = NULL;
@@ -314,24 +244,29 @@ void invoke_get_keys(struct message_t* msg) {
 	char** keys = tree_get_keys(tree);
 	pthread_mutex_unlock(&mutex_tree);
 	message_t__init(msg);
+
 	if (keys == NULL) {
 		msg->opcode = MESSAGE_T__OPCODE__OP_ERROR;
 		msg->c_type = MESSAGE_T__C_TYPE__CT_NONE;
 		return;
 	}
+
 	msg->opcode = MESSAGE_T__OPCODE__OP_GETKEYS + 1;
 	msg->c_type = MESSAGE_T__C_TYPE__CT_KEYS;
 
 	int n_keys = 0;
+
 	while (keys[n_keys] != NULL) {
 		n_keys++;
 	}
+
 	msg->n_keys = n_keys;
 
 	msg->keys = (char**)malloc(n_keys * sizeof(char*));
 	for (int i = 0; i < n_keys; i++) {
 		msg->keys[i] = strdup(keys[i]);
 	}
+
 	tree_free_keys(keys);
 }
 
@@ -436,23 +371,38 @@ void* process_request(void* params) {
 			// print_tree(tree); // Print tree
 			pthread_mutex_unlock(&mutex_tree);	// Unlock access to tree
 
+			// Check for error
+			if (result == -1) {
+				printf("Error processing put request!\n");
+			} else {
+				printf("PUT successful!\n");
+			}
+
+			// Send request down the chain
+			struct entry_t* entry = entry_create(request->key, data);
+			if(next_server != NULL){
+				if(rtree_put(next_server, entry) == -1) {
+					printf("Error processing remote put request!\n");
+				} else {
+					printf("Remote PUT successful!\n");
+				}
+			} else{
+				printf("Request not forwarded because this is the tail. Probably...\n");
+			}
+			//entry_destroy(entry);
+
+			// Update operatino procedure
 			pthread_mutex_lock(&mutex_op_proc);
 			if (request->op_n > op_procedure.max_proc) {
 				op_procedure.max_proc = request->op_n;
 			}
 			op_procedure.in_progress[id] = request->op_n;
-			// Free request
-			request_destroy(request);
 			pthread_mutex_unlock(&mutex_op_proc);
+
 			// Free request and data
+			request_destroy(request);
 			data_destroy(data);
 
-			// Check for error
-			if (result == -1) {
-				printf("Error processing put request!\n");
-				continue;
-			}
-			printf("%d: PUT successful!\n", id);
 		} else if (request->op == OP_DEL) {
 			printf("\n%d: Thread will execute delete operation.\n", id);
 
@@ -464,28 +414,38 @@ void* process_request(void* params) {
 			// print_tree_id(id, tree); // Print tree
 			// print_tree(tree); // Print tree
 			pthread_mutex_unlock(&mutex_tree);	// Unlock access to tree
+
+			// Check for error
+			if (result == -1) {
+				printf("Error processing del request!\n");
+			} else {
+				printf("del successful!\n");
+			}
+
+			// Send request down the chain
+			if(rtree_del(next_server, request->key) == -1) {
+				printf("Error processing remote del request!\n");
+			} else {
+				printf("Remote del successful!\n");
+			}
+
 			pthread_mutex_lock(&mutex_op_proc);
 			// print_op_proc(id, &op_procedure);
 			if (request->op_n > op_procedure.max_proc) {
 				op_procedure.max_proc = request->op_n;
 			}
+
 			op_procedure.in_progress[id] = request->op_n;
 			// print_op_proc(id, &op_procedure);
 			//  Free request
-			request_destroy(request);
 			pthread_mutex_unlock(&mutex_op_proc);
-
-			// Check for error
-			if (result == -1) {
-				printf("Error processing delete request!\n");
-				continue;
-			}
-			printf("%d: DELETE successful!\n", id);
+			request_destroy(request);
 		}
 	}
 	printf("Closing thread %d.\n", id);
 	return NULL;
 }
+
 void print_queue(int id, struct request_t* queue) {
 	if (queue == NULL) {
 		printf("%d: QUEUE: empty\n", id);

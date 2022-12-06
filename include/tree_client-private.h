@@ -1,8 +1,18 @@
+#ifndef _TREE_CLIENT_PRIVATE_H
+#define _TREE_CLIENT_PRIVATE_H
+
+#include "client_zookeeper-private.h"
+
+struct rtree_t* head/*  = NULL */;
+struct rtree_t* tail/*  = NULL */;
+
+void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zhandle_t* zh);
+
 void showMenu();
 
 void readOption(char* input, int size);
 
-void executeCommand(struct rtree_t* rtree, char* option);
+void executeCommand(char* option);
 
 int commandIsPut(char* option);
 
@@ -22,22 +32,24 @@ int commandIsRandom(char*option);
 
 int commandIsVerify(char* option);
 
-void executePut(struct rtree_t* r_tree, char* option);
+void executePut(char* option);
 
-void executeGet(struct rtree_t* r_tree, char* option);
+void executeGet(char* option);
 
-void executeDel(struct rtree_t* r_tree, char* option);
+void executeDel(char* option);
 
-void executeSize(struct rtree_t* r_tree);
+void executeSize();
 
-void executeHeight(struct rtree_t* r_tree);
+void executeHeight();
 
-void executeGetKeys(struct rtree_t* rtree);
+void executeGetKeys();
 
-void executeGetValues(struct rtree_t* rtree);
+void executeGetValues();
 
-void executeVerify(struct rtree_t* rtree, char* option);
+void executeVerify(char* option);
 
-void executeRandom(struct rtree_t* rtree, char* option);
+void executeRandom(char* option);
 
 void sig_pipe_handler(int signal);
+
+#endif

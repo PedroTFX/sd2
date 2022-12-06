@@ -1,3 +1,5 @@
+#ifndef _TREE_SKEL_PRIVATE_H
+#define _TREE_SKEL_PRIVATE_H
 #include <zookeeper.h>
 
 #define OP_DEL 0
@@ -11,12 +13,14 @@ struct request_t {
 	struct request_t* next;
 };
 
+struct rtree_t* next_rtree;
+
 struct op_proc {
 	int max_proc;	   // Maior número da operação já executada
 	int* in_progress;  // Array de numeros de operações em execução por cada thread
 };
 
-static void child_watcher(zhandle_t* wzh, int type, int state, const char* zpath, void* watcher_ctx);
+void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh/* zoo_string* children_list, char* root_path */);
 
 void invoke_size(struct message_t*);
 
@@ -43,3 +47,5 @@ void print_op_proc(int id, struct op_proc* op_procedure);
 void queue_add_task(struct request_t* task);
 
 struct request_t* queue_get_task(int id);
+
+#endif

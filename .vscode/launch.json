@@ -9,7 +9,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/binary/tree-client",
-			"args": ["127.0.0.1:1337", " < ./tests/del01.txt"],
+			"args": ["127.0.0.1:2181", " < ./tests/del01.txt"],
 			"stopAtEntry": false,
 			"cwd": "${fileDirname}",
 			"environment": [],
@@ -41,6 +41,105 @@
 			"program": "${workspaceFolder}/binary/tree-server",
 			"args": [
 				"1337",
+				"127.0.0.1:2181"
+			],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "Compile server",
+			"setupCommands": [
+				{
+					"description": "Enable funcy printing to gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "In this mode GDB will be attached to both processes after a call to fork() or vfork().",
+					"text": "-gdb-set detach-on-fork on",
+					"ignoreFailures": false
+				},
+				{
+					"description": "The new process is debugged after a fork. The parent process runs unimpeded.",
+					"text": "-gdb-set follow-fork-mode child",
+					"ignoreFailures": false
+				}
+			]
+		},
+		{
+			"name": "Server1",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/binary/tree-server",
+			"args": [
+				"1338",
+				"127.0.0.1:2181"
+			],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "Compile server",
+			"setupCommands": [
+				{
+					"description": "Enable funcy printing to gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "In this mode GDB will be attached to both processes after a call to fork() or vfork().",
+					"text": "-gdb-set detach-on-fork on",
+					"ignoreFailures": false
+				},
+				{
+					"description": "The new process is debugged after a fork. The parent process runs unimpeded.",
+					"text": "-gdb-set follow-fork-mode child",
+					"ignoreFailures": false
+				}
+			]
+		},
+		{
+			"name": "Server2",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/binary/tree-server",
+			"args": [
+				"1339",
+				"127.0.0.1:2181"
+			],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "Compile server",
+			"setupCommands": [
+				{
+					"description": "Enable funcy printing to gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "In this mode GDB will be attached to both processes after a call to fork() or vfork().",
+					"text": "-gdb-set detach-on-fork on",
+					"ignoreFailures": false
+				},
+				{
+					"description": "The new process is debugged after a fork. The parent process runs unimpeded.",
+					"text": "-gdb-set follow-fork-mode child",
+					"ignoreFailures": false
+				}
+			]
+		},
+		{
+			"name": "Server3",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/binary/tree-server3",
+			"args": [
+				"1340",
 				"127.0.0.1:2181"
 			],
 			"stopAtEntry": false,

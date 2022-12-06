@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "client_stub-private.h"
 #include "client_stub.h"
 #include "data.h"
 #include "entry.h"
 #include "tree_client-private.h"
+#include "client_zookeeper-private.h"
 
 #define PUT "put"
 #define GET "get"
@@ -24,7 +24,7 @@
 #define VERIFY "verify"
 #define RANDOM "random"
 
-struct rtree_t* rtree;
+zhandle_t* zh;
 
 int main(int argc, char const* argv[]) {
 	// Ignore SIGPIPE signal so server doesn't crash if socket closes unexpectedly
@@ -35,23 +35,29 @@ int main(int argc, char const* argv[]) {
 	sigaction(SIGPIPE, &new_actn, NULL);
 
 	if (argc < 2) {
-		printf("Usage: ./tree_client <server>:<port>\n");
+		printf("Usage: ./tree_client <zookeeper server>:<zookeeper port>\n");
 		return -1;
 	}
 
-	rtree = rtree_connect(argv[1]);
-	if (rtree == NULL) {
-		perror("could not connect client\n");
-		return -1;
+	// Connect to ZooKeeper
+	zh = zk_connect(argv[1]);
+	if (zh == NULL) {
+		fprintf(stderr, "Error connecting to ZooKeeper!\n");
+		exit(EXIT_FAILURE);
 	}
+
+	// Get children list
+	struct watcher_ctx watcher_ctx;
+	watcher_ctx.callback = select_head_and_tail_servers;
+	zk_get_children(zh, &watcher_ctx);
 
 	char option[1024];
 	do {
 		showMenu();
 		readOption(option, 1024);
-		executeCommand(rtree, option);
+		executeCommand(option);
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
-	rtree_disconnect(rtree);
+	zk_disconnect(zh); // Disconnect from ZooKeeper
 	printf("Client exiting. Bye.\n");
 	return 0;
 }
@@ -75,23 +81,23 @@ void readOption(char* input, int size) {
 	input[strlen(input) - 1] = '\0';
 }
 
-void executeCommand(struct rtree_t* rtree, char* option) {
+void executeCommand(char* option) {
 	if (commandIsPut(option)) {
-		executePut(rtree, option);
+		executePut(option);
 	} else if (commandIsGetKeys(option)) {
-		executeGetKeys(rtree);
+		executeGetKeys();
 	} else if (commandIsGetValues(option)) {
-		executeGetValues(rtree);
+		executeGetValues();
 	} else if (commandIsGet(option)) {
-		executeGet(rtree, option);
+		executeGet(option);
 	} else if (commandIsDel(option)) {
-		executeDel(rtree, option);
+		executeDel(option);
 	} else if (commandIsSize(option)) {
-		executeSize(rtree);
+		executeSize();
 	} else if (commandIsHeight(option)) {
-		executeHeight(rtree);
+		executeHeight();
 	} else if (commandIsVerify(option)) {
-		executeVerify(rtree, option);
+		executeVerify(option);
 	}
 }
 
@@ -131,12 +137,12 @@ int commandIsRandom(char* option) {
 	return strncmp(option, RANDOM, strlen(RANDOM)) == 0;
 }
 
-void executePut(struct rtree_t* rtree, char* option) {
+void executePut(char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
 	char* value = strdup(strtok(NULL, " "));
 	struct entry_t* entry = entry_create(key, data_create2(strlen(value), value));
-	int op_num = rtree_put(rtree, entry);
+	int op_num = rtree_put(head, entry);
 	entry_destroy(entry);
 	if (op_num == -1) {
 		printf("\nPut failed.\n");
@@ -145,10 +151,10 @@ void executePut(struct rtree_t* rtree, char* option) {
 	printf("\n#######Put operation queued with number %d#######\n", op_num);
 }
 
-void executeGet(struct rtree_t* rtree, char* option) {
+void executeGet(char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
-	struct data_t* value = rtree_get(rtree, key);
+	struct data_t* value = rtree_get(tail, key);
 	free(key);
 	if (value == NULL) {
 		printf("\nget failed\n");
@@ -162,10 +168,10 @@ void executeGet(struct rtree_t* rtree, char* option) {
 	free(buffer);
 }
 
-void executeDel(struct rtree_t* rtree, char* option) {
+void executeDel(char* option) {
 	strtok(option, " ");
 	char* key = strdup(strtok(NULL, " "));
-	int op_num = rtree_del(rtree, key);
+	int op_num = rtree_del(head, key);
 	free(key);
 	if (op_num == -1) {
 		printf("\nDel failed\n");
@@ -174,8 +180,8 @@ void executeDel(struct rtree_t* rtree, char* option) {
 	printf("\n#######Del operation queued with number %d#######\n", op_num);
 }
 
-void executeSize(struct rtree_t* rtree) {
-	int result = rtree_size(rtree);
+void executeSize() {
+	int result = rtree_size(tail);
 	if (result == -1) {
 		printf("\nSize failed\n");
 		return;
@@ -184,8 +190,8 @@ void executeSize(struct rtree_t* rtree) {
 	printf("Size: %d\n", result);
 }
 
-void executeHeight(struct rtree_t* rtree) {
-	int result = rtree_height(rtree);
+void executeHeight() {
+	int result = rtree_height(tail);
 	if (result == -1) {
 		printf("\nHeight failed\n");
 		return;
@@ -194,8 +200,8 @@ void executeHeight(struct rtree_t* rtree) {
 	printf("Height: %d\n", result);
 }
 
-void executeGetKeys(struct rtree_t* rtree) {
-	char** keys = rtree_get_keys(rtree);
+void executeGetKeys() {
+	char** keys = rtree_get_keys(tail);
 	if (keys == NULL) {
 		printf("\nGetkeys failed\n");
 		return;
@@ -217,8 +223,8 @@ void executeGetKeys(struct rtree_t* rtree) {
 	free(keys);
 }
 
-void executeGetValues(struct rtree_t* rtree) {
-	struct data_t** values = (struct data_t**)rtree_get_values(rtree);
+void executeGetValues() {
+	struct data_t** values = (struct data_t**)rtree_get_values(tail);
 	if (values == NULL) {
 		printf("\nGetvalues failed\n");
 		return;
@@ -243,10 +249,10 @@ void executeGetValues(struct rtree_t* rtree) {
 	free(values);
 }
 
-void executeVerify(struct rtree_t* rtree, char* option) {
+void executeVerify(char* option) {
 	strtok(option, " ");
 	int op_n = atoi(strtok(NULL, ""));
-	int verified = rtree_verify(rtree, op_n);
+	int verified = rtree_verify(tail, op_n);
 	if (verified == -1) {
 		printf("\nVerify failed\n");
 		return;
@@ -260,5 +266,5 @@ void executeVerify(struct rtree_t* rtree, char* option) {
 
 void sig_pipe_handler(int signal){
 	printf("Client exiting after server crash. Bye.\n");
-	rtree_disconnect(rtree);
+	zk_disconnect(zh);
 }
