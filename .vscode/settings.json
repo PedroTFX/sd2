@@ -21,6 +21,9 @@
 		"tree.h": "c",
 		"network_client-private.h": "c",
 		"util.h": "c",
-		"sdmessage.pb-c.h": "c"
+		"sdmessage.pb-c.h": "c",
+		"bubble_sort-private.h": "c",
+		"zookeeper.jute.h": "c",
+		"zookeeper_version.h": "c"
 	}
 }

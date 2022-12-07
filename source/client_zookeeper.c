@@ -7,6 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
 
 #include "client_zookeeper-private.h"
 
@@ -44,8 +51,9 @@ void zk_register_server(zhandle_t* zh, const char* server_port) {
 	strcat(node_path, root_path);
 	strcat(node_path, "/node");
 	zk_node_id = malloc(zk_node_id_length);
-	char server_address_port[100];
-	char* server_address = "127.0.0.1";
+	char server_address_port[101];
+	char server_address[100];
+	get_ip_address(server_address);
 	sprintf(server_address_port, "%s:%s", server_address, server_port);
 	char* node_metadata = server_address_port;
 	int node_metadata_length = strlen(node_metadata) + 1;
@@ -111,6 +119,26 @@ void zk_child_watcher(zhandle_t* zh, int type, int state, const char* zpath, voi
 		// Free children list
 		free(children_list);
 	}
+}
+
+void get_ip_address(char* ip_address) {
+	int fd;
+	struct ifreq ifr;
+	/*AF_INET - to define network interface IPv4*/
+	/*Creating soket for it.*/
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+	/*AF_INET - to define IPv4 Address type.*/
+	ifr.ifr_addr.sa_family = AF_INET;
+	/*eth0 - define the ifr_name - port name
+	where network attached.*/
+	memcpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);
+	/*Accessing network interface information by
+	passing address using ioctl.*/
+	ioctl(fd, SIOCGIFADDR, &ifr);
+	/*closing fd*/
+	close(fd);
+	/*Extract IP Address*/
+	strcpy(ip_address, inet_ntoa(((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr));
 }
 
 void zk_disconnect(zhandle_t* zh) {

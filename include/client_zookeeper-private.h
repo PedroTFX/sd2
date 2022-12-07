@@ -30,6 +30,8 @@ void zk_get_children(zhandle_t* zh, void* watcher_ctx);
 
 void zk_child_watcher(zhandle_t* zh, int type, int state, const char* zpath, void* watcher_ctx);
 
+void get_ip_address(char* ip_address);
+
 void zk_disconnect(zhandle_t* zh);
 
 #endif

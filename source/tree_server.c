@@ -13,6 +13,7 @@
 #include "network_server.h"
 #include "tree_server-private.h"
 #include "tree_skel-private.h"
+#include "bubble_sort-private.h"
 
 zhandle_t* zh;
 
@@ -78,6 +79,15 @@ int main(int argc, const char* argv[]) {
 void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* zh) {
 	// Process children list
 	printf("Callback function was called on the server!\n");
+	printf("antes de ordenar\n");
+	for (int i = 0; i < children_list->count; i++) {
+		printf("%s\n", children_list->data[i]);
+	}
+	bubble_sort(children_list->data, children_list->count);
+	printf("depois de ordenar\n");
+	for (int i = 0; i < children_list->count; i++) {
+		printf("%s\n", children_list->data[i]);
+	}
 	int i;
 	for (i = 0; i < children_list->count; i++) {
 		if(i == 0 && strcmp(children_list->data[i], zk_node_id) == 0) {

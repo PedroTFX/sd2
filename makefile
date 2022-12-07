@@ -10,10 +10,6 @@ BINDIR := binary
 LIBDIR := lib
 ASMDIR := asm
 
-SRCFILES := $(shell find $(SRCDIR) -type f \( -iname "*.$(EXTENSION)" \) -exec basename \{} \;)
-HEADERFILES := $(shell find $(INCLUDEDIR) -type f \( -iname "*.h" \) -exec basename \{} \;)
-OBJFILES := $(SRCFILES:%.$(EXTENSION)=%.o)
-
 MACROS := MAKE
 BASEFLAGS := $(addprefix -D ,$(MACROS))
 DEBUGFLAGS := $(BASEFLAGS) -g -Wall
@@ -61,8 +57,8 @@ client_zookeeper.o:
 client_stub.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/client_stub.c -o $(OBJDIR)/client_stub.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR)
 
-client-lib.o: data.o entry.o sdmessage.pb-c.o util.o network_client.o client_zookeeper.o client_stub.o
-	ld -r $(OBJDIR)/data.o $(OBJDIR)/entry.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/util.o $(OBJDIR)/network_client.o $(OBJDIR)/client_zookeeper.o $(OBJDIR)/client_stub.o -o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR)
+client-lib.o: data.o entry.o sdmessage.pb-c.o util.o network_client.o client_zookeeper.o client_stub.o sort.o
+	ld -r $(OBJDIR)/data.o $(OBJDIR)/entry.o $(OBJDIR)/sdmessage.pb-c.o $(OBJDIR)/util.o $(OBJDIR)/network_client.o $(OBJDIR)/client_zookeeper.o $(OBJDIR)/client_stub.o $(OBJDIR)/bubble_sort.o -o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR)
 
 tree-client: client-lib.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/tree_client.c -o $(BINDIR)/tree-client $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I $(LIBINCLUDEDIR) -I/usr/include/ -L/usr/include -lprotobuf-c -lpthread -lzookeeper_mt
@@ -149,3 +145,7 @@ zoo_du:
 
 zoo_z:
 	./ZooKeeper/examples/zoo 127.0.0.1:2181
+
+
+sort.o:
+	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/bubble_sort.c -o $(OBJDIR)/bubble_sort.o -I $(INCLUDEDIR) -I$(LIBINCLUDEDIR) -lzookeeper_mt

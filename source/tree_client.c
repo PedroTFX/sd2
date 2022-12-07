@@ -14,16 +14,17 @@
 #include "data.h"
 #include "entry.h"
 #include "tree_client-private.h"
+#include "bubble_sort-private.h"
 
-#define PUT "put"
-#define GET "get"
-#define DEL "del"
+#define PUT "put "
+#define GET "get "
+#define DEL "del "
 #define QUIT "quit"
 #define SIZE "size"
 #define HEIGHT "height"
 #define GET_KEYS "getkeys"
 #define GET_VALUES "getvalues"
-#define VERIFY "verify"
+#define VERIFY "verify "
 #define RANDOM "random"
 
 zhandle_t* zh;
@@ -71,6 +72,15 @@ int main(int argc, char const* argv[]) {
 void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zhandle_t* zh) {
 
 	printf("Callback function was called on the client!\n");
+	printf("antes de ordenar\n");
+	for (int i = 0; i < children_list->count; i++) {
+		printf("%s\n", children_list->data[i]);
+	}
+	bubble_sort(children_list->data, children_list->count);
+	printf("depois de ordenar\n");
+	for (int i = 0; i < children_list->count; i++) {
+		printf("%s\n", children_list->data[i]);
+	}
 	if (children_list->count > 0) {
 		// Get next node's IP and port
 		int watch = 0;
@@ -135,6 +145,8 @@ void executeCommand(char* option) {
 		executeHeight();
 	} else if (commandIsVerify(option)) {
 		executeVerify(option);
+	} else {
+		printf("\nInvalid operation\n");
 	}
 }
 

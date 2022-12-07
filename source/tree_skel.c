@@ -87,18 +87,24 @@ int invoke(struct message_t* msg) {
 		invoke_put(msg);
 	} else if (msg->opcode == M_OPCODE_GET) {
 		invoke_get(msg);
+		printf("GET\n");
 	} else if (msg->opcode == M_OPCODE_DEL) {
 		invoke_del(msg);
 	} else if (msg->opcode == M_OPCODE_SIZE) {
 		invoke_size(msg);
+		printf("SIZE\n");
 	} else if (msg->opcode == M_OPCODE_HEIGHT) {
 		invoke_heigth(msg);
+		printf("HEIGHT\n");
 	} else if (msg->opcode == M_OPCODE_GETKEYS) {
 		invoke_get_keys(msg);
+		printf("GETKEYS\n");
 	} else if (msg->opcode == M_OPCODE_GETVALUES) {
 		invoke_get_values(msg);
+		printf("GETVALUES\n");
 	} else if (msg->opcode == M_OPCODE_VERIFY) {
 		invoke_verify(msg);
+		printf("VERIFY\n");
 	}
 	return 0;
 }
@@ -337,7 +343,7 @@ void* process_request(void* params) {
 					printf("Remote PUT successful!\n");
 				}
 			} else {
-				printf("Request not forwarded because this is the tail. Probably...\n");
+				printf("Put request not forwarded because this is the tail.\n");
 			}
 			// entry_destroy(entry);
 
@@ -373,12 +379,15 @@ void* process_request(void* params) {
 			}
 
 			// Send request down the chain
-			if (rtree_del(next_server, request->key) == -1) {
-				printf("Error processing remote del request!\n");
+			if (next_server != NULL) {
+				if (rtree_del(next_server, request->key) == -1) {
+					printf("Error processing remote del request!\n");
+				} else {
+					printf("Remote del successful!\n");
+				}
 			} else {
-				printf("Remote del successful!\n");
+				printf("Del request not forwarded because this is the tail.\n");
 			}
-
 			pthread_mutex_lock(&mutex_op_proc);
 			// print_op_proc(id, &op_procedure);
 			if (request->op_n > op_procedure.max_proc) {
