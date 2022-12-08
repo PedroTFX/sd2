@@ -63,7 +63,9 @@ int main(int argc, char const* argv[]) {
 		readOption(option, 1024);
 		executeCommand(option);
 	} while (strncmp(option, QUIT, strlen(QUIT)) != 0);
-	zk_disconnect(zh);	// Disconnect from ZooKeeper
+	zk_disconnect(zh);
+	rtree_disconnect(head);
+	rtree_disconnect(tail);
 	printf("Client exiting. Bye.\n");
 	return 0;
 }
@@ -95,6 +97,12 @@ void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zh
 			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
 		}
 
+		// If there's already a connection to head
+		if(head != NULL) {
+			// Disconnect from head
+			rtree_disconnect(head);
+		}
+
 		head = rtree_connect(node_metadata);
 
 		node_path[0] = '\0';
@@ -103,6 +111,12 @@ void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zh
 		strcat(node_path, children_list->data[children_list->count - 1]);
 		if (zoo_get(zh, node_path, watch, node_metadata, &node_metadata_length, stat) != ZOK) {
 			fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
+		}
+
+		// If there's already a connection to tail
+		if(tail != NULL) {
+			// Disconnect from tail
+			rtree_disconnect(tail);
 		}
 
 		tail = rtree_connect(node_metadata);
@@ -316,4 +330,6 @@ void executeVerify(char* option) {
 void sig_pipe_handler(int signal) {
 	printf("Client exiting after server crash. Bye.\n");
 	zk_disconnect(zh);
+	rtree_disconnect(head);
+	rtree_disconnect(tail);
 }

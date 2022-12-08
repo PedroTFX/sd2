@@ -17,9 +17,9 @@
 #include "message-private.h"
 #include "tree-private.h"
 #include "tree.h"
+#include "tree_server-private.h"
 #include "tree_skel-private.h"
 #include "tree_skel.h"
-#include "tree_server-private.h"
 
 struct tree_t* tree;
 struct request_t* queue_head;
@@ -337,10 +337,16 @@ void* process_request(void* params) {
 			// Send request down the chain
 			struct entry_t* entry = entry_create(request->key, data);
 			if (next_server != NULL) {
-				if (rtree_put(next_server, entry) == -1) {
-					printf("Error processing remote put request!\n");
-				} else {
-					printf("Remote PUT successful!\n");
+				int put_result = -1;
+				int retries = 0;
+				int max_retries = 10;
+				while (put_result == -1 && retries < max_retries) {
+					put_result = rtree_put(next_server, entry);
+					if (put_result == -1) {
+						printf("Error processing remote put request! Retrying %d/%d...\n", ++retries, max_retries);
+					} else {
+						printf("Remote PUT successful!\n");
+					}
 				}
 			} else {
 				printf("Put request not forwarded because this is the tail.\n");
@@ -380,14 +386,21 @@ void* process_request(void* params) {
 
 			// Send request down the chain
 			if (next_server != NULL) {
-				if (rtree_del(next_server, request->key) == -1) {
-					printf("Error processing remote del request!\n");
-				} else {
-					printf("Remote del successful!\n");
+				int del_result = -1;
+				int retries = 0;
+				int max_retries = 10;
+				while (del_result == -1 && retries < max_retries) {
+					del_result = rtree_del(next_server, request->key);
+					if (del_result == -1) {
+						printf("Error processing remote del request! Retrying %d/%d...\n", ++retries, max_retries);
+					} else {
+						printf("Remote del successful!\n");
+					}
 				}
 			} else {
 				printf("Del request not forwarded because this is the tail.\n");
 			}
+
 			pthread_mutex_lock(&mutex_op_proc);
 			// print_op_proc(id, &op_procedure);
 			if (request->op_n > op_procedure.max_proc) {

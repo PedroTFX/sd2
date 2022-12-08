@@ -32,6 +32,20 @@ int main(int argc, const char* argv[]) {
 		return -1;
 	}
 
+	// Listen to client request
+	const char* server_port = argv[1];
+	short port = (short)atoi(server_port);
+	if (port == 0) {
+		printf("Usage: tree-server <server port> <zookeeper address>:<zookeeper port>\n");
+		printf("Port should be a number.\n");
+		return -1;
+	}
+	int listening_socket;
+	if ((listening_socket = network_server_init(port)) == -1) {
+		printf("Could not listen on port %u\n", port);
+		return -1;
+	}
+
 	// Connect to ZooKeeper to forward client requests
 	char* root_node = "/chain";
 	zh = zk_connect(argv[2], root_node);
@@ -44,7 +58,6 @@ int main(int argc, const char* argv[]) {
 	zk_create_root_node_if_doesnt_exist(zh);
 
 	// Register server in ZooKeeper
-	const char* server_port = argv[1];
 	zk_register_server(zh, server_port);
 
 	// Get children list
@@ -52,18 +65,6 @@ int main(int argc, const char* argv[]) {
 	watcher_ctx.callback = select_next_server;
 	zk_get_children(zh, &watcher_ctx);
 
-	// Listen to client request
-	short port = (short)atoi(server_port);
-	if (port == 0) {
-		printf("Usage: tree-server <server port> <zookeeper address>:<zookeeper port>\n");
-		printf("Port should be a number.\n");
-		return -1;
-	}
-	int listening_socket;
-	if ((listening_socket = network_server_init(port)) == -1) {
-		printf("Could not listen on port %u\n", port);
-		return -1;
-	}
 
 	// Listen to interrupt signal
 	signal(SIGINT, tree_server_close);
@@ -94,7 +95,7 @@ void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* z
 			printf("I'm the head!\n");
 		}
 
-		// If we find next node
+		// If we find next node that is not the previous one
 		if (strcmp(children_list->data[i], zk_node_id) > 0) {
 			// Get next node's IP and port
 			int watch = 0;
@@ -109,7 +110,12 @@ void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* z
 				fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
 			}
 
-			// Connext to the next server
+			// If we're already connected
+			if(next_server != NULL) {
+				rtree_disconnect(next_server);
+			}
+
+			// Connect to the next server
 			next_server = rtree_connect(node_metadata);
 			if (next_server == NULL) {
 				fprintf(stderr, "Error connecting to the next server %s:%s!\n", next_server->address, next_server->port);

@@ -1,1 +1,2 @@
-struct rtree_t* next_server;
+#include <stdlib.h>
+struct rtree_t* next_server = NULL;
