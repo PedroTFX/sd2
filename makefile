@@ -149,3 +149,7 @@ zoo_z:
 
 sort.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/bubble_sort.c -o $(OBJDIR)/bubble_sort.o -I $(INCLUDEDIR) -I$(LIBINCLUDEDIR) -lzookeeper_mt
+
+
+chmod:
+	chmod +x ./ZooKeeper/bin/*
