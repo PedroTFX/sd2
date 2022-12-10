@@ -120,6 +120,7 @@ void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zh
 		}
 
 		tail = rtree_connect(node_metadata);
+		free(node_metadata);
 	}
 }
 
@@ -157,9 +158,11 @@ void executeCommand(char* option) {
 		executeSize();
 	} else if (commandIsHeight(option)) {
 		executeHeight();
+	} else if (commandIsRandom(option)) {
+		executeRandom(option);
 	} else if (commandIsVerify(option)) {
 		executeVerify(option);
-	} else {
+	} else if (strncmp(option, QUIT, strlen(QUIT)) != 0) {
 		printf("\nInvalid operation\n");
 	}
 }

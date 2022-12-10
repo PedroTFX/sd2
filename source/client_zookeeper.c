@@ -18,7 +18,6 @@
 #include "client_zookeeper-private.h"
 
 char* root_path = NULL;
-int zk_node_id_length = 1024;
 
 zhandle_t* zk_connect(const char* address_port, char* rp) {
 	// Save root path
@@ -50,14 +49,13 @@ void zk_register_server(zhandle_t* zh, const char* server_port) {
 	char node_path[120] = "";
 	strcat(node_path, root_path);
 	strcat(node_path, "/node");
-	zk_node_id = malloc(zk_node_id_length);
 	char server_address_port[101];
 	char server_address[100];
 	get_ip_address(server_address);
 	sprintf(server_address_port, "%s:%s", server_address, server_port);
 	char* node_metadata = server_address_port;
 	int node_metadata_length = strlen(node_metadata) + 1;
-	int create_result = zoo_create(zh, node_path, node_metadata, node_metadata_length, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE, zk_node_id, zk_node_id_length);
+	int create_result = zoo_create(zh, node_path, node_metadata, node_metadata_length, &ZOO_OPEN_ACL_UNSAFE, ZOO_EPHEMERAL | ZOO_SEQUENCE, zk_node_id, ZDATALEN);
 	if (create_result != ZOK) {
 		fprintf(stderr, "Error creating znode from path %s!\n", node_path);
 		fprintf(stderr, "Error: %d!\n", create_result);
@@ -78,14 +76,6 @@ void zk_print_nodes(zoo_string* children_list) {
 		fprintf(stderr, "\n(%d): %s", i + 1, children_list->data[i]);
 	}
 	fprintf(stderr, "\n=== done ===\n");
-}
-
-char* zk_get_full_path(char* root, char* child) {
-	char* full_path = (char*)calloc(1, strlen(root) + strlen(child) + 2);
-	strcat(full_path, root);
-	strcat(full_path, "/");
-	strcat(full_path, child);
-	return full_path;
 }
 
 void zk_get_children(zhandle_t* zh, void* watcher_ctx) {

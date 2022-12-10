@@ -85,13 +85,7 @@ f6cclient_run: tree-client
 	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01-del.txt
 
 cclient_valgrind: tree-client
-	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337 < ./tests/del01-del.txt
-
-2cclient_valgrind: tree-client
-	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337 < ./tests/del01.txt
-
-3cclient_valgrind: tree-client
-	valgrind --leak-check=full --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:1337
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:2181
 
 # Server
 tree.o:
@@ -119,7 +113,11 @@ ssserver_run2: tree-server
 	./$(BINDIR)/tree-server $(args) 127.0.0.1:2181
 
 sserver_valgrind: tree-server
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 3
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 127.0.0.1:2181
+v1algrind_server: tree-server
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1337 127.0.0.1:2181
+v2algrind_server: tree-server
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1338 127.0.0.1:2181
 
 zoo: compile_zoo
 
@@ -146,7 +144,11 @@ zoo_du:
 zoo_z:
 	./ZooKeeper/examples/zoo 127.0.0.1:2181
 
+val_zoo_cw: zoo_cw
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./ZooKeeper/examples/zchildwatcher
 
+val_zoo_cm : zoo_cm
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./ZooKeeper/examples/zchildmaker
 sort.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/bubble_sort.c -o $(OBJDIR)/bubble_sort.o -I $(INCLUDEDIR) -I$(LIBINCLUDEDIR) -lzookeeper_mt
 

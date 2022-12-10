@@ -14,7 +14,7 @@ struct watcher_ctx {
 	call_back_fn callback;
 };
 
-char* zk_node_id;
+char zk_node_id[ZDATALEN];
 
 zhandle_t* zk_connect(const char* address_port, char* rp);
 
@@ -24,7 +24,6 @@ void zk_register_server(zhandle_t* zh, const char* server_port);
 
 void zk_print_nodes(zoo_string* children_list);
 
-char* zk_get_full_path(char* root, char* child);
 
 void zk_get_children(zhandle_t* zh, void* watcher_ctx);
 

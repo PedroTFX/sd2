@@ -48,6 +48,3 @@ void executeVerify(char* option);
 void sig_pipe_handler(int signal);
 
 #endif
-
-
-//zookeeper-joao_santos-server-DESKTOP-RSEBCQ4.out
