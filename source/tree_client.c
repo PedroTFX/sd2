@@ -103,6 +103,7 @@ void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zh
 			rtree_disconnect(head);
 		}
 
+		printf("Connected to head %s\n", node_metadata);
 		head = rtree_connect(node_metadata);
 
 		node_path[0] = '\0';
@@ -119,6 +120,7 @@ void select_head_and_tail_servers(zoo_string* children_list, char* root_path, zh
 			rtree_disconnect(tail);
 		}
 
+		printf("Connected to tail %s\n", node_metadata);
 		tail = rtree_connect(node_metadata);
 		free(node_metadata);
 	}
