@@ -133,6 +133,11 @@ void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* z
 
 	// If we didn't find a node higher than ours, then there's no next node
 	if (i == children_list->count) {
+		// If we're already connected
+		if(next_server != NULL) {
+			rtree_disconnect(next_server);
+			next_server = NULL;
+		}
 		printf("I'm the tail!\n");
 	}
 }
