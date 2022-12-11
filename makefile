@@ -66,24 +66,6 @@ tree-client: client-lib.o
 ccclient_run: tree-client
 	./$(BINDIR)/tree-client 127.0.0.1:2181
 
-f1cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01.txt
-
-f2cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del02.txt
-
-f3cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del03.txt
-
-f4cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01-expected.txt
-
-f5cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01-put.txt
-
-f6cclient_run: tree-client
-	./$(BINDIR)/tree-client 127.0.0.1:1337 < tests/del01-del.txt
-
 cclient_valgrind: tree-client
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(BINDIR)/tree-client 127.0.0.1:2181
 
@@ -100,15 +82,6 @@ tree_skel.o:
 tree-server: tree.o network_server.o tree_skel.o client-lib.o
 	$(CC) $(DEBUGFLAGS) $(SRCDIR)/zookeeper.c $(SRCDIR)/tree_server.c -o $(BINDIR)/tree-server $(OBJDIR)/tree.o $(OBJDIR)/network_server.o $(OBJDIR)/tree_skel.o $(LIBDIR)/client-lib.o -I $(INCLUDEDIR) -I/usr/include/ -I$(LIBINCLUDEDIR) -L/usr/include -lprotobuf-c -lpthread -lzookeeper_mt
 
-sss1erver_run: tree-server
-	./$(BINDIR)/tree-server 1337 127.0.0.1:2181
-sss2erver_run: tree-server
-	./$(BINDIR)/tree-server 1338 127.0.0.1:2181
-sss3erver_run: tree-server
-	./$(BINDIR)/tree-server 1339 127.0.0.1:2181
-sss4erver_run: tree-server
-	./$(BINDIR)/tree-server 1340 127.0.0.1:2181
-
 ssserver_run2: tree-server
 	./$(BINDIR)/tree-server $(args) 127.0.0.1:2181
 
@@ -119,39 +92,8 @@ v1algrind_server: tree-server
 v2algrind_server: tree-server
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all $(BINDIR)/tree-server 1338 127.0.0.1:2181
 
-zoo: compile_zoo
-
-compile_zoo:
-	gcc ./ZooKeeper/examples/zoo.c -o ./ZooKeeper/examples/zoo -lzookeeper_mt
-	gcc ./ZooKeeper/examples/zchildmaker.c -o ./ZooKeeper/examples/zchildmaker -lzookeeper_mt
-	gcc ./ZooKeeper/examples/zchildwatcher.c -o ./ZooKeeper/examples/zchildwatcher -lzookeeper_mt
-	gcc ./ZooKeeper/examples/zdataupdater.c -o ./ZooKeeper/examples/zdataupdater -lzookeeper_mt
-	gcc ./ZooKeeper/examples/zdataupdater.c -o ./ZooKeeper/examples/zdataupdater -lzookeeper_mt
-	gcc ./ZooKeeper/examples/zdatawatcher.c -o ./ZooKeeper/examples/zdatawatcher -lzookeeper_mt
-
-zoo_cw:
-	./ZooKeeper/examples/zchildwatcher 127.0.0.1:2181
-
-zoo_dw:
-	./ZooKeeper/examples/zdatawatcher 127.0.0.1:2181
-
-zoo_cm:
-	./ZooKeeper/examples/zchildmaker 127.0.0.1:2181
-
-zoo_du:
-	./ZooKeeper/examples/zdataupdater 127.0.0.1:2181
-
-zoo_z:
-	./ZooKeeper/examples/zoo 127.0.0.1:2181
-
-val_zoo_cw: zoo_cw
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./ZooKeeper/examples/zchildwatcher
-
-val_zoo_cm : zoo_cm
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./ZooKeeper/examples/zchildmaker
 sort.o:
 	$(CC) $(DEBUGFLAGS) -c $(SRCDIR)/bubble_sort.c -o $(OBJDIR)/bubble_sort.o -I $(INCLUDEDIR) -I$(LIBINCLUDEDIR) -lzookeeper_mt
-
 
 chmod:
 	chmod +x ./ZooKeeper/bin/*
