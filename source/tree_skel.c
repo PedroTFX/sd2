@@ -335,7 +335,7 @@ void* process_request(void* params) {
 			}
 
 			// Send request down the chain
-			struct entry_t* entry = entry_create(request->key, data);
+			struct entry_t* entry = entry_create(strdup(request->key), data_dup(data));
 			if (next_server != NULL) {
 				int put_result = -1;
 				int retries = 0;
@@ -351,7 +351,7 @@ void* process_request(void* params) {
 			} else {
 				printf("Put request not forwarded because this is the tail.\n");
 			}
-			// entry_destroy(entry);
+			entry_destroy(entry);
 
 			// Update operatino procedure
 			pthread_mutex_lock(&mutex_op_proc);
