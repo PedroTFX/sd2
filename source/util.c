@@ -37,7 +37,7 @@ int write_all(int sock, char* buf, int len) {
 
 int read_all2(int sock, char** buf) {
 	// Read 4 bytes
-	int buffer_size;
+	int buffer_size = -1;
 	int bytes_read = read(sock, &buffer_size, sizeof(int));
 
 	// Socket was closed
