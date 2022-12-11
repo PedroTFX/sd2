@@ -110,20 +110,23 @@ void select_next_server(zoo_string* children_list, char* root_path, zhandle_t* z
 				fprintf(stderr, "Error getting new node's metadata at %s!\n", root_path);
 			}
 
-			// If we're already connected
-			if(next_server != NULL) {
-				rtree_disconnect(next_server);
-			}
-
 			// Connect to the next server
-			next_server = rtree_connect(node_metadata);
-			if (next_server == NULL) {
-				fprintf(stderr, "Error connecting to the next server %s:%s!\n", next_server->address, next_server->port);
+			struct rtree_t* temp_next_server = rtree_connect(node_metadata);
+			if (temp_next_server == NULL) {
+				fprintf(stderr, "Error connecting to the next server %s:%s!\n", temp_next_server->address, temp_next_server->port);
 			} else {
+				// If we're already connected
+				if(next_server != NULL) {
+					rtree_disconnect(next_server);
+				}
+
+				// Switch to the new connection
+				next_server = temp_next_server;
 				fprintf(stdout, "Connected to the next server %s:%s!\n", next_server->address, next_server->port);
 			}
 
 			// We're done, leave cycle
+			free(node_metadata);
 			break;
 		}
 	}
