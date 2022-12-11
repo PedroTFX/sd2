@@ -160,8 +160,6 @@ void executeCommand(char* option) {
 		executeSize();
 	} else if (commandIsHeight(option)) {
 		executeHeight();
-	} else if (commandIsRandom(option)) {
-		executeRandom(option);
 	} else if (commandIsVerify(option)) {
 		executeVerify(option);
 	} else if (strncmp(option, QUIT, strlen(QUIT)) != 0) {

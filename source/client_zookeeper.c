@@ -49,7 +49,7 @@ void zk_register_server(zhandle_t* zh, const char* server_port) {
 	char node_path[120] = "";
 	strcat(node_path, root_path);
 	strcat(node_path, "/node");
-	char server_address_port[101];
+	char server_address_port[120];
 	char server_address[100];
 	get_ip_address(server_address);
 	sprintf(server_address_port, "%s:%s", server_address, server_port);

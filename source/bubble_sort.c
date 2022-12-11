@@ -1,3 +1,8 @@
+// Trabalho realizado por:
+// Pedro Trindade 56342
+// Joao Santos 56380
+// Marcus Gomes 56326
+
 #include <string.h>
 
 #include "bubble_sort-private.h"
@@ -18,6 +23,3 @@ void bubble_sort(char** string_array, int size) {
 		}
 	}
 }
-
-//  |
-// [5][4][3][2][1][0]

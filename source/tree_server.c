@@ -65,7 +65,6 @@ int main(int argc, const char* argv[]) {
 	watcher_ctx.callback = select_next_server;
 	zk_get_children(zh, &watcher_ctx);
 
-
 	// Listen to interrupt signal
 	signal(SIGINT, tree_server_close);
 
